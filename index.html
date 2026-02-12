@@ -72,11 +72,22 @@
         /* Auth */
         #auth-area { display: flex; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
         .auth-box { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 360px; }
-        input[type="text"] { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #e0e0e0; border-radius: 12px; }
+        input[type="text"] { font-family: 'Inter'; width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #e0e0e0; border-radius: 12px; }
         button { padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
+<div id="emoji-overlay" class="overlay">
+  <div class="modal" style="max-width:300px;">
+    <div class="modal-header">
+      <h2>Emoji & Sonderzeichen</h2>
+      <span style="cursor:pointer" onclick="closeOverlay('emoji-overlay')">✕</span>
+    </div>
+    <div class="modal-body" style="display:flex; flex-wrap:wrap; gap:10px; max-height:300px; overflow-y:auto;">
+      <!-- Emojis werden hier per JS eingefügt -->
+    </div>
+  </div>
+</div>
 
     <div id="settings-overlay" class="overlay">
         <div class="modal">
@@ -164,6 +175,7 @@
             <div id="messages-container"></div>
             <div id="input-area">
                 <input type="text" id="msg-input" placeholder="Nachricht...">
+                <button id="btn-emoji" style="width:40px;">😊</button>
                 <button id="btn-send" style="width:60px;">➤</button>
             </div>
         </div>
@@ -458,6 +470,36 @@ window.editContactAlias = (contact) => {
         closeOverlay('alias-overlay');
     };
 };
+// Alle Emojis aus 1F300–1F9FF generieren
+const emojiList = [];
+for(let code = 0x1F300; code <= 0x1F9FF; code++){
+    try {
+        emojiList.push(String.fromCodePoint(code));
+    } catch(e) {}
+}
+
+// Overlay öffnen und Emojis einfügen
+function openEmojiPicker() {
+    const body = document.querySelector("#emoji-overlay .modal-body");
+    body.innerHTML = ""; // vorher löschen
+    emojiList.forEach(e => {
+        const span = document.createElement('span');
+        span.style.cursor = 'pointer';
+        span.style.fontSize = '22px';
+        span.innerText = e;
+        span.onclick = () => {
+            const input = document.getElementById('msg-input');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            input.value = input.value.slice(0,start) + e + input.value.slice(end);
+            input.focus();
+            input.selectionStart = input.selectionEnd = start + e.length;
+            closeOverlay('emoji-overlay');
+        };
+        body.appendChild(span);
+    });
+    document.getElementById('emoji-overlay').style.display = 'flex';
+}
 
 
 </script>
