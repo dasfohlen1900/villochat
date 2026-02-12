@@ -143,7 +143,7 @@
         </div>
     </div>
 
-   <script type="module">
+  <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
@@ -158,7 +158,7 @@ const firebaseConfig = {
     authDomain: "villochat.firebaseapp.com",
     databaseURL: "https://villochat-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "villochat",
-    storageBucket: "villochat.firebasestorage.app",
+    storageBucket: "villochat.firebasedata.app",
     messagingSenderId: "257561919332",
     appId: "1:257561919332:web:712d942c2f2e07169e8471"
 };
@@ -167,197 +167,198 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-let myUsername = "",
-    activeChatId = null,
-    currentMode = 'login',
-    chatRef = null,
-    typingRef = null;
+let myUsername = "", activeChatId = null, currentMode = 'login', chatRef = null, typingRef = null;
 
 marked.setOptions({ breaks: true });
 
-/* ------------------------------------------------ */
-/* AVATAR */
-/* ------------------------------------------------ */
-
+/* ------------------------------ */
+/* AVATAR HELPERS */
+/* ------------------------------ */
 function stringToColor(str) {
     let hash = 0;
-    for (let i = 0; i < str.length; i++)
-        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
     return `hsl(${Math.abs(hash) % 360},65%,40%)`;
 }
-
 function getAvatarHTML(name) {
-    return `<div class="avatar"
-        style="background:${stringToColor(name)}">
-        ${name.charAt(0)}
-    </div>`;
+    const color = stringToColor(name);
+    const letter = name.charAt(0);
+    return `<div class="avatar" style="background:${color}">${letter}</div>`;
 }
 
-/* ------------------------------------------------ */
-/* AUTH */
-/* ------------------------------------------------ */
+/* ------------------------------ */
+/* OVERLAY FUNCTIONS */
+/* ------------------------------ */
+window.openSettings = () => {
+    document.getElementById('set-username').innerText = myUsername;
+    document.getElementById('settings-overlay').style.display = 'flex';
+};
+window.closeOverlay = (id) => document.getElementById(id).style.display = 'none';
 
-window.setAuth = (m) => currentMode = m;
+/* ------------------------------ */
+/* AUTH & LOGIN/REGISTER */
+/* ------------------------------ */
+window.setAuth = (m) => {
+    currentMode = m;
+    document.getElementById('t-login').style.borderBottom = m==='login'?'2px solid var(--primary)':'none';
+    document.getElementById('t-reg').style.borderBottom = m==='register'?'2px solid var(--primary)':'none';
+};
 
 document.getElementById('v-pin').addEventListener('input', e => {
-    let v = e.target.value.replace(/\D/g, '');
-    if (v.length > 4)
-        v = v.slice(0, 4) + '-' + v.slice(4, 8);
+    let v = e.target.value.replace(/\D/g,'');
+    if(v.length>4) v=v.slice(0,4)+'-'+v.slice(4,8);
     e.target.value = v;
 });
 
 document.getElementById('btn-auth').onclick = async () => {
     const u = document.getElementById('v-username').value.trim();
     const p = document.getElementById('v-pin').value;
-    if (!u || p.length < 9) return alert("Daten unvollständig!");
+    if(!u || p.length<9) return alert("Daten unvollständig!");
 
     const s = await get(ref(db, 'accounts/' + u));
-
-    if (currentMode === 'register') {
-        if (s.exists()) return alert("Name belegt!");
-        await set(ref(db, 'accounts/' + u), {
-            username: u,
-            pin: p,
-            id: u.toLowerCase()
-        });
+    if(currentMode === 'register'){
+        if(s.exists()) return alert("Name belegt!");
+        await set(ref(db, 'accounts/' + u), { username: u, pin: p, id: u.toLowerCase() });
         alert("Registriert ✔");
         return;
+    } else {
+        if(!s.exists() || s.val().pin !== p) return alert("Login falsch!");
+        await signInAnonymously(auth);
+        myUsername = u;
+        localStorage.setItem('villo_session', u);
+        showApp();
     }
-
-    if (!s.exists() || s.val().pin !== p)
-        return alert("Login falsch!");
-
-    await signInAnonymously(auth);
-    myUsername = u;
-    localStorage.setItem('villo_session', u);
-    showApp();
 };
 
-/* ------------------------------------------------ */
-/* APP START */
-/* ------------------------------------------------ */
-
+/* ------------------------------ */
+/* SHOW APP & LOAD CONTACTS */
+/* ------------------------------ */
 function showApp() {
     document.getElementById('auth-area').style.display = 'none';
     document.getElementById('chat-area').style.display = 'flex';
     document.getElementById('my-name-display').innerText = myUsername;
+    const savedBg = localStorage.getItem('villo_bg');
+    if(savedBg) document.getElementById('main-chat').style.backgroundColor = savedBg;
 
-    onValue(ref(db, `accounts/${myUsername}/contacts`), snap => {
-        const list = document.getElementById('contacts-list');
-        list.innerHTML = "";
-        if (!snap.exists()) return;
-
+    onValue(ref(db, `accounts/${myUsername}/contacts`), (snap) => {
+        const list = document.getElementById('contacts-list'); list.innerHTML = "";
+        if(!snap.exists()) return;
         Object.values(snap.val()).forEach(n => {
             const d = document.createElement('div');
             d.className = 'contact-item';
-            d.innerHTML =
-                `${getAvatarHTML(n)}
-                 <span>${n}</span>
-                 <span class="del-contact"
-                   onclick="removeContact('${n}')">✕</span>`;
-            d.onclick = () => startChat(n);
+            d.innerHTML = `${getAvatarHTML(n)} <span>${n}</span> <span class="del-contact" onclick="removeContact('${n}')">✕</span>`;
+            d.onclick = () => startChat(n); 
             list.appendChild(d);
         });
     });
 }
 
-/* ------------------------------------------------ */
-/* CHAT */
-/* ------------------------------------------------ */
+/* ------------------------------ */
+/* SEARCH & ADD CONTACTS */
+/* ------------------------------ */
+document.getElementById('btn-search').onclick = async () => {
+    const s = document.getElementById('search-input').value.trim().toLowerCase();
+    const q = query(ref(db, 'accounts'), orderByChild('id'), startAt(s), endAt(s+"\uf8ff"));
+    const snap = await get(q);
+    const resDiv = document.getElementById('search-results'); resDiv.innerHTML = "";
+    if(snap.exists()){
+        document.getElementById('search-overlay').style.display = 'flex';
+        for(let key in snap.val()){
+            const name = snap.val()[key].username; if(name === myUsername) continue;
+            const item = document.createElement('div'); 
+            item.className = 'contact-item';
+            item.innerHTML = `${getAvatarHTML(name)} <span>${name}</span> <span style="margin-left:auto;">+</span>`;
+            item.onclick = () => { addGegenseitig(name); closeOverlay('search-overlay'); };
+            resDiv.appendChild(item);
+        }
+    }
+};
 
-function startChat(n) {
+async function addGegenseitig(target) {
+    push(ref(db, `accounts/${myUsername}/contacts`), target);
+    push(ref(db, `accounts/${target}/contacts`), myUsername);
+}
 
-    if (chatRef) off(chatRef);
-    if (typingRef) off(typingRef);
+/* ------------------------------ */
+/* START CHAT & MESSAGES */
+/* ------------------------------ */
+function startChat(n){
+    if(chatRef) off(chatRef);
+    if(typingRef) off(typingRef);
 
-    activeChatId =
-        myUsername < n
-            ? `${myUsername}_${n}`
-            : `${n}_${myUsername}`;
+    activeChatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
 
+    document.getElementById('chat-header').innerHTML = `<div style="display:flex;align-items:center;">${getAvatarHTML(n)} <span style="margin-left:10px;">${n}</span></div>`;
     document.getElementById('messages-container').innerHTML = "";
-    document.getElementById('chat-area')
-        .classList.add('chat-open');
+    document.getElementById('chat-area').classList.add('chat-open');
 
     chatRef = ref(db, 'chats/' + activeChatId);
-
-    onChildAdded(chatRef, s => {
-        const m = s.val();
+    onChildAdded(chatRef, (s) => {
+        const m = s.val(); 
         const d = document.createElement('div');
-        d.className =
-            'msg ' +
-            (m.sender === myUsername ? 'sent' : 'received');
-        d.id = "m-" + s.key;
-
-        const time = new Date(m.timestamp)
-            .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-        const del =
-            m.sender === myUsername
-                ? `<span class="del-msg"
-                   onclick="deleteMsg('${s.key}')">🗑</span>`
-                : "";
-
-        d.innerHTML =
-            `<div>${marked.parse(m.text)}</div>
-             <span class="msg-time">${time} ${del}</span>`;
-
-        const c = document.getElementById('messages-container');
-        c.appendChild(d);
-        c.scrollTop = c.scrollHeight;
+        d.className = 'msg ' + (m.sender===myUsername?'sent':'received');
+        d.id = "m-"+s.key;
+        const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        const delIcon = m.sender===myUsername?`<span class="del-msg" onclick="deleteMsg('${s.key}')">🗑</span>`:'';
+        d.innerHTML = `<div>${marked.parse(m.text)}</div><span class="msg-time">${time} ${delIcon}</span>`;
+        const c = document.getElementById('messages-container'); c.appendChild(d); c.scrollTop = c.scrollHeight;
     });
-
     onChildRemoved(chatRef, s => {
-        const el = document.getElementById("m-" + s.key);
-        if (el) el.remove();
+        const el = document.getElementById("m-"+s.key);
+        if(el) el.remove();
     });
 
     typingRef = ref(db, `typing/${activeChatId}/${n}`);
     onValue(typingRef, s => {
-        document.getElementById('typing-status')
-            .innerText =
-            s.val() ? `${n} schreibt gerade...` : "";
+        document.getElementById('typing-status').innerText = s.val()?`${n} schreibt gerade...`:'';
     });
 }
 
-window.deleteMsg = (mid) => {
-    if (!activeChatId) return;
-    remove(ref(db, `chats/${activeChatId}/${mid}`));
+/* ------------------------------ */
+/* SEND MESSAGE & TYPING */
+/* ------------------------------ */
+const msgInput = document.getElementById('msg-input');
+msgInput.oninput = () => {
+    if(activeChatId){
+        set(ref(db, `typing/${activeChatId}/${myUsername}`), true);
+        clearTimeout(window.tOut);
+        window.tOut = setTimeout(()=>set(ref(db, `typing/${activeChatId}/${myUsername}`),false),2000);
+    }
 };
-
-window.removeContact = async (n) => {
-    const snap = await get(
-        ref(db, `accounts/${myUsername}/contacts`)
-    );
-    if (!snap.exists()) return;
-
-    Object.entries(snap.val()).forEach(([key, val]) => {
-        if (val === n)
-            remove(ref(db,
-                `accounts/${myUsername}/contacts/${key}`));
-    });
-};
+msgInput.onkeypress = e=>{if(e.key==='Enter') document.getElementById('btn-send').click();};
 
 document.getElementById('btn-send').onclick = () => {
-    const input = document.getElementById('msg-input');
-    if (!input.value.trim() || !activeChatId) return;
-
-    push(ref(db, 'chats/' + activeChatId), {
-        sender: myUsername,
-        text: input.value,
-        timestamp: Date.now()
-    });
-
-    input.value = "";
+    if(!msgInput.value.trim() || !activeChatId) return;
+    push(ref(db, 'chats/'+activeChatId), {sender:myUsername,text:msgInput.value,timestamp:Date.now()});
+    set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
+    msgInput.value = "";
 };
+
+/* ------------------------------ */
+/* DELETE & REMOVE CONTACTS */
+/* ------------------------------ */
+window.deleteMsg = mid => { if(activeChatId) remove(ref(db, `chats/${activeChatId}/${mid}`)); };
+
+window.removeContact = async n => {
+    const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+    if(!snap.exists()) return;
+    Object.entries(snap.val()).forEach(([key,val]) => { if(val===n) remove(ref(db, `accounts/${myUsername}/contacts/${key}`)); });
+};
+
+/* ------------------------------ */
+/* CLOSE CHAT & LOGOUT */
+/* ------------------------------ */
+window.closeChat = () => {
+    document.getElementById('chat-area').classList.remove('chat-open');
+    if(activeChatId) set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
+};
+
+window.logout = () => { localStorage.clear(); location.reload(); };
 
 window.onload = () => {
     const s = localStorage.getItem('villo_session');
-    if (s) {
-        myUsername = s;
-        showApp();
-    }
+    if(s){ myUsername = s; showApp(); }
 };
 </script>
+
 </body>
 </html>
