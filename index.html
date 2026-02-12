@@ -334,14 +334,39 @@ document.getElementById('btn-send').onclick = () => {
 };
 
 /* ------------------------------ */
-/* DELETE & REMOVE CONTACTS */
+/* DELETE MESSAGE MIT BESTÄTIGUNG */
 /* ------------------------------ */
-window.deleteMsg = mid => { if(activeChatId) remove(ref(db, `chats/${activeChatId}/${mid}`)); };
+window.deleteMsg = (mid) => {
+    if(!activeChatId) return;
+    document.getElementById('confirm-text').innerText = "Nachricht wirklich löschen?";
+    document.getElementById('confirm-overlay').style.display = 'flex';
 
-window.removeContact = async n => {
-    const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
-    if(!snap.exists()) return;
-    Object.entries(snap.val()).forEach(([key,val]) => { if(val===n) remove(ref(db, `accounts/${myUsername}/contacts/${key}`)); });
+    const yesBtn = document.getElementById('confirm-yes');
+    yesBtn.replaceWith(yesBtn.cloneNode(true));
+    const newYes = document.getElementById('confirm-yes');
+    newYes.onclick = () => {
+        remove(ref(db, `chats/${activeChatId}/${mid}`));
+        closeOverlay('confirm-overlay');
+    };
+};
+
+/* ------------------------------ */
+/* DELETE CONTACT MIT BESTÄTIGUNG */
+/* ------------------------------ */
+window.removeContact = (n) => {
+    document.getElementById('confirm-text').innerText = `Kontakt "${n}" wirklich entfernen?`;
+    document.getElementById('confirm-overlay').style.display = 'flex';
+
+    const yesBtn = document.getElementById('confirm-yes');
+    yesBtn.replaceWith(yesBtn.cloneNode(true));
+    const newYes = document.getElementById('confirm-yes');
+    newYes.onclick = async () => {
+        const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+        if(snap.exists()){
+            Object.entries(snap.val()).forEach(([key,val]) => { if(val===n) remove(ref(db, `accounts/${myUsername}/contacts/${key}`)); });
+        }
+        closeOverlay('confirm-overlay');
+    };
 };
 
 /* ------------------------------ */
