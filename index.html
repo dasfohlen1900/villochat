@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat Pro</title>
+    <title>VilloChat Pro + Groups</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -11,13 +11,17 @@
         * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; height: 100vh; background: var(--bg); overflow: hidden; }
 
-        /* Auth Screen */
+        /* Login & Overlays */
         #auth-screen { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .auth-card { background: white; padding: 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; }
-        
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 6000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal { background: white; padding: 25px; border-radius: 24px; width: 90%; max-width: 360px; transform: scale(0.9); transition: 0.2s; }
+        .overlay.show { display: flex; }
+        .overlay.show .modal { transform: scale(1); }
+
         /* Layout */
         #app-wrap { display: none; height: 100vh; width: 100vw; position: relative; }
-        #sidebar { width: 350px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; z-index: 10; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #sidebar { width: 350px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; z-index: 10; transition: 0.3s; }
         #main-chat { flex-grow: 1; background: #e5ddd5; display: flex; flex-direction: column; position: relative; transition: 0.3s; }
 
         @media (max-width: 768px) {
@@ -26,36 +30,23 @@
             body.chat-open #main-chat { left: 0; }
         }
 
-        /* Header & Avatars */
-        .header { padding: 10px 20px; background: white; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid #eee; min-height: 70px; }
+        /* Elements */
+        .header { padding: 10px 20px; background: white; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee; min-height: 70px; }
         .avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; flex-shrink: 0; background: var(--accent); }
         .group-avatar { border-radius: 12px; }
         
-        /* Chat List */
-        .contact-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f9f9f9; cursor: pointer; transition: 0.15s; }
+        .contact-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f9f9f9; cursor: pointer; }
         .contact-item:hover { background: #f5f5f5; }
-        .del-icon { margin-left: auto; color: #ccc; font-size: 14px; padding: 8px; }
 
-        /* Messages */
         #messages-container { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 4px; }
-        .msg { padding: 8px 12px; border-radius: 12px; max-width: 80%; font-size: 15px; box-shadow: 0 1px 1px rgba(0,0,0,0.08); line-height: 1.4; }
-        .msg p { margin: 0; }
+        .msg { padding: 8px 12px; border-radius: 12px; max-width: 80%; font-size: 15px; box-shadow: 0 1px 1px rgba(0,0,0,0.08); line-height: 1.4; position: relative; }
         .sent { align-self: flex-end; background: var(--sent); border-bottom-right-radius: 2px; }
         .received { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
 
-        /* Typing & Input */
-        #typing-indicator { padding: 5px 20px; font-size: 12px; color: #666; font-style: italic; min-height: 22px; }
         .input-bar { padding: 10px 15px; background: #f0f0f0; display: flex; gap: 10px; align-items: center; }
         input[type="text"] { border-radius: 22px; border: 1px solid #ddd; padding: 12px 18px; flex-grow: 1; outline: none; font-size: 16px; }
-        
-        button.btn-p { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
-        #btn-send { border-radius: 50%; width: 46px; height: 46px; flex-shrink: 0; }
-
-        /* Modals */
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 6000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal { background: white; padding: 25px; border-radius: 24px; width: 90%; max-width: 360px; transform: scale(0.9); transition: 0.2s; }
-        .overlay.show { display: flex; }
-        .overlay.show .modal { transform: scale(1); }
+        .btn-p { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 12px; font-weight: 600; cursor: pointer; }
+        #typing-indicator { padding: 0 20px 5px; font-size: 11px; color: #666; font-style: italic; min-height: 16px; background: transparent; }
     </style>
 </head>
 <body>
@@ -65,6 +56,16 @@
             <h1 style="color:var(--primary)">VilloChat</h1>
             <input type="text" id="auth-user" placeholder="Dein Nutzername" style="width:100%; margin-bottom:15px; padding:12px; border-radius:12px; border:1px solid #ddd;">
             <button class="btn-p" style="width:100%" onclick="doLogin()">Loslegen</button>
+        </div>
+    </div>
+
+    <div id="modal-group-admin" class="overlay">
+        <div class="modal">
+            <h3 id="admin-group-name">Gruppe verwalten</h3>
+            <p style="font-size:12px; color:#666">Mitglied hinzufügen:</p>
+            <input type="text" id="add-member-input" placeholder="Nutzername eingeben..." style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #ddd;">
+            <button class="btn-p" style="width:100%" onclick="inviteToGroup()">Hinzufügen</button>
+            <button onclick="closeModals()" style="width:100%; margin-top:15px; border:none; background:none; color:#999;">Schließen</button>
         </div>
     </div>
 
@@ -95,16 +96,19 @@
         </div>
 
         <div id="main-chat">
-            <div class="header">
-                <button onclick="closeChat()" style="border:none; background:none; font-size:24px; cursor:pointer;" id="back-btn">←</button>
+            <div class="header" id="chat-header-area" style="cursor:pointer">
+                <button onclick="closeChat()" style="border:none; background:none; font-size:24px; cursor:pointer;">←</button>
                 <div id="chat-avatar" class="avatar">?</div>
-                <h3 id="chat-header" style="margin:0; font-size:17px;">Chat wählen</h3>
+                <div style="flex-grow:1">
+                    <h3 id="chat-header" style="margin:0; font-size:17px;">Chat wählen</h3>
+                    <small id="chat-sub" style="color:#999; font-size:11px;"></small>
+                </div>
             </div>
             <div id="messages-container"></div>
             <div id="typing-indicator"></div>
             <div class="input-bar">
                 <input type="text" id="msg-input" placeholder="Nachricht...">
-                <button id="btn-send" class="btn-p">➤</button>
+                <button id="btn-send" class="btn-p" style="border-radius:50%; width:46px; height:46px;">➤</button>
             </div>
         </div>
     </div>
@@ -127,9 +131,7 @@
         const db = getDatabase(app);
 
         let myUsername = localStorage.getItem('villo_session');
-        let activeChatId = null;
-        let chatRef = null;
-        let typingRef = null;
+        let activeChatId = null, chatRef = null, typingRef = null, activeChatType = 'private';
 
         marked.setOptions({ sanitize: true, breaks: true });
 
@@ -145,11 +147,6 @@
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app-wrap').style.display = 'flex';
             document.getElementById('my-avatar').innerText = myUsername.charAt(0).toUpperCase();
-            
-            const savedColor = localStorage.getItem('chat_bg_color') || '#e5ddd5';
-            document.getElementById('main-chat').style.backgroundColor = savedColor;
-            document.getElementById('color-picker').value = savedColor;
-            
             loadContacts();
         }
 
@@ -159,19 +156,13 @@
                 list.innerHTML = "";
                 if(snap.exists()) {
                     Object.entries(snap.val()).forEach(([key, c]) => {
-                        const name = typeof c === 'string' ? c : c.name;
+                        const name = c.name || c;
                         const type = c.type || 'private';
                         const id = type === 'group' ? c.id : (myUsername < name ? `${myUsername}_${name}` : `${name}_${myUsername}`);
-
                         const div = document.createElement('div');
                         div.className = 'contact-item';
-                        div.innerHTML = `
-                            <div class="avatar ${type==='group'?'group-avatar':''}" style="background:#128C7E">${name.charAt(0).toUpperCase()}</div>
-                            <div style="flex-grow:1" onclick="startChat('${name}', '${id}', '${type}')">
-                                <b>${name}</b><br><small style="color:#999">${type}</small>
-                            </div>
-                            <span class="del-icon" onclick="doDeleteContact('${key}')">✕</span>
-                        `;
+                        div.innerHTML = `<div class="avatar ${type==='group'?'group-avatar':''}">${name.charAt(0).toUpperCase()}</div>
+                                         <div style="flex-grow:1" onclick="startChat('${name}', '${id}', '${type}')"><b>${name}</b></div>`;
                         list.appendChild(div);
                     });
                 }
@@ -179,58 +170,53 @@
         }
 
         window.startChat = (name, id, type) => {
-            if(chatRef) off(chatRef);
-            if(typingRef) off(typingRef);
-
-            activeChatId = id;
+            if(chatRef) off(chatRef); if(typingRef) off(typingRef);
+            activeChatId = id; activeChatType = type;
             document.getElementById('messages-container').innerHTML = "";
             document.getElementById('chat-header').innerText = name;
-            document.getElementById('chat-avatar').innerText = name.charAt(0).toUpperCase();
+            document.getElementById('chat-sub').innerText = type === 'group' ? 'Gruppe verwalten...' : 'Online';
             document.getElementById('chat-avatar').className = 'avatar ' + (type==='group'?'group-avatar':'');
+            document.getElementById('chat-avatar').innerText = name.charAt(0).toUpperCase();
             document.body.classList.add('chat-open');
 
-            // Typing Indicator
             typingRef = ref(db, `typing/${id}`);
-            onValue(typingRef, (snap) => {
-                const typers = snap.val() || {};
-                const otherTypers = Object.keys(typers).filter(u => u !== myUsername);
-                document.getElementById('typing-indicator').innerText = otherTypers.length > 0 ? `${otherTypers.join(', ')} schreibt...` : '';
+            onValue(typingRef, (s) => {
+                const typers = Object.keys(s.val() || {}).filter(u => u !== myUsername);
+                document.getElementById('typing-indicator').innerText = typers.length > 0 ? typers.join(', ') + ' schreibt...' : '';
             });
 
-            // Chat Listener
             chatRef = ref(db, 'chats/' + id);
             onChildAdded(chatRef, (s) => {
                 if(activeChatId !== id) return;
-                const m = s.val();
-                const isMe = m.sender === myUsername;
+                const m = s.val(); const isMe = m.sender === myUsername;
                 const d = document.createElement('div');
                 d.className = `msg ${isMe ? 'sent' : 'received'}`;
-                d.innerHTML = `${type === 'group' && !isMe ? `<small style="font-weight:600; color:var(--primary); display:block;">${m.sender}</small>` : ''}${marked.parse(m.text)}`;
+                d.innerHTML = `${type==='group' && !isMe ? `<small style="font-weight:bold;color:var(--primary)">${m.sender}</small>` : ''}${marked.parse(m.text)}`;
                 document.getElementById('messages-container').appendChild(d);
                 document.getElementById('messages-container').scrollTop = document.getElementById('messages-container').scrollHeight;
             });
         };
 
-        // Typing Status senden
-        let typingTimeout;
-        document.getElementById('msg-input').oninput = () => {
-            if(!activeChatId) return;
-            set(ref(db, `typing/${activeChatId}/${myUsername}`), true);
-            clearTimeout(typingTimeout);
-            typingTimeout = setTimeout(() => {
-                remove(ref(db, `typing/${activeChatId}/${myUsername}`));
-            }, 2000);
+        // Gruppen-Admin Modal öffnen
+        document.getElementById('chat-header-area').onclick = () => {
+            if(activeChatType === 'group') {
+                document.getElementById('admin-group-name').innerText = document.getElementById('chat-header').innerText;
+                document.getElementById('modal-group-admin').classList.add('show');
+            }
         };
 
-        document.getElementById('btn-send').onclick = () => {
-            const i = document.getElementById('msg-input');
-            if(!i.value.trim() || !activeChatId) return;
-            push(ref(db, 'chats/' + activeChatId), { sender: myUsername, text: i.value, timestamp: Date.now() });
-            remove(ref(db, `typing/${activeChatId}/${myUsername}`));
-            i.value = "";
+        window.inviteToGroup = async () => {
+            const target = document.getElementById('add-member-input').value.trim();
+            const gName = document.getElementById('chat-header').innerText;
+            if(!target || !activeChatId) return;
+            
+            // In die Kontaktliste des Ziel-Users schreiben
+            await push(ref(db, `accounts/${target}/contacts`), { name: gName, type: 'group', id: activeChatId });
+            document.getElementById('add-member-input').value = "";
+            closeModals();
         };
 
-        // Hilfsfunktionen
+        // Standard-Funktionen
         window.doAddContact = () => {
             const n = document.getElementById('search-input').value.trim();
             if(n && n !== myUsername) push(ref(db, `accounts/${myUsername}/contacts`), { name: n, type: 'private' });
@@ -240,21 +226,27 @@
         window.doCreateGroup = () => {
             const n = document.getElementById('group-name-input').value.trim();
             if(n) push(ref(db, `accounts/${myUsername}/contacts`), { name: n, type: 'group', id: 'group_'+Date.now() });
-            document.getElementById('group-name-input').value = "";
             closeModals();
+        };
+
+        document.getElementById('btn-send').onclick = () => {
+            const i = document.getElementById('msg-input');
+            if(!i.value.trim() || !activeChatId) return;
+            push(ref(db, 'chats/' + activeChatId), { sender: myUsername, text: i.value, timestamp: Date.now() });
+            i.value = "";
+            remove(ref(db, `typing/${activeChatId}/${myUsername}`));
+        };
+
+        document.getElementById('msg-input').oninput = () => {
+            if(activeChatId) set(ref(db, `typing/${activeChatId}/${myUsername}`), true);
+            setTimeout(() => remove(ref(db, `typing/${activeChatId}/${myUsername}`)), 3000);
         };
 
         window.openSettings = () => document.getElementById('modal-settings').classList.add('show');
         window.closeModals = () => document.querySelectorAll('.overlay').forEach(el => el.classList.remove('show'));
-        window.doDeleteContact = (key) => set(ref(db, `accounts/${myUsername}/contacts/${key}`), null);
         window.closeChat = () => document.body.classList.remove('chat-open');
         window.logout = () => { localStorage.clear(); location.reload(); };
-        
         document.getElementById('msg-input').onkeydown = (e) => { if(e.key==='Enter') document.getElementById('btn-send').click(); };
-        document.getElementById('color-picker').oninput = (e) => {
-            document.getElementById('main-chat').style.backgroundColor = e.target.value;
-            localStorage.setItem('chat_bg_color', e.target.value);
-        };
 
         if(myUsername) initApp();
     </script>
