@@ -3,63 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VilloChat</title>
+    <title>VilloChat - Login/Register</title>
     <style>
         :root { --primary: #075e54; --bg: #f0f2f5; --white: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
         
-        /* Loginbereich */
-        #login-area { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-        .login-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
-        button:hover { opacity: 0.9; }
-
-        /* Chatbereich */
+        /* Auth Bereich */
+        #auth-area { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .auth-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 320px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
+        .tab { flex: 1; padding: 10px; cursor: pointer; text-align: center; color: #666; }
+        .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); font-weight: bold; }
+        
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
+        /* Chat Bereich */
         #chat-area { display: none; height: 100vh; }
         #sidebar { width: 320px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
         #main-chat { flex-grow: 1; display: flex; flex-direction: column; background: #e5ddd5; }
-        
         .header { padding: 15px; background: var(--primary); color: white; font-weight: bold; }
-        #contacts-list { flex-grow: 1; overflow-y: auto; }
-        .contact-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; background: white; }
-        .contact-item:hover { background: #f9f9f9; }
-
         #messages-container { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
-        .msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; max-width: 70%; word-wrap: break-word; position: relative; }
-        .sent { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 2px; }
-        .received { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
-
-        #input-area { padding: 15px; background: #f0f0f0; display: flex; align-items: center; }
-        #msg-input { flex-grow: 1; margin: 0 10px 0 0; }
+        .msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; max-width: 70%; word-wrap: break-word; }
+        .sent { align-self: flex-end; background: #dcf8c6; }
+        .received { align-self: flex-start; background: white; }
+        #input-area { padding: 15px; background: #f0f0f0; display: flex; }
     </style>
 </head>
 <body>
 
-    <div id="login-area">
-        <div class="login-box">
-            <h2 style="color: var(--primary)">VilloChat</h2>
-            <input type="text" id="v-username" placeholder="Nutzername (A-Z, 0-9, .-_*)">
-            <input type="text" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9">
-            <button id="btn-login">Starten / Beitreten</button>
-            <p style="font-size: 12px; color: #666; margin-top: 15px;">Neu hier? Einfach Name & PIN wählen zum Registrieren.</p>
+    <div id="auth-area">
+        <div class="auth-box">
+            <h2 style="color: var(--primary); margin-top: 0;">VilloChat</h2>
+            <div class="tabs">
+                <div id="tab-login" class="tab active" onclick="switchTab('login')">Login</div>
+                <div id="tab-register" class="tab" onclick="switchTab('register')">Registrieren</div>
+            </div>
+
+            <div id="form-container">
+                <input type="text" id="v-username" placeholder="Nutzername">
+                <input type="text" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9">
+                <button id="btn-auth">Anmelden</button>
+            </div>
+            <p id="auth-info" style="font-size: 11px; color: #888; margin-top: 10px;">Bitte gib deine Daten ein.</p>
         </div>
     </div>
 
     <div id="chat-area">
         <div id="sidebar">
-            <div class="header">VilloChat</div>
+            <div class="header" id="my-name-display">Mein Profil</div>
             <div style="padding: 10px; display: flex; gap: 5px;">
                 <input type="text" id="search-input" placeholder="Kennung suchen..." style="margin:0;">
                 <button id="btn-search" style="width: 50px;">+</button>
             </div>
-            <div id="contacts-list"></div>
+            <div id="contacts-list" style="overflow-y: auto; flex-grow: 1;"></div>
+            <button onclick="logout()" style="background: #a33; border-radius: 0;">Logout</button>
         </div>
         <div id="main-chat">
             <div id="chat-header" class="header" style="background: #ededed; color: #333;">Kontakt wählen</div>
             <div id="messages-container"></div>
             <div id="input-area">
-                <input type="text" id="msg-input" placeholder="Nachricht schreiben...">
+                <input type="text" id="msg-input" placeholder="Nachricht...">
                 <button id="btn-send" style="width: 80px;">Senden</button>
             </div>
         </div>
@@ -67,10 +71,9 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, get, push, onChildAdded, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // --- KONFIGURATION ---
         const firebaseConfig = {
             apiKey: "AIzaSyB3wZU09SzNh7xZFPFjPHR9nhDCWkGzj7E",
             authDomain: "villochat.firebaseapp.com",
@@ -85,73 +88,76 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let activeChatId = null;
+        let currentMode = 'login'; // oder 'register'
         let myUsername = "";
+        let activeChatId = null;
 
-        // --- HILFSFUNKTIONEN ---
-        const validName = (n) => /^[a-zA-Z0-9.\-_*]+$/.test(n);
-        const validPin = (p) => /^\d{4}-\d{4}$/.test(p);
+        // --- TAB WECHSEL ---
+        window.switchTab = (mode) => {
+            currentMode = mode;
+            document.getElementById('tab-login').className = mode === 'login' ? 'tab active' : 'tab';
+            document.getElementById('tab-register').className = mode === 'register' ? 'tab active' : 'tab';
+            document.getElementById('btn-auth').innerText = mode === 'login' ? 'Anmelden' : 'Konto erstellen';
+            document.getElementById('auth-info').innerText = mode === 'login' ? 'Gib Name und PIN ein.' : 'Wähle einen neuen Namen und PIN.';
+        };
 
-        // PIN-Formatierung während des Tippens (xxxx-xxxx)
+        // PIN-Formatierung
         document.getElementById('v-pin').addEventListener('input', (e) => {
             let val = e.target.value.replace(/\D/g, '');
             if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
             e.target.value = val;
         });
 
-        // --- LOGIN / REGISTER LOGIK ---
-        document.getElementById('btn-login').onclick = async () => {
+        // --- AUTH LOGIK ---
+        document.getElementById('btn-auth').onclick = async () => {
             const user = document.getElementById('v-username').value.trim();
             const pin = document.getElementById('v-pin').value;
-
-            if (!validName(user)) return alert("Ungültige Zeichen im Namen!");
-            if (!validPin(pin)) return alert("PIN Format: 1234-5678");
+            if (!/^[a-zA-Z0-9.\-_*]+$/.test(user)) return alert("Ungültige Zeichen im Namen!");
+            if (!/^\d{4}-\d{4}$/.test(pin)) return alert("PIN Format: 1234-5678");
 
             const userRef = ref(db, 'accounts/' + user);
             const snap = await get(userRef);
 
-            if (!snap.exists()) {
-                if (confirm("Konto neu anlegen?")) {
-                    await set(userRef, { username: user, pin: pin, id: user.toLowerCase() });
-                    doLogin(user);
-                }
+            if (currentMode === 'register') {
+                if (snap.exists()) return alert("Name bereits vergeben!");
+                await set(userRef, { username: user, pin: pin, id: user.toLowerCase() });
+                alert("Konto erstellt! Du kannst dich jetzt einloggen.");
+                switchTab('login');
             } else {
-                if (snap.val().pin === pin) {
-                    doLogin(user);
-                } else {
-                    alert("Falsche PIN!");
-                }
+                if (!snap.exists()) return alert("Nutzer nicht gefunden!");
+                if (snap.val().pin !== pin) return alert("Falsche PIN!");
+                
+                await signInAnonymously(auth);
+                myUsername = user;
+                localStorage.setItem('villo_session', user);
+                showApp();
             }
         };
 
-        async function doLogin(user) {
-            await signInAnonymously(auth);
-            myUsername = user;
-            localStorage.setItem('villo_session', user);
-            document.getElementById('login-area').style.display = 'none';
+        function showApp() {
+            document.getElementById('auth-area').style.display = 'none';
             document.getElementById('chat-area').style.display = 'flex';
+            document.getElementById('my-name-display').innerText = "Ich: " + myUsername;
         }
 
-        // --- KONTAKT SUCHE ---
+        window.logout = () => {
+            localStorage.removeItem('villo_session');
+            location.reload();
+        };
+
+        // --- MESSENGER LOGIK ---
         document.getElementById('btn-search').onclick = async () => {
             const target = document.getElementById('search-input').value.trim().toLowerCase();
-            if (!target) return;
-
             const q = query(ref(db, 'accounts'), orderByChild('id'), equalTo(target));
             const snap = await get(q);
-
             if (snap.exists()) {
-                const userData = Object.values(snap.val())[0];
-                renderContact(userData.username);
-            } else {
-                alert("User nicht gefunden!");
-            }
+                const name = Object.values(snap.val())[0].username;
+                renderContact(name);
+            } else alert("Kein Treffer.");
         };
 
         function renderContact(name) {
             const list = document.getElementById('contacts-list');
-            if ([...list.childNodes].some(el => el.innerText === name)) return;
-
             const div = document.createElement('div');
             div.className = 'contact-item';
             div.innerText = name;
@@ -159,45 +165,30 @@
             list.appendChild(div);
         }
 
-        // --- CHAT LOGIK ---
         function startChat(targetName) {
             activeChatId = myUsername < targetName ? `${myUsername}_${targetName}` : `${targetName}_${myUsername}`;
             document.getElementById('chat-header').innerText = "Chat mit " + targetName;
             document.getElementById('messages-container').innerHTML = "";
-
-            const chatRef = ref(db, 'chats/' + activeChatId);
-            onChildAdded(chatRef, (snap) => {
+            onChildAdded(ref(db, 'chats/' + activeChatId), (snap) => {
                 const m = snap.val();
                 const d = document.createElement('div');
                 d.className = 'msg ' + (m.sender === myUsername ? 'sent' : 'received');
                 d.innerText = m.text;
-                const container = document.getElementById('messages-container');
-                container.appendChild(d);
-                container.scrollTop = container.scrollHeight;
+                document.getElementById('messages-container').appendChild(d);
+                document.getElementById('messages-container').scrollTop = 99999;
             });
         }
 
-        // --- SENDEN ---
         document.getElementById('btn-send').onclick = () => {
-            const txt = document.getElementById('msg-input').value.trim();
+            const txt = document.getElementById('msg-input').value;
             if (!txt || !activeChatId) return;
-
-            push(ref(db, 'chats/' + activeChatId), {
-                sender: myUsername,
-                text: txt,
-                time: Date.now()
-            });
+            push(ref(db, 'chats/' + activeChatId), { sender: myUsername, text: txt });
             document.getElementById('msg-input').value = "";
         };
 
-        // Auto-Login wenn Session existiert
         window.onload = () => {
             const saved = localStorage.getItem('villo_session');
-            if (saved) {
-                myUsername = saved;
-                document.getElementById('login-area').style.display = 'none';
-                document.getElementById('chat-area').style.display = 'flex';
-            }
+            if (saved) { myUsername = saved; showApp(); }
         };
     </script>
 </body>
