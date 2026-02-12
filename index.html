@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat Fixed</title>
+    <title>VilloChat - Version 2.13</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -354,6 +354,9 @@ function startChat(n){
     document.getElementById('messages-container').innerHTML = "";
     document.getElementById('chat-area').classList.add('chat-open');
 
+    // Hier den Tab-Titel setzen
+    document.title = `VilloChat - ${n}`;
+
     chatRef = ref(db, 'chats/' + activeChatId);
     onChildAdded(chatRef, (s) => {
         const m = s.val(); 
@@ -375,6 +378,14 @@ function startChat(n){
         document.getElementById('typing-status').innerText = s.val()?`${n} schreibt gerade...`:'';
     });
 }
+
+// Optional: Beim Schließen des Chats wieder Standard-Titel
+window.closeChat = () => {
+    document.getElementById('chat-area').classList.remove('chat-open');
+    document.title = "VilloChat";
+    if(activeChatId) set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
+};
+
 
 /* ------------------------------ */
 /* SEND MESSAGE & TYPING */
