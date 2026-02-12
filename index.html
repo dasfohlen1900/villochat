@@ -3,67 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VilloChat - Login/Register</title>
+    <title>VilloChat - Final</title>
     <style>
         :root { --primary: #075e54; --bg: #f0f2f5; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
         
-        /* Auth Bereich */
+        /* Auth */
         #auth-area { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         .auth-box { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 320px; }
         .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #ddd; }
         .tab { flex: 1; padding: 10px; cursor: pointer; text-align: center; color: #666; }
         .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); font-weight: bold; }
-        
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px; }
-        
-        /* Chat Bereich */
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        /* App Layout */
         #chat-area { display: none; height: 100vh; }
         #sidebar { width: 320px; background: white; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
         #main-chat { flex-grow: 1; display: flex; flex-direction: column; background: #e5ddd5; }
-        .header { padding: 15px; background: var(--primary); color: white; font-weight: bold; }
+        
+        .header { padding: 15px; background: var(--primary); color: white; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        #contacts-list { flex-grow: 1; overflow-y: auto; background: white; }
+        .contact-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; transition: 0.2s; }
+        .contact-item:hover { background: #f5f5f5; }
+        
         #messages-container { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
-        .msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; max-width: 70%; word-wrap: break-word; }
+        .msg { padding: 8px 12px; border-radius: 8px; margin-bottom: 8px; max-width: 75%; word-wrap: break-word; font-size: 15px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
         .sent { align-self: flex-end; background: #dcf8c6; }
         .received { align-self: flex-start; background: white; }
-        #input-area { padding: 15px; background: #f0f0f0; display: flex; }
+
+        #input-area { padding: 15px; background: #f0f0f0; display: flex; gap: 10px; }
     </style>
 </head>
 <body>
 
     <div id="auth-area">
         <div class="auth-box">
-            <h2 style="color: var(--primary); margin-top: 0;">VilloChat</h2>
+            <h2 style="color: var(--primary); margin: 0 0 15px 0;">VilloChat</h2>
             <div class="tabs">
                 <div id="tab-login" class="tab active" onclick="switchTab('login')">Login</div>
-                <div id="tab-register" class="tab" onclick="switchTab('register')">Registrieren</div>
+                <div id="tab-register" class="tab" onclick="switchTab('register')">Neu hier?</div>
             </div>
-
-            <div id="form-container">
-                <input type="text" id="v-username" placeholder="Nutzername">
-                <input type="text" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9">
-                <button id="btn-auth">Anmelden</button>
-            </div>
-            <p id="auth-info" style="font-size: 11px; color: #888; margin-top: 10px;">Bitte gib deine Daten ein.</p>
+            <input type="text" id="v-username" placeholder="Nutzername">
+            <input type="text" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9">
+            <button id="btn-auth">Anmelden</button>
         </div>
     </div>
 
     <div id="chat-area">
         <div id="sidebar">
-            <div class="header" id="my-name-display">Mein Profil</div>
-            <div style="padding: 10px; display: flex; gap: 5px;">
-                <input type="text" id="search-input" placeholder="Kennung suchen..." style="margin:0;">
-                <button id="btn-search" style="width: 50px;">+</button>
+            <div class="header">
+                <span id="my-name-display">Profil</span>
+                <button onclick="logout()" style="width: auto; padding: 5px 10px; background: #cc3300; font-size: 11px;">Logout</button>
             </div>
-            <div id="contacts-list" style="overflow-y: auto; flex-grow: 1;"></div>
-            <button onclick="logout()" style="background: #a33; border-radius: 0;">Logout</button>
+            <div style="padding: 10px; display: flex; gap: 5px; border-bottom: 1px solid #eee;">
+                <input type="text" id="search-input" placeholder="Kennung suchen..." style="margin:0; padding: 8px;">
+                <button id="btn-search" style="width: 40px; padding: 0;">+</button>
+            </div>
+            <div id="contacts-list"></div>
         </div>
         <div id="main-chat">
-            <div id="chat-header" class="header" style="background: #ededed; color: #333;">Kontakt wählen</div>
+            <div id="chat-header" class="header" style="background: #ededed; color: #333; border-bottom: 1px solid #ddd;">Wähle einen Chat</div>
             <div id="messages-container"></div>
             <div id="input-area">
-                <input type="text" id="msg-input" placeholder="Nachricht...">
+                <input type="text" id="msg-input" placeholder="Nachricht..." style="margin:0;">
                 <button id="btn-send" style="width: 80px;">Senden</button>
             </div>
         </div>
@@ -88,45 +91,38 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        let currentMode = 'login'; // oder 'register'
+        let currentMode = 'login';
         let myUsername = "";
         let activeChatId = null;
 
-        // --- TAB WECHSEL ---
         window.switchTab = (mode) => {
             currentMode = mode;
             document.getElementById('tab-login').className = mode === 'login' ? 'tab active' : 'tab';
             document.getElementById('tab-register').className = mode === 'register' ? 'tab active' : 'tab';
             document.getElementById('btn-auth').innerText = mode === 'login' ? 'Anmelden' : 'Konto erstellen';
-            document.getElementById('auth-info').innerText = mode === 'login' ? 'Gib Name und PIN ein.' : 'Wähle einen neuen Namen und PIN.';
         };
 
-        // PIN-Formatierung
         document.getElementById('v-pin').addEventListener('input', (e) => {
             let val = e.target.value.replace(/\D/g, '');
             if (val.length > 4) val = val.slice(0, 4) + '-' + val.slice(4, 8);
             e.target.value = val;
         });
 
-        // --- AUTH LOGIK ---
         document.getElementById('btn-auth').onclick = async () => {
             const user = document.getElementById('v-username').value.trim();
             const pin = document.getElementById('v-pin').value;
-            if (!/^[a-zA-Z0-9.\-_*]+$/.test(user)) return alert("Ungültige Zeichen im Namen!");
-            if (!/^\d{4}-\d{4}$/.test(pin)) return alert("PIN Format: 1234-5678");
+            if (!/^[a-zA-Z0-9.\-_*]+$/.test(user) || !/^\d{4}-\d{4}$/.test(pin)) return alert("Check Name & PIN (xxxx-xxxx)!");
 
             const userRef = ref(db, 'accounts/' + user);
             const snap = await get(userRef);
 
             if (currentMode === 'register') {
-                if (snap.exists()) return alert("Name bereits vergeben!");
+                if (snap.exists()) return alert("Name belegt!");
                 await set(userRef, { username: user, pin: pin, id: user.toLowerCase() });
-                alert("Konto erstellt! Du kannst dich jetzt einloggen.");
+                alert("Konto bereit! Logge dich jetzt ein.");
                 switchTab('login');
             } else {
-                if (!snap.exists()) return alert("Nutzer nicht gefunden!");
-                if (snap.val().pin !== pin) return alert("Falsche PIN!");
-                
+                if (!snap.exists() || snap.val().pin !== pin) return alert("Daten falsch!");
                 await signInAnonymously(auth);
                 myUsername = user;
                 localStorage.setItem('villo_session', user);
@@ -134,30 +130,41 @@
             }
         };
 
-        function showApp() {
+        async function showApp() {
             document.getElementById('auth-area').style.display = 'none';
             document.getElementById('chat-area').style.display = 'flex';
-            document.getElementById('my-name-display').innerText = "Ich: " + myUsername;
+            document.getElementById('my-name-display').innerText = myUsername;
+            loadMyContacts();
         }
 
-        window.logout = () => {
-            localStorage.removeItem('villo_session');
-            location.reload();
-        };
+        async function loadMyContacts() {
+            const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+            if (snap.exists()) {
+                Object.values(snap.val()).forEach(name => renderContact(name, false));
+            }
+        }
 
-        // --- MESSENGER LOGIK ---
         document.getElementById('btn-search').onclick = async () => {
             const target = document.getElementById('search-input').value.trim().toLowerCase();
+            if (!target || target === myUsername.toLowerCase()) return;
+
             const q = query(ref(db, 'accounts'), orderByChild('id'), equalTo(target));
             const snap = await get(q);
             if (snap.exists()) {
-                const name = Object.values(snap.val())[0].username;
-                renderContact(name);
-            } else alert("Kein Treffer.");
+                const foundName = Object.values(snap.val())[0].username;
+                renderContact(foundName, true);
+                document.getElementById('search-input').value = "";
+            } else alert("Nicht gefunden.");
         };
 
-        function renderContact(name) {
+        function renderContact(name, saveToDb) {
             const list = document.getElementById('contacts-list');
+            if ([...list.children].some(c => c.innerText === name)) return;
+
+            if (saveToDb) {
+                push(ref(db, `accounts/${myUsername}/contacts`), name);
+            }
+
             const div = document.createElement('div');
             div.className = 'contact-item';
             div.innerText = name;
@@ -167,29 +174,30 @@
 
         function startChat(targetName) {
             activeChatId = myUsername < targetName ? `${myUsername}_${targetName}` : `${targetName}_${myUsername}`;
-            document.getElementById('chat-header').innerText = "Chat mit " + targetName;
-            document.getElementById('messages-container').innerHTML = "";
+            document.getElementById('chat-header').innerText = "Chat: " + targetName;
+            const container = document.getElementById('messages-container');
+            container.innerHTML = "";
+            
+            // Ab jetzt Nachrichten live empfangen
             onChildAdded(ref(db, 'chats/' + activeChatId), (snap) => {
                 const m = snap.val();
                 const d = document.createElement('div');
                 d.className = 'msg ' + (m.sender === myUsername ? 'sent' : 'received');
                 d.innerText = m.text;
-                document.getElementById('messages-container').appendChild(d);
-                document.getElementById('messages-container').scrollTop = 99999;
+                container.appendChild(d);
+                container.scrollTop = container.scrollHeight;
             });
         }
 
         document.getElementById('btn-send').onclick = () => {
-            const txt = document.getElementById('msg-input').value;
-            if (!txt || !activeChatId) return;
-            push(ref(db, 'chats/' + activeChatId), { sender: myUsername, text: txt });
-            document.getElementById('msg-input').value = "";
+            const input = document.getElementById('msg-input');
+            if (!input.value.trim() || !activeChatId) return;
+            push(ref(db, 'chats/' + activeChatId), { sender: myUsername, text: input.value });
+            input.value = "";
         };
 
-        window.onload = () => {
-            const saved = localStorage.getItem('villo_session');
-            if (saved) { myUsername = saved; showApp(); }
-        };
+        window.logout = () => { localStorage.removeItem('villo_session'); location.reload(); };
+        window.onload = () => { const s = localStorage.getItem('villo_session'); if (s) { myUsername = s; showApp(); } };
     </script>
 </body>
 </html>
