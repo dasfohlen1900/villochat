@@ -20,17 +20,11 @@
         /* Layout */
         #chat-area { display: none; height: 100vh; width: 100vw; overflow: hidden; position: relative; }
         #sidebar { position: absolute; width: 100%; height: 100%; left: 0; top: 0; background: white; z-index: 10; transition: 0.3s ease; display: flex; flex-direction: column; }
-        #main-chat { 
-            position: absolute; width: 100%; height: 100%; left: 100%; top: 0; 
-            background: #e5ddd5; 
-            z-index: 20; transition: 0.3s ease; display: flex; flex-direction: column; 
-        }
+        #main-chat { position: absolute; width: 100%; height: 100%; left: 100%; top: 0; background: #e5ddd5; z-index: 20; transition: 0.3s ease; display: flex; flex-direction: column; }
 
-        /* Mobile View State */
         .chat-open #sidebar { transform: translateX(-20%); }
         .chat-open #main-chat { transform: translateX(-100%); }
 
-        /* Desktop View */
         @media (min-width: 768px) {
             #chat-area { display: flex !important; }
             #sidebar { position: relative; width: 350px; transform: none !important; border-right: 1px solid #ddd; }
@@ -41,22 +35,19 @@
         .header { padding: 15px 20px; background: white; color: var(--primary); border-bottom: 1px solid #eee; display: flex; align-items: center; min-height: 70px; z-index: 30; }
         .header h2 { font-family: var(--text-heading); font-size: 20px; margin: 0; flex-grow: 1; }
         
+        .avatar { width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-family: var(--text-heading); text-transform: uppercase; font-size: 18px; flex-shrink: 0; }
         #contacts-list { flex-grow: 1; overflow-y: auto; background: white; }
-        .contact-item { padding: 12px 20px; border-bottom: 1px solid #f5f5f5; cursor: pointer; font-weight: 500; display: flex; align-items: center; }
+        .contact-item { padding: 12px 20px; border-bottom: 1px solid #f5f5f5; cursor: pointer; display: flex; align-items: center; }
 
-        /* Avatare */
-        .avatar { 
-            width: 40px; height: 40px; border-radius: 50%; margin-right: 12px; 
-            display: flex; align-items: center; justify-content: center; 
-            color: white; font-weight: bold; font-family: var(--text-heading); 
-            text-transform: uppercase; font-size: 18px; flex-shrink: 0; 
-        }
+        /* Delete Buttons */
+        .del-contact { margin-left: auto; color: #ccc; font-size: 20px; padding: 5px; cursor: pointer; transition: 0.2s; }
+        .del-contact:hover { color: #cc0000; }
+        .del-msg { font-size: 12px; margin-left: 8px; cursor: pointer; opacity: 0; color: #cc0000; }
+        .msg:hover .del-msg { opacity: 1; }
 
-        /* Schreibt-Status */
         #typing-status { font-size: 12px; font-style: italic; color: var(--primary); padding: 5px 20px; min-height: 22px; }
-
         #messages-container { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
-        .msg { padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; max-width: 85%; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
+        .msg { padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; max-width: 85%; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; transition: opacity 0.3s; }
         .sent { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 2px; }
         .received { align-self: flex-start; background: white; border-bottom-left-radius: 2px; }
         
@@ -65,14 +56,6 @@
 
         #input-area { padding: 15px; background: #f0f0f0; display: flex; gap: 10px; align-items: center; }
         #msg-input { border-radius: 25px; border: none; flex-grow: 1; padding: 12px 20px; outline: none; font-size: 16px; }
-        
-        .settings-btn { cursor: pointer; font-size: 20px; margin-left: 10px; }
-        .back-btn { font-size: 24px; margin-right: 15px; cursor: pointer; }
-
-        /* Auth */
-        #auth-area { display: flex; align-items: center; justify-content: center; height: 100vh; padding: 20px; }
-        .auth-box { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 360px; }
-        input[type="text"] { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #e0e0e0; border-radius: 12px; }
         button { padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; }
     </style>
 </head>
@@ -123,8 +106,8 @@
                 <span class="settings-btn" onclick="openSettings()">⚙️</span>
             </div>
             <div style="padding:10px; display:flex; gap:5px; background:#f9f9f9;">
-                <input type="text" id="search-input" placeholder="User suchen..." style="margin:0;">
-                <button id="btn-search" style="width:50px; margin:0;">+</button>
+                <input type="text" id="search-input" placeholder="User suchen...">
+                <button id="btn-search" style="width:50px;">+</button>
             </div>
             <div id="contacts-list"></div>
         </div>
@@ -146,7 +129,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getDatabase, ref, set, get, push, onChildAdded, query, orderByChild, startAt, endAt, onValue, off } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, set, get, push, onChildAdded, onChildRemoved, query, orderByChild, startAt, endAt, onValue, off, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyB3wZU09SzNh7xZFPFjPHR9nhDCWkGzj7E",
@@ -166,7 +149,6 @@
 
         marked.setOptions({ sanitize: true, breaks: true });
 
-        // Avatar Hilfsfunktionen
         function stringToColor(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
@@ -174,9 +156,7 @@
         }
 
         function getAvatarHTML(name) {
-            const color = stringToColor(name);
-            const letter = name.charAt(0);
-            return `<div class="avatar" style="background:${color}">${letter}</div>`;
+            return `<div class="avatar" style="background:${stringToColor(name)}">${name.charAt(0)}</div>`;
         }
 
         window.closeOverlay = (id) => document.getElementById(id).style.display = 'none';
@@ -184,6 +164,17 @@
         window.openSettings = () => {
             document.getElementById('set-username').innerText = myUsername;
             document.getElementById('settings-overlay').style.display = 'flex';
+        };
+
+        // Löschfunktionen Global machen
+        window.deleteMsg = (id) => { if(activeChatId) remove(ref(db, `chats/${activeChatId}/${id}`)); };
+        window.removeContact = async (n) => {
+            const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+            if(snap.exists()) {
+                Object.entries(snap.val()).forEach(([key, val]) => {
+                    if(val === n) remove(ref(db, `accounts/${myUsername}/contacts/${key}`));
+                });
+            }
         };
 
         document.getElementById('bg-color-picker').oninput = (e) => {
@@ -204,13 +195,13 @@
         document.getElementById('btn-auth').onclick = async () => {
             const u = document.getElementById('v-username').value.trim();
             const p = document.getElementById('v-pin').value;
-            if(!u || p.length < 9) return alert("Daten unvollständig!");
+            if(!u || p.length < 9) return;
             const s = await get(ref(db, 'accounts/' + u));
             if(currentMode === 'register'){
-                if(s.exists()) return alert("Name belegt!");
+                if(s.exists()) return;
                 await set(ref(db, 'accounts/' + u), { username: u, pin: p, id: u.toLowerCase() }); setAuth('login');
             } else {
-                if(!s.exists() || s.val().pin !== p) return alert("Login falsch!");
+                if(!s.exists() || s.val().pin !== p) return;
                 await signInAnonymously(auth); myUsername = u; localStorage.setItem('villo_session', u); showApp();
             }
         };
@@ -226,8 +217,8 @@
                 const list = document.getElementById('contacts-list'); list.innerHTML = "";
                 if (snap.exists()) Object.values(snap.val()).forEach(n => {
                     const d = document.createElement('div'); d.className = 'contact-item';
-                    d.innerHTML = `${getAvatarHTML(n)} <span>${n}</span>`;
-                    d.onclick = () => startChat(n); list.appendChild(d);
+                    d.innerHTML = `${getAvatarHTML(n)} <span style="flex-grow:1" onclick="startChat('${n}')">${n}</span> <span class="del-contact" onclick="removeContact('${n}')">×</span>`;
+                    list.appendChild(d);
                 });
             });
         }
@@ -263,22 +254,22 @@
             document.getElementById('messages-container').innerHTML = "";
             document.getElementById('chat-area').classList.add('chat-open');
             
-            // Nachrichten laden
             chatRef = ref(db, 'chats/' + activeChatId);
             onChildAdded(chatRef, (s) => {
                 const m = s.val(); const d = document.createElement('div');
-                d.className = 'msg ' + (m.sender === myUsername ? 'sent' : 'received');
+                d.className = 'msg ' + (m.sender === myUsername ? 'sent' : 'received'); d.id = "m-" + s.key;
                 const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-                d.innerHTML = `<div>${marked.parse(m.text)}</div><span class="msg-time">${time}</span>`;
+                const delIcon = m.sender === myUsername ? `<span class="del-msg" onclick="deleteMsg('${s.key}')">🗑</span>` : "";
+                d.innerHTML = `<div>${marked.parse(m.text)}</div><span class="msg-time">${time} ${delIcon}</span>`;
                 document.getElementById('messages-container').appendChild(d);
                 document.getElementById('messages-container').scrollTop = 99999;
             });
 
-            // "Schreibt gerade..." Logik empfangen
+            // Echtzeit Löschen beim Partner
+            onChildRemoved(chatRef, (s) => { const el = document.getElementById("m-" + s.key); if(el) el.remove(); });
+
             typingRef = ref(db, `typing/${activeChatId}/${n}`);
-            onValue(typingRef, (s) => {
-                document.getElementById('typing-status').innerText = s.val() ? `${n} schreibt gerade...` : "";
-            });
+            onValue(typingRef, (s) => { document.getElementById('typing-status').innerText = s.val() ? `${n} schreibt gerade...` : ""; });
         }
 
         window.closeChat = () => {
@@ -286,7 +277,6 @@
             if(activeChatId) set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
         };
 
-        // Nachricht senden & Tipp-Status setzen
         const msgInput = document.getElementById('msg-input');
         msgInput.oninput = () => {
             if(activeChatId) {
