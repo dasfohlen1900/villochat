@@ -271,6 +271,21 @@ document.getElementById('btn-search').onclick = async () => {
             resDiv.appendChild(item);
         }
     }
+    Object.values(snap.val()).forEach(n => {
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
+    const displayName = aliases[n] || n; // Zeigt Alias, wenn vorhanden
+
+    const d = document.createElement('div');
+    d.className = 'contact-item';
+    d.innerHTML = `
+        ${getAvatarHTML(displayName)} 
+        <span>${displayName}</span> 
+        <span class="edit-contact" onclick="editContactAlias('${n}')">✎</span>
+        <span class="del-contact" onclick="removeContact('${n}')">✕</span>
+    `;
+    d.onclick = () => startChat(n); 
+    list.appendChild(d);
+});
 };
 
 async function addGegenseitig(target) {
@@ -383,6 +398,17 @@ window.onload = () => {
     const s = localStorage.getItem('villo_session');
     if(s){ myUsername = s; showApp(); }
 };
+window.editContactAlias = (contact) => {
+    const alias = prompt(`Neuer Name für ${contact}:`, contact);
+    if(!alias) return; // Abbrechen
+    // Alias lokal speichern
+    let aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
+    aliases[contact] = alias;
+    localStorage.setItem('contact_aliases', JSON.stringify(aliases));
+    // Kontakte neu rendern
+    showApp();
+};
+
 </script>
 
 </body>
