@@ -252,17 +252,28 @@ function showApp() {
     const savedBg = localStorage.getItem('villo_bg');
     if(savedBg) document.getElementById('main-chat').style.backgroundColor = savedBg;
 
-    onValue(ref(db, `accounts/${myUsername}/contacts`), (snap) => {
-        const list = document.getElementById('contacts-list'); list.innerHTML = "";
-        if(!snap.exists()) return;
-        Object.values(snap.val()).forEach(n => {
-            const d = document.createElement('div');
-            d.className = 'contact-item';
-            d.innerHTML = `${getAvatarHTML(n)} <span>${n}</span> <span class="del-contact" onclick="removeContact('${n}')">✕</span>`;
-            d.onclick = () => startChat(n); 
-            list.appendChild(d);
-        });
+  onValue(ref(db, `accounts/${myUsername}/contacts`), (snap) => {
+    const list = document.getElementById('contacts-list'); 
+    list.innerHTML = "";
+    if(!snap.exists()) return;
+
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
+
+    Object.values(snap.val()).forEach(n => {
+        const displayName = aliases[n] || n;
+        const d = document.createElement('div');
+        d.className = 'contact-item';
+        d.innerHTML = `
+            ${getAvatarHTML(displayName)} 
+            <span>${displayName}</span>
+            <span class="edit-contact" style="margin-left:auto; cursor:pointer; align:right;" onclick="event.stopPropagation(); editContactAlias('${n}')">✎</span>
+            <span class="del-contact" style="margin-left:5px; cursor:pointer; align:right;" onclick="event.stopPropagation(); removeContact('${n}')">✕</span>
+        `;
+        d.onclick = () => startChat(n);
+        list.appendChild(d);
     });
+});
+
 }
 
 /* ------------------------------ */
