@@ -92,6 +92,19 @@
             </div>
         </div>
     </div>
+    <div id="confirm-overlay" class="overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Bestätigung</h2>
+            <span style="cursor:pointer" onclick="closeOverlay('confirm-overlay')">✕</span>
+        </div>
+        <div class="modal-body">
+            <p id="confirm-text">Text...</p>
+            <button id="confirm-yes" style="background:#cc0000; color:white; width:48%; margin-right:4%;">Ja</button>
+            <button onclick="closeOverlay('confirm-overlay')" style="background:#ccc; color:black; width:48%;">Nein</button>
+        </div>
+    </div>
+</div>
 
     <div id="search-overlay" class="overlay">
         <div class="modal">
