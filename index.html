@@ -115,6 +115,19 @@
             <div id="search-results" style="max-height:300px; overflow-y:auto;"></div>
         </div>
     </div>
+<div id="alias-overlay" class="overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>Alias bearbeiten</h2>
+      <span style="cursor:pointer" onclick="closeOverlay('alias-overlay')">✕</span>
+    </div>
+    <div class="modal-body">
+      <p id="alias-text">Alias für Kontakt:</p>
+      <input type="text" id="alias-input" style="width:100%; padding:10px; border-radius:10px; margin-top:5px;">
+      <button id="alias-save" style="margin-top:10px; width:100%; background:#075e54; color:white;">Speichern</button>
+    </div>
+  </div>
+</div>
 
     <div id="auth-area">
         <div class="auth-box">
@@ -423,15 +436,29 @@ window.onload = () => {
     if(s){ myUsername = s; showApp(); }
 };
 window.editContactAlias = (contact) => {
-    const alias = prompt(`Neuer Name für ${contact}:`, contact);
-    if(!alias) return; // Abbrechen
-    // Alias lokal speichern
-    let aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
-    aliases[contact] = alias;
-    localStorage.setItem('contact_aliases', JSON.stringify(aliases));
-    // Kontakte neu rendern
-    showApp();
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
+    const current = aliases[contact] || contact;
+
+    document.getElementById('alias-text').innerText = `Alias für ${contact}:`;
+    const input = document.getElementById('alias-input');
+    input.value = current;
+
+    document.getElementById('alias-overlay').style.display = 'flex';
+
+    const saveBtn = document.getElementById('alias-save');
+    saveBtn.replaceWith(saveBtn.cloneNode(true)); // alte Listener entfernen
+    const newSave = document.getElementById('alias-save');
+    newSave.onclick = () => {
+        const newAlias = input.value.trim();
+        if(newAlias){
+            aliases[contact] = newAlias;
+            localStorage.setItem('contact_aliases', JSON.stringify(aliases));
+            showApp(); // Kontakte neu rendern
+        }
+        closeOverlay('alias-overlay');
+    };
 };
+
 
 </script>
 
