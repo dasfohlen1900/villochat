@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 2.13</title>
+    <title>VilloChat - Version 2.14</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -55,6 +55,20 @@
         /* Schreibt-Status */
         #typing-status { font-size: 12px; font-style: italic; color: var(--primary); padding: 5px 20px; min-height: 22px; }
 
+        /* Datums-Trenner */
+        .date-separator { 
+            text-align: center; 
+            margin: 15px 0; 
+            font-size: 12px; 
+            color: #888; 
+        }
+        .date-separator span { 
+            background: #e5ddd5; 
+            padding: 5px 12px; 
+            border-radius: 8px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+        }
+
         #messages-container { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; }
         .msg { padding: 10px 14px; border-radius: 12px; margin-bottom: 10px; max-width: 85%; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); word-wrap: break-word; }
         .sent { align-self: flex-end; background: #dcf8c6; border-bottom-right-radius: 2px; }
@@ -62,6 +76,15 @@
         
         .msg p { margin: 0; }
         .msg-time { font-size: 9px; display: block; text-align: right; opacity: 0.5; margin-top: 4px; }
+        
+        /* Lesebestätigungen */
+        .msg-status { 
+            display: inline-block; 
+            margin-left: 4px; 
+            font-size: 10px; 
+        }
+        .check-sent { color: #999; }
+        .check-read { color: #34b7f1; }
 
         #input-area { padding: 15px; background: #f0f0f0; display: flex; gap: 10px; align-items: center; }
         #msg-input { border-radius: 25px; border: none; flex-grow: 1; padding: 12px 20px; outline: none; font-size: 16px; }
@@ -77,17 +100,6 @@
     </style>
 </head>
 <body>
-<!---<div id="emoji-overlay" class="overlay">
-  <div class="modal" style="max-width:300px;">
-    <div class="modal-header">
-      <h2>Emoji & Sonderzeichen</h2>
-      <span style="cursor:pointer" onclick="closeOverlay('emoji-overlay')">✕</span>
-    </div>
-    <div class="modal-body" style="display:flex; flex-wrap:wrap; gap:10px; max-height:300px; overflow-y:auto;">
-    </div>
-  </div>
-</div>--->
-
     <div id="settings-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
@@ -102,19 +114,20 @@
             </div>
         </div>
     </div>
+
     <div id="confirm-overlay" class="overlay">
-    <div class="modal">
-        <div class="modal-header">
-            <h2>Bestätigung</h2>
-            <span style="cursor:pointer" onclick="closeOverlay('confirm-overlay')">✕</span>
-        </div>
-        <div class="modal-body">
-            <p id="confirm-text">Text...</p>
-            <button id="confirm-yes" style="background:#cc0000; color:white; width:48%; margin-right:4%;">Ja</button>
-            <button onclick="closeOverlay('confirm-overlay')" style="background:#ccc; color:black; width:48%;">Nein</button>
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Bestätigung</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('confirm-overlay')">✕</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirm-text">Text...</p>
+                <button id="confirm-yes" style="background:#cc0000; color:white; width:48%; margin-right:4%;">Ja</button>
+                <button onclick="closeOverlay('confirm-overlay')" style="background:#ccc; color:black; width:48%;">Nein</button>
+            </div>
         </div>
     </div>
-</div>
 
     <div id="search-overlay" class="overlay">
         <div class="modal">
@@ -125,19 +138,20 @@
             <div id="search-results" style="max-height:300px; overflow-y:auto;"></div>
         </div>
     </div>
-<div id="alias-overlay" class="overlay">
-  <div class="modal">
-    <div class="modal-header">
-      <h2>Alias bearbeiten</h2>
-      <span style="cursor:pointer" onclick="closeOverlay('alias-overlay')">✕</span>
+
+    <div id="alias-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Alias bearbeiten</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('alias-overlay')">✕</span>
+            </div>
+            <div class="modal-body">
+                <p id="alias-text">Alias für Kontakt:</p>
+                <input type="text" id="alias-input" style="width:100%; padding:10px; border-radius:10px; margin-top:5px;">
+                <button id="alias-save" style="margin-top:10px; width:100%; background:#075e54; color:white;">Speichern</button>
+            </div>
+        </div>
     </div>
-    <div class="modal-body">
-      <p id="alias-text">Alias für Kontakt:</p>
-      <input type="text" id="alias-input" style="width:100%; padding:10px; border-radius:10px; margin-top:5px;">
-      <button id="alias-save" style="margin-top:10px; width:100%; background:#075e54; color:white;">Speichern</button>
-    </div>
-  </div>
-</div>
 
     <div id="auth-area">
         <div class="auth-box">
@@ -169,18 +183,18 @@
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
                 <h2 id="chat-header">Chat</h2>
+                <span class="settings-btn" onclick="exportChat()" title="Chat exportieren">📥</span>
             </div>
             <div id="typing-status"></div>
             <div id="messages-container"></div>
             <div id="input-area">
                 <input type="text" id="msg-input" placeholder="Nachricht...">
-                <!--<button id="btn-emoji" style="width:40px;">😊</button>-->
                 <button id="btn-send" style="width:60px;">➤</button>
             </div>
         </div>
     </div>
 
-  <script type="module">
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
@@ -220,6 +234,20 @@ function getAvatarHTML(name) {
     const color = stringToColor(name);
     const letter = name.charAt(0);
     return `<div class="avatar" style="background:${color}">${letter}</div>`;
+}
+
+/* ------------------------------ */
+/* DATE LABEL HELPER */
+/* ------------------------------ */
+function getDateLabel(timestamp) {
+    const msgDate = new Date(timestamp);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if(msgDate.toDateString() === today.toDateString()) return "Heute";
+    if(msgDate.toDateString() === yesterday.toDateString()) return "Gestern";
+    return msgDate.toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric'});
 }
 
 /* ------------------------------ */
@@ -276,28 +304,27 @@ function showApp() {
     const savedBg = localStorage.getItem('villo_bg');
     if(savedBg) document.getElementById('main-chat').style.backgroundColor = savedBg;
 
-  onValue(ref(db, `accounts/${myUsername}/contacts`), (snap) => {
-    const list = document.getElementById('contacts-list'); 
-    list.innerHTML = "";
-    if(!snap.exists()) return;
+    onValue(ref(db, `accounts/${myUsername}/contacts`), (snap) => {
+        const list = document.getElementById('contacts-list'); 
+        list.innerHTML = "";
+        if(!snap.exists()) return;
 
-    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
+        const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
 
-    Object.values(snap.val()).forEach(n => {
-        const displayName = aliases[n] || n;
-        const d = document.createElement('div');
-        d.className = 'contact-item';
-        d.innerHTML = `
-            ${getAvatarHTML(displayName)} 
-            <span>${displayName}</span>
-            <span class="edit-contact" style="margin-left:auto; cursor:pointer; align:right;" onclick="event.stopPropagation(); editContactAlias('${n}')">✎</span>
-            <span class="del-contact" style="margin-left:5px; cursor:pointer; align:right;" onclick="event.stopPropagation(); removeContact('${n}')">✕</span>
-        `;
-        d.onclick = () => startChat(n);
-        list.appendChild(d);
+        Object.values(snap.val()).forEach(n => {
+            const displayName = aliases[n] || n;
+            const d = document.createElement('div');
+            d.className = 'contact-item';
+            d.innerHTML = `
+                ${getAvatarHTML(displayName)} 
+                <span>${displayName}</span>
+                <span class="edit-contact" style="margin-left:auto; cursor:pointer;" onclick="event.stopPropagation(); editContactAlias('${n}')">✎</span>
+                <span class="del-contact" style="margin-left:5px; cursor:pointer;" onclick="event.stopPropagation(); removeContact('${n}')">✕</span>
+            `;
+            d.onclick = () => startChat(n);
+            list.appendChild(d);
+        });
     });
-});
-
 }
 
 /* ------------------------------ */
@@ -307,11 +334,14 @@ document.getElementById('btn-search').onclick = async () => {
     const s = document.getElementById('search-input').value.trim().toLowerCase();
     const q = query(ref(db, 'accounts'), orderByChild('id'), startAt(s), endAt(s+"\uf8ff"));
     const snap = await get(q);
-    const resDiv = document.getElementById('search-results'); resDiv.innerHTML = "";
+    const resDiv = document.getElementById('search-results'); 
+    resDiv.innerHTML = "";
+    
     if(snap.exists()){
         document.getElementById('search-overlay').style.display = 'flex';
         for(let key in snap.val()){
-            const name = snap.val()[key].username; if(name === myUsername) continue;
+            const name = snap.val()[key].username; 
+            if(name === myUsername) continue;
             const item = document.createElement('div'); 
             item.className = 'contact-item';
             item.innerHTML = `${getAvatarHTML(name)} <span>${name}</span> <span style="margin-left:auto;">+</span>`;
@@ -319,21 +349,6 @@ document.getElementById('btn-search').onclick = async () => {
             resDiv.appendChild(item);
         }
     }
-    Object.values(snap.val()).forEach(n => {
-    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
-    const displayName = aliases[n] || n; // Zeigt Alias, wenn vorhanden
-
-    const d = document.createElement('div');
-    d.className = 'contact-item';
-    d.innerHTML = `
-        ${getAvatarHTML(displayName)} 
-        <span>${displayName}</span> 
-        <span class="edit-contact" onclick="editContactAlias('${n}')">✎</span>
-        <span class="del-contact" onclick="removeContact('${n}')">✕</span>
-    `;
-    d.onclick = () => startChat(n); 
-    list.appendChild(d);
-});
 };
 
 async function addGegenseitig(target) {
@@ -350,24 +365,55 @@ function startChat(n){
 
     activeChatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
 
-    document.getElementById('chat-header').innerHTML = `<div style="display:flex;align-items:center;">${getAvatarHTML(n)} <span style="margin-left:10px;">${n}</span></div>`;
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
+    const displayName = aliases[n] || n;
+
+    document.getElementById('chat-header').innerHTML = `<div style="display:flex;align-items:center;">${getAvatarHTML(displayName)} <span style="margin-left:10px;">${displayName}</span></div>`;
     document.getElementById('messages-container').innerHTML = "";
     document.getElementById('chat-area').classList.add('chat-open');
 
-    // Hier den Tab-Titel setzen
-    document.title = `VilloChat - ${n}`;
+    document.title = `VilloChat - ${displayName}`;
 
     chatRef = ref(db, 'chats/' + activeChatId);
+    
+    let lastDate = null;
+    
     onChildAdded(chatRef, (s) => {
         const m = s.val(); 
+        const msgDate = getDateLabel(m.timestamp);
+        
+        // Datums-Trenner einfügen
+        if(msgDate !== lastDate) {
+            const dateSep = document.createElement('div');
+            dateSep.className = 'date-separator';
+            dateSep.innerHTML = `<span>${msgDate}</span>`;
+            document.getElementById('messages-container').appendChild(dateSep);
+            lastDate = msgDate;
+        }
+        
         const d = document.createElement('div');
         d.className = 'msg ' + (m.sender===myUsername?'sent':'received');
         d.id = "m-"+s.key;
         const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        
+        // Lesebestätigungen
+        const checkmark = m.sender === myUsername 
+            ? `<span class="msg-status ${m.read ? 'check-read' : 'check-sent'}">${m.read ? '✓✓' : '✓'}</span>` 
+            : '';
+        
         const delIcon = m.sender===myUsername?`<span class="del-msg" onclick="deleteMsg('${s.key}')">🗑</span>`:'';
-        d.innerHTML = `<div>${marked.parse(m.text)}</div><span class="msg-time">${time} ${delIcon}</span>`;
-        const c = document.getElementById('messages-container'); c.appendChild(d); c.scrollTop = c.scrollHeight;
+        d.innerHTML = `<div>${marked.parse(m.text)}</div><span class="msg-time">${time} ${checkmark} ${delIcon}</span>`;
+        
+        const c = document.getElementById('messages-container'); 
+        c.appendChild(d); 
+        c.scrollTop = c.scrollHeight;
+        
+        // Nachricht als gelesen markieren
+        if(m.sender !== myUsername && !m.read) {
+            set(ref(db, `chats/${activeChatId}/${s.key}/read`), true);
+        }
     });
+    
     onChildRemoved(chatRef, s => {
         const el = document.getElementById("m-"+s.key);
         if(el) el.remove();
@@ -375,17 +421,18 @@ function startChat(n){
 
     typingRef = ref(db, `typing/${activeChatId}/${n}`);
     onValue(typingRef, s => {
-        document.getElementById('typing-status').innerText = s.val()?`${n} schreibt gerade...`:'';
+        document.getElementById('typing-status').innerText = s.val()?`${displayName} schreibt gerade...`:'';
     });
 }
 
-// Optional: Beim Schließen des Chats wieder Standard-Titel
+/* ------------------------------ */
+/* CLOSE CHAT */
+/* ------------------------------ */
 window.closeChat = () => {
     document.getElementById('chat-area').classList.remove('chat-open');
     document.title = "VilloChat";
     if(activeChatId) set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
 };
-
 
 /* ------------------------------ */
 /* SEND MESSAGE & TYPING */
@@ -402,7 +449,12 @@ msgInput.onkeypress = e=>{if(e.key==='Enter') document.getElementById('btn-send'
 
 document.getElementById('btn-send').onclick = () => {
     if(!msgInput.value.trim() || !activeChatId) return;
-    push(ref(db, 'chats/'+activeChatId), {sender:myUsername,text:msgInput.value,timestamp:Date.now()});
+    push(ref(db, 'chats/'+activeChatId), {
+        sender: myUsername,
+        text: msgInput.value,
+        timestamp: Date.now(),
+        read: false
+    });
     set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
     msgInput.value = "";
 };
@@ -437,26 +489,17 @@ window.removeContact = (n) => {
     newYes.onclick = async () => {
         const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
         if(snap.exists()){
-            Object.entries(snap.val()).forEach(([key,val]) => { if(val===n) remove(ref(db, `accounts/${myUsername}/contacts/${key}`)); });
+            Object.entries(snap.val()).forEach(([key,val]) => { 
+                if(val===n) remove(ref(db, `accounts/${myUsername}/contacts/${key}`)); 
+            });
         }
         closeOverlay('confirm-overlay');
     };
 };
 
 /* ------------------------------ */
-/* CLOSE CHAT & LOGOUT */
+/* EDIT CONTACT ALIAS */
 /* ------------------------------ */
-window.closeChat = () => {
-    document.getElementById('chat-area').classList.remove('chat-open');
-    if(activeChatId) set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
-};
-
-window.logout = () => { localStorage.clear(); location.reload(); };
-
-window.onload = () => {
-    const s = localStorage.getItem('villo_session');
-    if(s){ myUsername = s; showApp(); }
-};
 window.editContactAlias = (contact) => {
     const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
     const current = aliases[contact] || contact;
@@ -468,50 +511,81 @@ window.editContactAlias = (contact) => {
     document.getElementById('alias-overlay').style.display = 'flex';
 
     const saveBtn = document.getElementById('alias-save');
-    saveBtn.replaceWith(saveBtn.cloneNode(true)); // alte Listener entfernen
+    saveBtn.replaceWith(saveBtn.cloneNode(true));
     const newSave = document.getElementById('alias-save');
     newSave.onclick = () => {
         const newAlias = input.value.trim();
         if(newAlias){
             aliases[contact] = newAlias;
             localStorage.setItem('contact_aliases', JSON.stringify(aliases));
-            showApp(); // Kontakte neu rendern
+            showApp();
         }
         closeOverlay('alias-overlay');
     };
 };
-// Alle Emojis aus 1F300–1F9FF generieren
-const emojiList = [];
-for(let code = 0x1F300; code <= 0x1F9FF; code++){
-    try {
-        emojiList.push(String.fromCodePoint(code));
-    } catch(e) {}
-}
 
-// Overlay öffnen und Emojis einfügen
-function openEmojiPicker() {
-    const body = document.querySelector("#emoji-overlay .modal-body");
-    body.innerHTML = ""; // vorher löschen
-    emojiList.forEach(e => {
-        const span = document.createElement('span');
-        span.style.cursor = 'pointer';
-        span.style.fontSize = '22px';
-        span.innerText = e;
-        span.onclick = () => {
-            const input = document.getElementById('msg-input');
-            const start = input.selectionStart;
-            const end = input.selectionEnd;
-            input.value = input.value.slice(0,start) + e + input.value.slice(end);
-            input.focus();
-            input.selectionStart = input.selectionEnd = start + e.length;
-            closeOverlay('emoji-overlay');
-        };
-        body.appendChild(span);
+/* ------------------------------ */
+/* CHAT EXPORT */
+/* ------------------------------ */
+window.exportChat = async () => {
+    if(!activeChatId) return alert("Kein Chat geöffnet!");
+    
+    const snap = await get(chatRef);
+    if(!snap.exists()) return alert("Keine Nachrichten vorhanden!");
+    
+    const chatName = document.getElementById('chat-header').innerText;
+    let txt = `VilloChat Export - ${chatName}\n`;
+    txt += `Exportiert am: ${new Date().toLocaleString('de-DE')}\n`;
+    txt += "=".repeat(50) + "\n\n";
+    
+    const messages = [];
+    snap.forEach(child => {
+        messages.push({...child.val(), key: child.key});
     });
-    document.getElementById('emoji-overlay').style.display = 'flex';
-}
+    
+    messages.sort((a, b) => a.timestamp - b.timestamp);
+    
+    messages.forEach(m => {
+        const time = new Date(m.timestamp).toLocaleString('de-DE');
+        txt += `[${time}] ${m.sender}:\n${m.text}\n\n`;
+    });
+    
+    const blob = new Blob([txt], {type: 'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Chat_${activeChatId}_${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+};
 
+/* ------------------------------ */
+/* LOGOUT */
+/* ------------------------------ */
+window.logout = () => { 
+    localStorage.clear(); 
+    location.reload(); 
+};
 
+/* ------------------------------ */
+/* BACKGROUND COLOR PICKER */
+/* ------------------------------ */
+document.getElementById('bg-color-picker').addEventListener('change', (e) => {
+    const color = e.target.value;
+    document.getElementById('main-chat').style.backgroundColor = color;
+    localStorage.setItem('villo_bg', color);
+});
+
+/* ------------------------------ */
+/* AUTO-LOGIN */
+/* ------------------------------ */
+window.onload = () => {
+    const s = localStorage.getItem('villo_session');
+    if(s){ 
+        myUsername = s; 
+        signInAnonymously(auth).then(() => showApp());
+    }
+};
 </script>
 
 </body>
