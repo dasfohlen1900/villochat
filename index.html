@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VilloChat - Version 3.2.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root { 
             --primary: #075e54; 
             --bg: #f0f2f5; 
             --white: #ffffff; 
-            --text-main: 'Inter', sans-serif; 
-            --text-heading: 'Playfair Display', serif; 
+            --text-main: 'Inter', 'Noto Color Emoji', sans-serif; 
+            --text-heading: 'Playfair Display', 'Noto Color Emoji', serif; 
         }
         
         /* Dark Mode Variables */
@@ -480,10 +481,16 @@
             transition: background 0.2s;
             text-align: center;
             user-select: none;
+            font-family: 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
         }
         .emoji-item:hover {
             background: var(--bg);
             transform: scale(1.2);
+        }
+        
+        /* Ensure emojis render properly in messages */
+        .msg, #msg-input, .avatar {
+            font-family: 'Inter', 'Noto Color Emoji', 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif;
         }
         
         /* Notification Toast */
@@ -654,7 +661,7 @@
 
         <div id="main-chat">
             <div class="encryption-notice">
-                🔒 Nachrichten sind per aeroSecure Ende-zu-Ende verschlüsselt
+                🔒 Nachrichten sind per aeroSecure Ende-zu-Ende verschlüsselt.
             </div>
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
