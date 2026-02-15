@@ -435,9 +435,48 @@
         .msg-menu:hover {
             opacity: 1 !important;
         }
+        
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            max-width: 300px;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .notification-toast.success { border-left: 4px solid #25d366; }
+        .notification-toast.error { border-left: 4px solid #dc3545; }
+        .notification-toast.warning { border-left: 4px solid #ffc107; }
+        
+        body.dark-mode .notification-toast {
+            background: var(--white);
+            color: var(--text-color);
+        }
     </style>
 </head>
 <body>
+    <div class="notification-toast" id="notification-toast"></div>
+    
     <div id="settings-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
@@ -733,6 +772,20 @@ document.addEventListener('click', (e) => {
 });
 
 /* ------------------------------ */
+/* NOTIFICATION SYSTEM */
+/* ------------------------------ */
+function showNotification(message, type = 'success') {
+    const toast = document.getElementById('notification-toast');
+    toast.textContent = message;
+    toast.className = `notification-toast ${type}`;
+    toast.style.display = 'flex';
+    
+    setTimeout(() => {
+        toast.style.display = 'none';
+    }, 3000);
+}
+
+/* ------------------------------ */
 /* AUTH & LOGIN/REGISTER */
 /* ------------------------------ */
 function setAuth(m) {
@@ -752,16 +805,25 @@ document.getElementById('v-pin').addEventListener('input', e => {
 document.getElementById('btn-auth').onclick = async () => {
     const u = document.getElementById('v-username').value.trim();
     const p = document.getElementById('v-pin').value;
-    if(!u || p.length<9) return alert("Daten unvollständig!");
+    if(!u || p.length<9) {
+        showNotification("⚠️ Bitte Name und PIN eingeben!", "warning");
+        return;
+    }
 
     const s = await get(ref(db, 'accounts/' + u));
     if(currentMode === 'register'){
-        if(s.exists()) return alert("Name belegt!");
+        if(s.exists()) {
+            showNotification("⛔ Name bereits vergeben!", "error");
+            return;
+        }
         await set(ref(db, 'accounts/' + u), { username: u, pin: p, id: u.toLowerCase() });
-        alert("Registriert ✔");
+        showNotification("✅ Erfolgreich registriert!", "success");
         return;
     } else {
-        if(!s.exists() || s.val().pin !== p) return alert("Login falsch!");
+        if(!s.exists() || s.val().pin !== p) {
+            showNotification("⛔ Falscher Name oder PIN!", "error");
+            return;
+        }
         await signInAnonymously(auth);
         myUsername = u;
         localStorage.setItem('villo_session', u);
@@ -775,6 +837,7 @@ document.getElementById('btn-auth').onclick = async () => {
 /* ------------------------------ */
 let contactsListener = null;
 let contactChatListeners = {};
+let messageListeners = {};
 
 function showApp() {
     document.getElementById('auth-area').style.display = 'none';
@@ -789,6 +852,12 @@ function showApp() {
 
     // Remove old listener
     if(contactsListener) off(contactsListener);
+    
+    // Clean up old message listeners
+    Object.keys(messageListeners).forEach(chatId => {
+        if(messageListeners[chatId]) off(messageListeners[chatId]);
+    });
+    messageListeners = {};
 
     contactsListener = ref(db, `accounts/${myUsername}/contacts`);
     onValue(contactsListener, (snap) => {
@@ -828,6 +897,20 @@ function showApp() {
             
             d.onclick = () => startChat(n);
             list.appendChild(d);
+            
+            // Listen for new messages
+            const chatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
+            if(!messageListeners[chatId]) {
+                messageListeners[chatId] = ref(db, `chats/${chatId}`);
+                onChildAdded(messageListeners[chatId], (msgSnap) => {
+                    const msg = msgSnap.val();
+                    if(msg.sender !== myUsername && !msg.read && activeChatId !== chatId) {
+                        updateUnreadCount(n, getUnreadCount(n) + 1);
+                        showNotification(`💬 Neue Nachricht von ${displayName}`, 'success');
+                        showApp(); // Refresh to show badge
+                    }
+                });
+            }
         });
     }, { onlyOnce: false });
 }
@@ -999,7 +1082,14 @@ msgInput.oninput = () => {
         window.tOut = setTimeout(()=>set(ref(db, `typing/${activeChatId}/${myUsername}`),false),2000);
     }
 };
-msgInput.onkeypress = e=>{if(e.key==='Enter') document.getElementById('btn-send').click();};
+
+// Enter to send, Shift+Enter for new line
+msgInput.onkeydown = (e) => {
+    if(e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('btn-send').click();
+    }
+};
 
 document.getElementById('btn-send').onclick = () => {
     if(!msgInput.value.trim() || !activeChatId) return;
@@ -1039,6 +1129,7 @@ window.deleteMsg = (mid) => {
     newYes.onclick = () => {
         remove(ref(db, `chats/${activeChatId}/${mid}`));
         closeOverlay('confirm-overlay');
+        showNotification("✅ Nachricht gelöscht", "success");
     };
 };
 
@@ -1060,6 +1151,7 @@ window.removeContact = (n) => {
             });
         }
         closeOverlay('confirm-overlay');
+        showNotification("✅ Kontakt entfernt", "success");
     };
 };
 
@@ -1085,6 +1177,7 @@ window.editContactAlias = (contact) => {
             aliases[contact] = newAlias;
             localStorage.setItem('contact_aliases', JSON.stringify(aliases));
             showApp();
+            showNotification("✅ Alias gespeichert", "success");
         }
         closeOverlay('alias-overlay');
     };
@@ -1094,7 +1187,10 @@ window.editContactAlias = (contact) => {
 /* CLEAR CHAT */
 /* ------------------------------ */
 window.clearChat = () => {
-    if(!activeChatId) return;
+    if(!activeChatId) {
+        showNotification("⚠️ Kein Chat geöffnet!", "warning");
+        return;
+    }
     document.getElementById('confirm-text').innerText = "Gesamten Chat-Verlauf löschen?";
     document.getElementById('confirm-overlay').style.display = 'flex';
 
@@ -1106,6 +1202,7 @@ window.clearChat = () => {
         closeOverlay('confirm-overlay');
         toggleChatMenu(); // Close menu
         document.getElementById('messages-container').innerHTML = "";
+        showNotification("✅ Chat geleert", "success");
     };
 };
 
@@ -1113,7 +1210,10 @@ window.clearChat = () => {
 /* SEARCH IN CHAT */
 /* ------------------------------ */
 window.searchInChat = async () => {
-    if(!activeChatId) return;
+    if(!activeChatId) {
+        showNotification("⚠️ Kein Chat geöffnet!", "warning");
+        return;
+    }
     toggleChatMenu();
     document.getElementById('chat-search-overlay').style.display = 'flex';
     document.getElementById('chat-search-input').value = '';
@@ -1173,11 +1273,17 @@ document.getElementById('chat-search-input').addEventListener('input', async (e)
 /* CHAT EXPORT */
 /* ------------------------------ */
 window.exportChat = async () => {
-    if(!activeChatId) return alert("Kein Chat geöffnet!");
+    if(!activeChatId) {
+        showNotification("⚠️ Kein Chat geöffnet!", "warning");
+        return;
+    }
     toggleChatMenu();
     
     const snap = await get(chatRef);
-    if(!snap.exists()) return alert("Keine Nachrichten vorhanden!");
+    if(!snap.exists()) {
+        showNotification("⚠️ Keine Nachrichten vorhanden!", "warning");
+        return;
+    }
     
     const chatName = document.getElementById('chat-header').innerText;
     let txt = `VilloChat Export - ${chatName}\n`;
@@ -1203,6 +1309,7 @@ window.exportChat = async () => {
     a.download = `Chat_${activeChatId}_${Date.now()}.txt`;
     a.click();
     URL.revokeObjectURL(url);
+    showNotification("✅ Chat exportiert", "success");
 };
 
 /* ------------------------------ */
@@ -1241,6 +1348,54 @@ window.onload = () => {
     // Setup auth tab listeners
     document.getElementById('t-login').addEventListener('click', () => setAuth('login'));
     document.getElementById('t-reg').addEventListener('click', () => setAuth('register'));
+    
+    // Global keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        // Ctrl/Cmd + K: Focus search
+        if((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            document.getElementById('search-input').focus();
+        }
+        
+        // Ctrl/Cmd + F: Search in chat
+        if((e.ctrlKey || e.metaKey) && e.key === 'f' && activeChatId) {
+            e.preventDefault();
+            searchInChat();
+        }
+        
+        // Ctrl/Cmd + E: Export chat
+        if((e.ctrlKey || e.metaKey) && e.key === 'e' && activeChatId) {
+            e.preventDefault();
+            exportChat();
+        }
+        
+        // Escape: Close overlays or chat
+        if(e.key === 'Escape') {
+            const overlays = ['settings-overlay', 'confirm-overlay', 'search-overlay', 'chat-search-overlay', 'alias-overlay'];
+            let anyOpen = false;
+            overlays.forEach(id => {
+                if(document.getElementById(id).style.display === 'flex') {
+                    closeOverlay(id);
+                    anyOpen = true;
+                }
+            });
+            
+            if(!anyOpen && document.getElementById('chat-area').classList.contains('chat-open')) {
+                closeChat();
+            }
+            
+            // Close chat menu
+            if(document.getElementById('chat-menu').classList.contains('show')) {
+                toggleChatMenu();
+            }
+        }
+        
+        // Ctrl/Cmd + ,: Open settings
+        if((e.ctrlKey || e.metaKey) && e.key === ',') {
+            e.preventDefault();
+            openSettings();
+        }
+    });
 };
 </script>
 
