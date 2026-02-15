@@ -638,18 +638,6 @@ function updateOnlineStatus() {
     });
 }
 
-function checkUserOnline(username, callback) {
-    onValue(ref(db, `online/${username}`), (snap) => {
-        if(snap.exists()) {
-            const data = snap.val();
-            const isOnline = data.status && (Date.now() - data.lastSeen < 60000); // Online wenn innerhalb letzter 60 Sekunden
-            callback(isOnline);
-        } else {
-            callback(false);
-        }
-    });
-}
-
 // Update online status every 30 seconds
 setInterval(updateOnlineStatus, 30000);
 window.addEventListener('beforeunload', () => {
@@ -785,6 +773,9 @@ document.getElementById('btn-auth').onclick = async () => {
 /* ------------------------------ */
 /* SHOW APP & LOAD CONTACTS */
 /* ------------------------------ */
+let contactsListener = null;
+let contactChatListeners = {};
+
 function showApp() {
     document.getElementById('auth-area').style.display = 'none';
     document.getElementById('chat-area').style.display = 'flex';
@@ -796,7 +787,11 @@ function showApp() {
     const darkModeEnabled = localStorage.getItem('villo_darkmode') === 'true';
     toggleDarkMode(darkModeEnabled);
 
-    onValue(ref(db, `accounts/${myUsername}/contacts`), (snap) => {
+    // Remove old listener
+    if(contactsListener) off(contactsListener);
+
+    contactsListener = ref(db, `accounts/${myUsername}/contacts`);
+    onValue(contactsListener, (snap) => {
         const list = document.getElementById('contacts-list'); 
         list.innerHTML = "";
         if(!snap.exists()) return;
@@ -823,31 +818,18 @@ function showApp() {
             const d = document.createElement('div');
             d.className = 'contact-item' + (isPinned ? ' pinned' : '');
             
-            // Check online status
-            checkUserOnline(n, (isOnline) => {
-                d.innerHTML = `
-                    ${getAvatarHTML(displayName, isOnline)} 
-                    <span>${displayName}${isPinned ? '<span class="pin-icon">📌</span>' : ''}</span>
-                    ${unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : ''}
-                    <span class="edit-contact" style="margin-left:auto; cursor:pointer;" onclick="event.stopPropagation(); editContactAlias('${n}')">✎</span>
-                    <span class="del-contact" style="margin-left:5px; cursor:pointer;" onclick="event.stopPropagation(); removeContact('${n}')">✕</span>
-                `;
-            });
+            d.innerHTML = `
+                ${getAvatarHTML(displayName, false)} 
+                <span>${displayName}${isPinned ? '<span class="pin-icon">📌</span>' : ''}</span>
+                ${unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : ''}
+                <span class="edit-contact" style="margin-left:auto; cursor:pointer;" onclick="event.stopPropagation(); editContactAlias('${n}')">✎</span>
+                <span class="del-contact" style="margin-left:5px; cursor:pointer;" onclick="event.stopPropagation(); removeContact('${n}')">✕</span>
+            `;
             
             d.onclick = () => startChat(n);
             list.appendChild(d);
-            
-            // Listen for new messages to update unread count
-            const chatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
-            onChildAdded(ref(db, `chats/${chatId}`), (msgSnap) => {
-                const msg = msgSnap.val();
-                if(msg.sender !== myUsername && !msg.read && activeChatId !== chatId) {
-                    updateUnreadCount(n, getUnreadCount(n) + 1);
-                    showApp(); // Refresh to show badge
-                }
-            });
         });
-    });
+    }, { onlyOnce: false });
 }
 
 /* ------------------------------ */
@@ -882,9 +864,12 @@ async function addGegenseitig(target) {
 /* ------------------------------ */
 /* START CHAT & MESSAGES */
 /* ------------------------------ */
+let onlineStatusListener = null;
+
 function startChat(n){
     if(chatRef) off(chatRef);
     if(typingRef) off(typingRef);
+    if(onlineStatusListener) off(onlineStatusListener);
 
     activeChatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
     activeContactName = n;
@@ -895,7 +880,14 @@ function startChat(n){
     const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
     const displayName = aliases[n] || n;
 
-    checkUserOnline(n, (isOnline) => {
+    // Setup online status listener for active chat only
+    onlineStatusListener = ref(db, `online/${n}`);
+    onValue(onlineStatusListener, (snap) => {
+        let isOnline = false;
+        if(snap.exists()) {
+            const data = snap.val();
+            isOnline = data.status && (Date.now() - data.lastSeen < 60000);
+        }
         document.getElementById('chat-header').innerHTML = `<div style="display:flex;align-items:center;">${getAvatarHTML(displayName, isOnline)} <span style="margin-left:10px;">${displayName}</span></div>`;
     });
     
@@ -989,6 +981,7 @@ window.closeChat = () => {
     document.getElementById('chat-area').classList.remove('chat-open');
     document.title = "VilloChat";
     if(activeChatId) set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
+    if(onlineStatusListener) off(onlineStatusListener);
     activeChatId = null;
     activeContactName = null;
     cancelReply();
