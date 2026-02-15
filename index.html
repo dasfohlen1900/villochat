@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.0</title>
+    <title>VilloChat - Version 3.2.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -385,7 +385,7 @@
             width: 100%; 
             max-width: 360px; 
         }
-        input[type="text"] { 
+        input[type="text"], input[type="password"] { 
             font-family: 'Inter'; 
             width: 100%; 
             padding: 14px; 
@@ -434,6 +434,34 @@
         }
         .msg-menu:hover {
             opacity: 1 !important;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #999;
+            text-align: center;
+            padding: 40px;
+        }
+        .empty-state-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--text-color);
+            opacity: 0.5;
+        }
+        .empty-state-subtitle {
+            font-size: 16px;
+            opacity: 0.5;
         }
         
         /* Notification Toast */
@@ -556,9 +584,11 @@
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
             </div>
-            <input type="text" id="v-username" placeholder="Name">
-            <input type="text" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9">
-            <button id="btn-auth" style="width:100%;">Starten</button>
+            <form id="auth-form" onsubmit="event.preventDefault(); document.getElementById('btn-auth').click();">
+                <input type="text" id="v-username" placeholder="Name" autocomplete="username" name="username">
+                <input type="password" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9" autocomplete="current-password" name="password">
+                <button id="btn-auth" type="submit" style="width:100%;">Starten</button>
+            </form>
         </div>
     </div>
 
@@ -577,7 +607,7 @@
 
         <div id="main-chat">
             <div class="encryption-notice">
-                🔒 Nachrichten sind per aeroSecure Ende-zu-Ende verschlüsselt
+                🔓 Nachrichten sind nicht Ende-zu-Ende verschlüsselt
             </div>
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
@@ -592,7 +622,13 @@
                 </div>
             </div>
             <div id="typing-status"></div>
-            <div id="messages-container"></div>
+            <div id="messages-container">
+                <div class="empty-state" id="empty-chat-state">
+                    <div class="empty-state-icon">💬</div>
+                    <div class="empty-state-title">Kein Chat ausgewählt</div>
+                    <div class="empty-state-subtitle">Wähle einen Kontakt aus der Liste, um zu chatten</div>
+                </div>
+            </div>
             <div id="reply-bar">
                 <div class="reply-content">
                     <div style="font-weight:bold; margin-bottom:2px;" id="reply-sender"></div>
@@ -794,6 +830,14 @@ function setAuth(m) {
     document.getElementById('t-login').style.color = m==='login'?'var(--primary)':'#999';
     document.getElementById('t-reg').style.borderBottom = m==='register'?'2px solid var(--primary)':'none';
     document.getElementById('t-reg').style.color = m==='register'?'var(--primary)':'#999';
+    
+    // Update autocomplete for password managers
+    const pinInput = document.getElementById('v-pin');
+    if(m === 'register') {
+        pinInput.setAttribute('autocomplete', 'new-password');
+    } else {
+        pinInput.setAttribute('autocomplete', 'current-password');
+    }
 }
 
 document.getElementById('v-pin').addEventListener('input', e => {
@@ -863,7 +907,18 @@ function showApp() {
     onValue(contactsListener, (snap) => {
         const list = document.getElementById('contacts-list'); 
         list.innerHTML = "";
-        if(!snap.exists()) return;
+        
+        if(!snap.exists() || Object.keys(snap.val()).length === 0) {
+            // Empty state for no contacts
+            list.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">👥</div>
+                    <div class="empty-state-title">Keine Kontakte</div>
+                    <div class="empty-state-subtitle">Suche nach Nutzern, um Kontakte hinzuzufügen</div>
+                </div>
+            `;
+            return;
+        }
 
         const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
         const pinned = getPinnedContacts();
@@ -974,7 +1029,13 @@ function startChat(n){
         document.getElementById('chat-header').innerHTML = `<div style="display:flex;align-items:center;">${getAvatarHTML(displayName, isOnline)} <span style="margin-left:10px;">${displayName}</span></div>`;
     });
     
-    document.getElementById('messages-container').innerHTML = "";
+    const messagesContainer = document.getElementById('messages-container');
+    messagesContainer.innerHTML = "";
+    
+    // Remove empty state
+    const emptyState = document.getElementById('empty-chat-state');
+    if(emptyState) emptyState.style.display = 'none';
+    
     document.getElementById('chat-area').classList.add('chat-open');
 
     document.title = `VilloChat - ${displayName}`;
@@ -992,7 +1053,7 @@ function startChat(n){
             const dateSep = document.createElement('div');
             dateSep.className = 'date-separator';
             dateSep.innerHTML = `<span>${msgDate}</span>`;
-            document.getElementById('messages-container').appendChild(dateSep);
+            messagesContainer.appendChild(dateSep);
             lastDate = msgDate;
         }
         
@@ -1020,9 +1081,8 @@ function startChat(n){
         
         d.innerHTML = `${replyHTML}<div>${marked.parse(m.text)}</div><span class="msg-time">${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
         
-        const c = document.getElementById('messages-container'); 
-        c.appendChild(d); 
-        c.scrollTop = c.scrollHeight;
+        messagesContainer.appendChild(d); 
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
         // Nachricht als gelesen markieren
         if(m.sender !== myUsername && !m.read) {
@@ -1068,6 +1128,17 @@ window.closeChat = () => {
     activeChatId = null;
     activeContactName = null;
     cancelReply();
+    
+    // Show empty state again
+    const messagesContainer = document.getElementById('messages-container');
+    messagesContainer.innerHTML = `
+        <div class="empty-state" id="empty-chat-state">
+            <div class="empty-state-icon">💬</div>
+            <div class="empty-state-title">Kein Chat ausgewählt</div>
+            <div class="empty-state-subtitle">Wähle einen Kontakt aus der Liste, um zu chatten</div>
+        </div>
+    `;
+    
     showApp(); // Refresh to clear badges
 };
 
