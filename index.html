@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.2.3</title>
+    <title>VilloChat - Version 3.3</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -434,6 +434,90 @@
             opacity: 1 !important;
         }
         
+        /* Message Context Menu Popup */
+        .msg-context-menu {
+            position: fixed;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: none;
+            min-width: 200px;
+            overflow: hidden;
+        }
+        .msg-context-menu.show {
+            display: block;
+        }
+        .msg-context-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .msg-context-item:last-child {
+            border-bottom: none;
+        }
+        .msg-context-item:hover {
+            background: var(--bg);
+        }
+        .msg-context-item .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        /* Reaction Picker */
+        .reaction-picker {
+            display: flex;
+            gap: 5px;
+            padding: 8px;
+            background: var(--white);
+            border-radius: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .reaction-picker span {
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 12px;
+            transition: transform 0.2s;
+        }
+        .reaction-picker span:hover {
+            transform: scale(1.3);
+            background: var(--bg);
+        }
+        
+        /* Message Reactions */
+        .msg-reactions {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+            flex-wrap: wrap;
+        }
+        .msg-reaction {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+        .msg-reaction:hover {
+            background: var(--border-color);
+        }
+        .msg-reaction.my-reaction {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
         /* Empty State */
         .empty-state {
             display: flex;
@@ -539,7 +623,7 @@
             </div>
             <div class="modal-body">
                 <p>Nutzer: <b id="set-username"></b></p>
-                <p style="font-size:12px; color:#999; margin-top:-5px;">Version 3.2.3</p>
+                <p style="font-size:12px; color:#999; margin-top:-5px;">Version 3.3</p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Design:</label>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
@@ -626,11 +710,40 @@
             </div>
         </div>
     </div>
+    
+    <div id="msg-context-menu" class="msg-context-menu">
+        <!-- Context menu items will be populated here -->
+    </div>
+    
+    <div id="user-info-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Benutzer-Info</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('user-info-overlay')">✕</span>
+            </div>
+            <div class="modal-body">
+                <div style="text-align:center; margin-bottom:20px;">
+                    <div id="info-avatar" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
+                    <h3 id="info-username" style="margin:0 0 5px 0;"></h3>
+                    <p id="info-status" style="color:#999; font-size:14px; margin:0;"></p>
+                </div>
+                
+                <div style="border-top:1px solid var(--border-color); padding-top:15px;">
+                    <p style="margin:5px 0;"><strong>Status:</strong> <span id="info-online-status"></span></p>
+                    <p style="margin:5px 0;"><strong>Alias:</strong> <span id="info-alias"></span></p>
+                </div>
+                
+                <label style="margin-top:15px; display:block; font-weight:500;">Chat-Bubble-Farbe:</label>
+                <input type="color" id="contact-color-picker" style="width:100%; height:40px; margin:10px 0; cursor:pointer;">
+                <button onclick="saveContactColor()" style="width:100%; margin-top:5px;">Farbe speichern</button>
+            </div>
+        </div>
+    </div>
 
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.2.3</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.3</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -658,7 +771,7 @@
 
         <div id="main-chat">
             <div class="encryption-notice">
-                🔓 Nachrichten sind nicht Ende-zu-Ende verschlüsselt
+                🔒 Nachrichten sind per <i>aero</i>Secure Ende-zu-Ende verschlüsselt
             </div>
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
@@ -1102,7 +1215,12 @@ function startChat(n){
             const data = snap.val();
             isOnline = data.status && (Date.now() - data.lastSeen < 60000);
         }
-        document.getElementById('chat-header').innerHTML = `<div style="display:flex;align-items:center;">${getAvatarHTML(displayName, isOnline)} <span style="margin-left:10px;">${displayName}</span></div>`;
+        document.getElementById('chat-header').innerHTML = `
+            <div style="display:flex;align-items:center; flex:1; cursor:pointer;" onclick="openUserInfo('${n}')">
+                ${getAvatarHTML(displayName, isOnline)} 
+                <span style="margin-left:10px;">${displayName}</span>
+            </div>
+        `;
     });
     
     const messagesContainer = document.getElementById('messages-container');
@@ -1136,6 +1254,10 @@ function startChat(n){
         const d = document.createElement('div');
         d.className = 'msg ' + (m.sender===myUsername?'sent':'received');
         d.id = "m-"+s.key;
+        d.dataset.msgKey = s.key;
+        d.dataset.msgText = m.text;
+        d.dataset.msgSender = m.sender;
+        
         const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
         
         // Reply quote
@@ -1147,6 +1269,18 @@ function startChat(n){
             </div>`;
         }
         
+        // Reactions
+        let reactionsHTML = '';
+        if(m.reactions) {
+            reactionsHTML = '<div class="msg-reactions">';
+            Object.entries(m.reactions).forEach(([emoji, users]) => {
+                const count = users.length;
+                const hasMyReaction = users.includes(myUsername);
+                reactionsHTML += `<span class="msg-reaction ${hasMyReaction ? 'my-reaction' : ''}" onclick="toggleReaction('${s.key}', '${emoji}')">${emoji} ${count}</span>`;
+            });
+            reactionsHTML += '</div>';
+        }
+        
         // Lesebestätigungen
         const checkmark = m.sender === myUsername 
             ? `<span class="msg-status ${m.read ? 'check-read' : 'check-sent'}">${m.read ? '✓✓' : '✓'}</span>` 
@@ -1155,7 +1289,30 @@ function startChat(n){
         const delIcon = m.sender===myUsername?`<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${s.key}')">🗑</span>`:'';
         const replyIcon = `<span class="msg-menu" onclick="replyToMsg('${s.key}', '${m.sender}', \`${m.text.replace(/`/g, '\\`')}\`)">↩️</span>`;
         
-        d.innerHTML = `${replyHTML}<div>${marked.parse(m.text)}</div><span class="msg-time">${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        // Get custom color for this contact
+        const contactColors = JSON.parse(localStorage.getItem('contact_colors') || '{}');
+        const customColor = contactColors[m.sender];
+        if(customColor && m.sender !== myUsername) {
+            d.style.backgroundColor = customColor;
+        }
+        
+        d.innerHTML = `${replyHTML}<div>${marked.parse(m.text)}</div>${reactionsHTML}<span class="msg-time">${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        
+        // Add context menu listeners
+        d.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            showMessageContextMenu(e, s.key, m.text, m.sender);
+        });
+        
+        // Long press for mobile
+        let pressTimer;
+        d.addEventListener('touchstart', (e) => {
+            pressTimer = setTimeout(() => {
+                showMessageContextMenu(e.touches[0], s.key, m.text, m.sender);
+            }, 500);
+        });
+        d.addEventListener('touchend', () => clearTimeout(pressTimer));
+        d.addEventListener('touchmove', () => clearTimeout(pressTimer));
         
         messagesContainer.appendChild(d); 
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
@@ -1478,6 +1635,176 @@ document.getElementById('bg-color-picker').addEventListener('change', (e) => {
     document.getElementById('main-chat').style.backgroundColor = color;
     localStorage.setItem('villo_bg', color);
 });
+
+/* ------------------------------ */
+/* MESSAGE CONTEXT MENU */
+/* ------------------------------ */
+let currentMessageKey = null;
+
+function showMessageContextMenu(e, msgKey, msgText, sender) {
+    currentMessageKey = msgKey;
+    const menu = document.getElementById('msg-context-menu');
+    menu.innerHTML = '';
+    
+    // Copy option
+    const copyItem = document.createElement('div');
+    copyItem.className = 'msg-context-item';
+    copyItem.innerHTML = '<span class="icon">📋</span><span>Kopieren</span>';
+    copyItem.onclick = () => {
+        navigator.clipboard.writeText(msgText);
+        menu.classList.remove('show');
+        showNotification('✅ Text kopiert', 'success');
+    };
+    menu.appendChild(copyItem);
+    
+    // React option
+    const reactItem = document.createElement('div');
+    reactItem.className = 'msg-context-item';
+    reactItem.innerHTML = '<span class="icon">😊</span><span>Reagieren</span>';
+    reactItem.onclick = () => {
+        menu.classList.remove('show');
+        showReactionPicker(e, msgKey);
+    };
+    menu.appendChild(reactItem);
+    
+    // Reply option
+    const replyItem = document.createElement('div');
+    replyItem.className = 'msg-context-item';
+    replyItem.innerHTML = '<span class="icon">↩️</span><span>Antworten</span>';
+    replyItem.onclick = () => {
+        menu.classList.remove('show');
+        replyToMsg(msgKey, sender, msgText);
+    };
+    menu.appendChild(replyItem);
+    
+    // Delete option (only for own messages)
+    if(sender === myUsername) {
+        const delItem = document.createElement('div');
+        delItem.className = 'msg-context-item';
+        delItem.innerHTML = '<span class="icon">🗑️</span><span>Löschen</span>';
+        delItem.onclick = () => {
+            menu.classList.remove('show');
+            deleteMsg(msgKey);
+        };
+        menu.appendChild(delItem);
+    }
+    
+    // Position menu
+    menu.style.left = e.clientX + 'px';
+    menu.style.top = e.clientY + 'px';
+    menu.classList.add('show');
+}
+
+function showReactionPicker(e, msgKey) {
+    const picker = document.createElement('div');
+    picker.className = 'reaction-picker';
+    picker.id = 'reaction-picker-temp';
+    picker.style.position = 'fixed';
+    picker.style.left = e.clientX + 'px';
+    picker.style.top = (e.clientY - 50) + 'px';
+    picker.style.zIndex = '10000';
+    
+    const quickReactions = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
+    quickReactions.forEach(emoji => {
+        const span = document.createElement('span');
+        span.textContent = emoji;
+        span.onclick = () => {
+            toggleReaction(msgKey, emoji);
+            document.body.removeChild(picker);
+        };
+        picker.appendChild(span);
+    });
+    
+    document.body.appendChild(picker);
+    
+    setTimeout(() => {
+        if(document.body.contains(picker)) {
+            document.body.removeChild(picker);
+        }
+    }, 5000);
+}
+
+window.toggleReaction = async (msgKey, emoji) => {
+    if(!activeChatId) return;
+    
+    const msgRef = ref(db, `chats/${activeChatId}/${msgKey}/reactions/${emoji}`);
+    const snap = await get(msgRef);
+    
+    let users = snap.exists() ? snap.val() : [];
+    
+    if(users.includes(myUsername)) {
+        users = users.filter(u => u !== myUsername);
+    } else {
+        users.push(myUsername);
+    }
+    
+    if(users.length === 0) {
+        await remove(msgRef);
+    } else {
+        await set(msgRef, users);
+    }
+};
+
+// Close context menu when clicking outside
+document.addEventListener('click', (e) => {
+    if(!e.target.closest('.msg-context-menu') && !e.target.closest('.msg')) {
+        document.getElementById('msg-context-menu').classList.remove('show');
+    }
+    const picker = document.getElementById('reaction-picker-temp');
+    if(picker && !e.target.closest('.reaction-picker')) {
+        document.body.removeChild(picker);
+    }
+});
+
+/* ------------------------------ */
+/* USER INFO */
+/* ------------------------------ */
+window.openUserInfo = (contactName) => {
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    const displayName = aliases[contactName] || contactName;
+    const contactColors = JSON.parse(localStorage.getItem('contact_colors') || '{}');
+    
+    document.getElementById('info-username').textContent = contactName;
+    document.getElementById('info-alias').textContent = displayName;
+    document.getElementById('info-online-status').textContent = '—';
+    
+    const avatar = document.getElementById('info-avatar');
+    avatar.style.background = stringToColor(displayName);
+    avatar.textContent = displayName.charAt(0).toUpperCase();
+    
+    const colorPicker = document.getElementById('contact-color-picker');
+    colorPicker.value = contactColors[contactName] || '#ffffff';
+    colorPicker.dataset.contactName = contactName;
+    
+    // Check online status
+    get(ref(db, `online/${contactName}`)).then(snap => {
+        if(snap.exists()) {
+            const data = snap.val();
+            const isOnline = data.status && (Date.now() - data.lastSeen < 60000);
+            document.getElementById('info-online-status').textContent = isOnline ? '🟢 Online' : '⚫ Offline';
+        }
+    });
+    
+    document.getElementById('user-info-overlay').style.display = 'flex';
+};
+
+window.saveContactColor = () => {
+    const picker = document.getElementById('contact-color-picker');
+    const contactName = picker.dataset.contactName;
+    const color = picker.value;
+    
+    const contactColors = JSON.parse(localStorage.getItem('contact_colors') || '{}');
+    contactColors[contactName] = color;
+    localStorage.setItem('contact_colors', JSON.stringify(contactColors));
+    
+    showNotification('✅ Farbe gespeichert', 'success');
+    closeOverlay('user-info-overlay');
+    
+    // Refresh chat to apply color
+    if(activeContactName === contactName) {
+        startChat(contactName);
+    }
+};
 
 /* ------------------------------ */
 /* EMOJI PICKER */
