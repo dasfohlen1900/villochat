@@ -66,6 +66,18 @@
             overflow: hidden;
             color: var(--text-color);
             transition: background 0.3s, color 0.3s;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        /* Allow selection in inputs and message content */
+        input, textarea, .msg div, #emoji-search, #chat-search-input, #search-input {
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
         }
 
         /* Overlays */
@@ -880,7 +892,7 @@
                     <li>💬 <strong>Custom Bubble-Farbe</strong> - Pro Kontakt einstellbar</li>
                 </ul>
 
-                <h3 style="color:var(--primary);">Version 3.2 🎉</h3>
+                <h3 style="color:var(--primary);">Version 3.2.3 🎉</h3>
                 <ul style="line-height:1.8;">
                     <li>🌓 <strong>Theme-System</strong> - System / Hell / Dunkel</li>
                     <li>💬 <strong>Empty States</strong> - "Kein Chat" & "Keine Kontakte"</li>
@@ -889,7 +901,7 @@
                     <li>🔐 <strong>Passwortmanager</strong> - PIN speicherbar</li>
                 </ul>
 
-                <h3 style="color:var(--primary);">Version 3.1 🚀</h3>
+                <h3 style="color:var(--primary);">Version 3.0 🚀</h3>
                 <ul style="line-height:1.8;">
                     <li>⋮ <strong>Dreipunkt-Menü</strong> - Export, Suche, Leeren</li>
                     <li>📌 <strong>Kontakte pinnen</strong></li>
@@ -945,7 +957,7 @@
 
         <div id="main-chat">
             <div class="encryption-notice" id="encryption-notice">
-                🔒 Wir achten auf einen datenschutzkonformen Umgang mit deinen Daten.
+                🔓 Nachrichten sind nicht Ende-zu-Ende verschlüsselt
             </div>
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
