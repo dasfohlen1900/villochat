@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.3</title>
+    <title>VilloChat - Version 3.4</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -432,6 +432,15 @@
             font-size: 12px;
             text-align: center;
             border-bottom: 1px solid #ffeaa7;
+            transition: opacity 0.3s, max-height 0.3s;
+            max-height: 40px;
+            overflow: hidden;
+        }
+        
+        .encryption-notice.hidden {
+            opacity: 0;
+            max-height: 0;
+            padding: 0;
         }
         
         body.dark-mode .encryption-notice {
@@ -539,6 +548,33 @@
             border-color: var(--primary);
         }
         
+        /* Scroll to Bottom Button */
+        #scroll-to-bottom {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 100;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        #scroll-to-bottom:hover {
+            transform: scale(1.1);
+        }
+        #scroll-to-bottom.show {
+            display: flex;
+        }
+        
         /* Empty State */
         .empty-state {
             display: flex;
@@ -572,6 +608,23 @@
             background: var(--primary) !important;
             color: white !important;
             border-color: var(--primary) !important;
+        }
+        
+        /* Accent Color Picker */
+        .accent-color-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .accent-color-option:hover {
+            transform: scale(1.15);
+        }
+        .accent-color-option.active {
+            border-color: var(--text-color);
+            transform: scale(1.1);
         }
         
         /* Emoji Picker */
@@ -648,7 +701,9 @@
                 </div>
                 
                 <p>Nutzer: <b id="set-username"></b></p>
-                <p style="font-size:12px; color:#999; margin-top:-5px;">Version 3.3</p>
+                <p style="font-size:12px; color:#999; margin-top:-5px;">
+                    Version 3.4 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
                 
@@ -681,6 +736,23 @@
                     <button id="theme-dark" class="theme-btn" onclick="setTheme('dark')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px; cursor:pointer; font-size:14px;">
                         🌙 Dunkel
                     </button>
+                </div>
+                
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Akzentfarbe:</label>
+                <div id="accent-color-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-bottom:15px;">
+                    <div class="accent-color-option" data-color="#dc3545" data-name="Rot" style="background:#dc3545;" title="Rot"></div>
+                    <div class="accent-color-option" data-color="#fd7e14" data-name="Orange" style="background:#fd7e14;" title="Orange"></div>
+                    <div class="accent-color-option" data-color="#ffc107" data-name="Gold" style="background:#ffc107;" title="Gold"></div>
+                    <div class="accent-color-option" data-color="#ffeb3b" data-name="Gelb" style="background:#ffeb3b;" title="Gelb"></div>
+                    <div class="accent-color-option" data-color="#cddc39" data-name="Limette" style="background:#cddc39;" title="Limette"></div>
+                    <div class="accent-color-option" data-color="#075e54" data-name="Grün" style="background:#075e54;" title="Grün (Standard)"></div>
+                    <div class="accent-color-option" data-color="#00bcd4" data-name="Himmelblau" style="background:#00bcd4;" title="Himmelblau"></div>
+                    <div class="accent-color-option" data-color="#3f51b5" data-name="Indigo" style="background:#3f51b5;" title="Indigo"></div>
+                    <div class="accent-color-option" data-color="#2196f3" data-name="Blau" style="background:#2196f3;" title="Blau"></div>
+                    <div class="accent-color-option" data-color="#9c27b0" data-name="Violett" style="background:#9c27b0;" title="Violett"></div>
+                    <div class="accent-color-option" data-color="#e91e63" data-name="Pink" style="background:#e91e63;" title="Pink"></div>
+                    <div class="accent-color-option" data-color="#ff9e80" data-name="Pfirsich" style="background:#ff9e80;" title="Pfirsich"></div>
+                    <div class="accent-color-option" data-color="#424242" data-name="Schwarz" style="background:#424242;" title="Schwarz"></div>
                 </div>
                 
                 <label>Chat-Farbe:</label>
@@ -784,11 +856,68 @@
             </div>
         </div>
     </div>
+    
+    <div id="changelog-overlay" class="overlay">
+        <div class="modal" style="max-width:500px; max-height:80vh;">
+            <div class="modal-header">
+                <h2>📝 Changelog</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
+            </div>
+            <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.4 🎨</h3>
+                <ul style="line-height:1.8;">
+                    <li>📍 <strong>Scroll to Bottom Button</strong> - Erscheint beim Nach-Oben-Scrollen</li>
+                    <li>🎨 <strong>13 Akzentfarben</strong> - Rot, Orange, Gold, Gelb, Limette, Grün, Himmelblau, Indigo, Blau, Violett, Pink, Pfirsich, Schwarz</li>
+                    <li>🔓 <strong>Encryption Notice</strong> - Wird nach 4 Sekunden automatisch ausgeblendet</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.3 😊</h3>
+                <ul style="line-height:1.8;">
+                    <li>🖱️ <strong>Kontextmenü</strong> - Rechtsklick/Langer Touch auf Nachrichten</li>
+                    <li>😊 <strong>Reaktionen</strong> - 6 Quick-Reactions (❤️👍😂😮😢🙏)</li>
+                    <li>ℹ️ <strong>Benutzer-Info</strong> - Klick auf Chat-Header</li>
+                    <li>🎨 <strong>Avatar anpassen</strong> - Farbe & Schriftart in Settings</li>
+                    <li>💬 <strong>Custom Bubble-Farbe</strong> - Pro Kontakt einstellbar</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.2 🎉</h3>
+                <ul style="line-height:1.8;">
+                    <li>🌓 <strong>Theme-System</strong> - System / Hell / Dunkel</li>
+                    <li>💬 <strong>Empty States</strong> - "Kein Chat" & "Keine Kontakte"</li>
+                    <li>🔔 <strong>Toast-Notifications</strong> - Alle Alerts ersetzt</li>
+                    <li>⌨️ <strong>Keyboard Shortcuts</strong> - Ctrl+K/F/E/,, Escape</li>
+                    <li>🔐 <strong>Passwortmanager</strong> - PIN speicherbar</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.1 🚀</h3>
+                <ul style="line-height:1.8;">
+                    <li>⋮ <strong>Dreipunkt-Menü</strong> - Export, Suche, Leeren</li>
+                    <li>📌 <strong>Kontakte pinnen</strong></li>
+                    <li>🔴 <strong>Unread Badge</strong> - Roter Punkt</li>
+                    <li>✓✓ <strong>Lesebestätigungen</strong></li>
+                    <li>📅 <strong>Datums-Gruppierung</strong></li>
+                    <li>📥 <strong>Chat-Export</strong></li>
+                    <li>↩️ <strong>Antwort-Funktion</strong></li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Basis-Features</h3>
+                <ul style="line-height:1.8;">
+                    <li>💬 <strong>Echtzeit-Chat</strong> mit Firebase</li>
+                    <li>😊 <strong>900+ Emojis</strong> mit Picker</li>
+                    <li>👥 <strong>Kontaktverwaltung</strong> mit Suche & Alias</li>
+                    <li>🟢 <strong>Online-Status</strong></li>
+                    <li>✏️ <strong>Markdown-Support</strong></li>
+                    <li>🔗 <strong>Link-Erkennung</strong></li>
+                    <li>🎨 <strong>Chat-Farben anpassbar</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.3</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.4</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -815,8 +944,8 @@
         </div>
 
         <div id="main-chat">
-            <div class="encryption-notice">
-                🔓 Nachrichten sind nicht Ende-zu-Ende verschlüsselt
+            <div class="encryption-notice" id="encryption-notice">
+                🔒 Wir achten auf einen datenschutzkonformen Umgang mit deinen Daten.
             </div>
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
@@ -831,12 +960,13 @@
                 </div>
             </div>
             <div id="typing-status"></div>
-            <div id="messages-container">
+            <div id="messages-container" style="position:relative;">
                 <div class="empty-state" id="empty-chat-state">
                     <div class="empty-state-icon">💬</div>
                     <div class="empty-state-title">Kein Chat ausgewählt</div>
                     <div class="empty-state-subtitle">Wähle einen Kontakt aus der Liste, um zu chatten</div>
                 </div>
+                <button id="scroll-to-bottom" onclick="scrollToBottom()">↓</button>
             </div>
             <div id="reply-bar">
                 <div class="reply-content">
@@ -1105,6 +1235,62 @@ document.addEventListener('click', (e) => {
 });
 
 /* ------------------------------ */
+/* SCROLL TO BOTTOM */
+/* ------------------------------ */
+window.scrollToBottom = () => {
+    const container = document.getElementById('messages-container');
+    container.scrollTo({
+        top: container.scrollHeight,
+        behavior: 'smooth'
+    });
+};
+
+// Show/hide scroll button based on scroll position
+function initScrollButton() {
+    const container = document.getElementById('messages-container');
+    const btn = document.getElementById('scroll-to-bottom');
+    
+    if(!container || !btn) return;
+    
+    container.addEventListener('scroll', () => {
+        const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
+        if(isNearBottom) {
+            btn.classList.remove('show');
+        } else {
+            btn.classList.add('show');
+        }
+    });
+}
+
+/* ------------------------------ */
+/* ACCENT COLOR */
+/* ------------------------------ */
+function setAccentColor(color) {
+    document.documentElement.style.setProperty('--primary', color);
+    localStorage.setItem('villo_accent', color);
+    
+    // Update active state
+    document.querySelectorAll('.accent-color-option').forEach(opt => {
+        if(opt.dataset.color === color) {
+            opt.classList.add('active');
+        } else {
+            opt.classList.remove('active');
+        }
+    });
+    
+    showNotification(`✅ Akzentfarbe geändert`, 'success');
+}
+
+function initAccentColorPicker() {
+    const savedAccent = localStorage.getItem('villo_accent') || '#075e54';
+    setAccentColor(savedAccent);
+    
+    document.querySelectorAll('.accent-color-option').forEach(opt => {
+        opt.onclick = () => setAccentColor(opt.dataset.color);
+    });
+}
+
+/* ------------------------------ */
 /* NOTIFICATION SYSTEM */
 /* ------------------------------ */
 function showNotification(message, type = 'success') {
@@ -1300,6 +1486,7 @@ async function addGegenseitig(target) {
 /* START CHAT & MESSAGES */
 /* ------------------------------ */
 let onlineStatusListener = null;
+let encryptionNoticeTimer = null;
 
 function startChat(n){
     if(chatRef) off(chatRef);
@@ -1314,6 +1501,20 @@ function startChat(n){
 
     const aliases = JSON.parse(localStorage.getItem('contact_aliases') || "{}");
     const displayName = aliases[n] || n;
+
+    // Show encryption notice, then hide after 4 seconds
+    const encryptionNotice = document.getElementById('encryption-notice');
+    if(encryptionNotice) {
+        encryptionNotice.classList.remove('hidden');
+        
+        // Clear any existing timer
+        if(encryptionNoticeTimer) clearTimeout(encryptionNoticeTimer);
+        
+        // Hide after 4 seconds
+        encryptionNoticeTimer = setTimeout(() => {
+            encryptionNotice.classList.add('hidden');
+        }, 4000);
+    }
 
     // Setup online status listener for active chat only
     onlineStatusListener = ref(db, `online/${n}`);
@@ -1440,6 +1641,9 @@ function startChat(n){
     onValue(typingRef, s => {
         document.getElementById('typing-status').innerText = s.val()?`${displayName} schreibt gerade...`:'';
     });
+    
+    // Re-initialize scroll button for new chat
+    setTimeout(initScrollButton, 100);
 }
 
 /* ------------------------------ */
@@ -1466,6 +1670,14 @@ window.closeChat = () => {
     document.title = "VilloChat";
     if(activeChatId) set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
     if(onlineStatusListener) off(onlineStatusListener);
+    
+    // Clear encryption notice timer and show notice again
+    if(encryptionNoticeTimer) clearTimeout(encryptionNoticeTimer);
+    const encryptionNotice = document.getElementById('encryption-notice');
+    if(encryptionNotice) {
+        encryptionNotice.classList.remove('hidden');
+    }
+    
     activeChatId = null;
     activeContactName = null;
     cancelReply();
@@ -1867,6 +2079,10 @@ document.addEventListener('click', (e) => {
 /* ------------------------------ */
 /* USER INFO */
 /* ------------------------------ */
+window.openChangelog = () => {
+    document.getElementById('changelog-overlay').style.display = 'flex';
+};
+
 window.openUserInfo = (contactName) => {
     const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
     const displayName = aliases[contactName] || contactName;
@@ -1999,6 +2215,9 @@ window.onload = () => {
     const theme = localStorage.getItem('villo_theme') || 'system';
     applyTheme(theme);
     
+    // Initialize accent color
+    initAccentColorPicker();
+    
     const s = localStorage.getItem('villo_session');
     if(s){ 
         myUsername = s; 
@@ -2011,6 +2230,9 @@ window.onload = () => {
     // Setup auth tab listeners
     document.getElementById('t-login').addEventListener('click', () => setAuth('login'));
     document.getElementById('t-reg').addEventListener('click', () => setAuth('register'));
+    
+    // Initialize scroll button
+    setTimeout(initScrollButton, 1000);
     
     // Global keyboard shortcuts
     document.addEventListener('keydown', (e) => {
