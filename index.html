@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VilloChat - Version 3.3</title>
+    
+    <!-- Standard Favicon (multiple formats for compatibility) -->
+    <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
+    <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+    <link rel="icon" type="image/png" sizes="16x16" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💬</text></svg>">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23075e54%22 rx=%2220%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22>💬</text></svg>">
+    <link rel="apple-touch-icon" sizes="152x152" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23075e54%22 rx=%2220%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22>💬</text></svg>">
+    <link rel="apple-touch-icon" sizes="144x144" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23075e54%22 rx=%2220%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22>💬</text></svg>">
+    <link rel="apple-touch-icon" sizes="120x120" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23075e54%22 rx=%2220%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22>💬</text></svg>">
+    <link rel="apple-touch-icon" sizes="76x76" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23075e54%22 rx=%2220%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22>💬</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23075e54%22 rx=%2220%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22>💬</text></svg>">
+    
+    <!-- Web App Manifest -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="VilloChat">
+    <meta name="application-name" content="VilloChat">
+    <meta name="theme-color" content="#075e54">
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -622,8 +643,32 @@
                 <span style="cursor:pointer" onclick="closeOverlay('settings-overlay')">✕</span>
             </div>
             <div class="modal-body">
+                <div style="text-align:center; margin-bottom:15px;">
+                    <div id="settings-avatar-preview" style="width:60px; height:60px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:bold; color:white;"></div>
+                </div>
+                
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">Version 3.3</p>
+                
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
+                
+                <label style="margin-top:10px; display:block; font-size:13px;">Avatar-Farbe:</label>
+                <input type="color" id="my-avatar-color-picker" style="width:100%; height:40px; margin:5px 0; cursor:pointer;">
+                
+                <label style="margin-top:10px; display:block; font-size:13px;">Schriftart:</label>
+                <select id="my-avatar-font-picker" style="width:100%; padding:10px; border-radius:8px; margin:5px 0; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color);">
+                    <option value="'Playfair Display', serif">Playfair Display (Standard)</option>
+                    <option value="'Inter', sans-serif">Inter</option>
+                    <option value="'Arial', sans-serif">Arial</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="'Georgia', serif">Georgia</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                    <option value="'Verdana', sans-serif">Verdana</option>
+                    <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                    <option value="'Impact', sans-serif">Impact</option>
+                </select>
+                <button onclick="saveMyAvatar()" style="width:100%; margin-top:5px; background:var(--primary);">Avatar speichern</button>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Design:</label>
                 <div style="display:flex; gap:10px; margin-bottom:15px;">
@@ -771,7 +816,7 @@
 
         <div id="main-chat">
             <div class="encryption-notice">
-                🔒 Nachrichten sind per <i>aero</i>Secure Ende-zu-Ende verschlüsselt
+                🔓 Nachrichten sind nicht Ende-zu-Ende verschlüsselt
             </div>
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
@@ -847,10 +892,15 @@ function stringToColor(str) {
     return `hsl(${Math.abs(hash) % 360},65%,40%)`;
 }
 function getAvatarHTML(name, showOnline = false) {
-    const color = stringToColor(name);
+    const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+    const settings = avatarSettings[name] || {};
+    
+    const color = settings.color || stringToColor(name);
+    const font = settings.font || "'Playfair Display', serif";
     const letter = name.charAt(0);
     const onlineIndicator = showOnline ? '<div class="online-indicator"></div>' : '';
-    return `<div class="avatar" style="background:${color}">${letter}${onlineIndicator}</div>`;
+    
+    return `<div class="avatar" style="background:${color}; font-family:${font}">${letter}${onlineIndicator}</div>`;
 }
 
 /* ------------------------------ */
@@ -969,10 +1019,68 @@ function markChatAsRead(chatId) {
 /* OVERLAY FUNCTIONS */
 /* ------------------------------ */
 window.openSettings = () => {
+    if(!myUsername) {
+        console.error('myUsername not set');
+        return;
+    }
+    
     document.getElementById('set-username').innerText = myUsername;
     const theme = localStorage.getItem('villo_theme') || 'system';
     updateThemeButtons(theme);
+    
+    // Load own avatar settings
+    const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+    const mySettings = avatarSettings[myUsername] || {};
+    const myColor = mySettings.color || stringToColor(myUsername);
+    const myFont = mySettings.font || "'Playfair Display', serif";
+    
+    // Set preview
+    const preview = document.getElementById('settings-avatar-preview');
+    if(preview) {
+        preview.style.background = myColor;
+        preview.style.fontFamily = myFont;
+        preview.textContent = myUsername.charAt(0).toUpperCase();
+    }
+    
+    // Set pickers
+    const colorPicker = document.getElementById('my-avatar-color-picker');
+    if(colorPicker) {
+        colorPicker.value = myColor;
+        
+        // Live preview on change
+        colorPicker.oninput = () => {
+            if(preview) preview.style.background = colorPicker.value;
+        };
+    }
+    
+    const fontPicker = document.getElementById('my-avatar-font-picker');
+    if(fontPicker) {
+        fontPicker.value = myFont;
+        
+        // Live preview on change
+        fontPicker.onchange = () => {
+            if(preview) preview.style.fontFamily = fontPicker.value;
+        };
+    }
+    
     document.getElementById('settings-overlay').style.display = 'flex';
+};
+
+window.saveMyAvatar = () => {
+    const colorPicker = document.getElementById('my-avatar-color-picker');
+    const fontPicker = document.getElementById('my-avatar-font-picker');
+    
+    const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+    avatarSettings[myUsername] = {
+        color: colorPicker.value,
+        font: fontPicker.value
+    };
+    localStorage.setItem('avatar_settings', JSON.stringify(avatarSettings));
+    
+    showNotification('✅ Dein Avatar wurde gespeichert', 'success');
+    
+    // Refresh to apply changes everywhere
+    showApp();
 };
 window.closeOverlay = (id) => {
     document.getElementById(id).style.display = 'none';
@@ -1763,13 +1871,18 @@ window.openUserInfo = (contactName) => {
     const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
     const displayName = aliases[contactName] || contactName;
     const contactColors = JSON.parse(localStorage.getItem('contact_colors') || '{}');
+    const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+    const settings = avatarSettings[contactName] || {};
     
     document.getElementById('info-username').textContent = contactName;
     document.getElementById('info-alias').textContent = displayName;
     document.getElementById('info-online-status').textContent = '—';
     
     const avatar = document.getElementById('info-avatar');
-    avatar.style.background = stringToColor(displayName);
+    const avatarColor = settings.color || stringToColor(displayName);
+    const avatarFont = settings.font || "'Playfair Display', serif";
+    avatar.style.background = avatarColor;
+    avatar.style.fontFamily = avatarFont;
     avatar.textContent = displayName.charAt(0).toUpperCase();
     
     const colorPicker = document.getElementById('contact-color-picker');
@@ -1786,6 +1899,10 @@ window.openUserInfo = (contactName) => {
     });
     
     document.getElementById('user-info-overlay').style.display = 'flex';
+};
+
+window.saveAvatarSettings = () => {
+    // Removed - not used anymore
 };
 
 window.saveContactColor = () => {
