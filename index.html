@@ -185,15 +185,12 @@
         
         /* Unread Badge */
         .unread-badge {
-            background: #25d366;
-            color: white;
-            border-radius: 12px;
-            padding: 2px 8px;
-            font-size: 11px;
-            font-weight: bold;
+            background: #dc3545;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
             margin-left: auto;
-            min-width: 20px;
-            text-align: center;
+            flex-shrink: 0;
         }
         
         /* Pin Icon */
@@ -661,7 +658,7 @@
 
         <div id="main-chat">
             <div class="encryption-notice">
-                🔒 Nachrichten sind per aeroSecure Ende-zu-Ende verschlüsselt.
+                🔓 Nachrichten sind nicht Ende-zu-Ende verschlüsselt
             </div>
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
@@ -1016,7 +1013,7 @@ function showApp() {
         contacts.forEach(n => {
             const displayName = aliases[n] || n;
             const isPinned = pinned.includes(n);
-            const unreadCount = getUnreadCount(n);
+            const hasUnread = getUnreadCount(n) > 0;
             
             const d = document.createElement('div');
             d.className = 'contact-item' + (isPinned ? ' pinned' : '');
@@ -1024,7 +1021,7 @@ function showApp() {
             d.innerHTML = `
                 ${getAvatarHTML(displayName, false)} 
                 <span>${displayName}${isPinned ? '<span class="pin-icon">📌</span>' : ''}</span>
-                ${unreadCount > 0 ? `<span class="unread-badge">${unreadCount}</span>` : ''}
+                ${hasUnread ? '<span class="unread-badge"></span>' : ''}
                 <span class="edit-contact" style="margin-left:auto; cursor:pointer;" onclick="event.stopPropagation(); editContactAlias('${n}')">✎</span>
                 <span class="del-contact" style="margin-left:5px; cursor:pointer;" onclick="event.stopPropagation(); removeContact('${n}')">✕</span>
             `;
@@ -1486,7 +1483,7 @@ document.getElementById('bg-color-picker').addEventListener('change', (e) => {
 /* EMOJI PICKER */
 /* ------------------------------ */
 const emojiCategories = {
-    'Smileys': ['🐙','😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','🥲','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐'],
+    'Smileys': ['😀','😃','😄','😁','😆','😅','🤣','😂','🙂','🙃','😉','😊','😇','🥰','😍','🤩','😘','😗','😚','😙','🥲','😋','😛','😜','🤪','😝','🤑','🤗','🤭','🤫','🤔','🤐','🤨','😐','😑','😶','😏','😒','🙄','😬','🤥','😌','😔','😪','🤤','😴','😷','🤒','🤕','🤢','🤮','🤧','🥵','🥶','🥴','😵','🤯','🤠','🥳','🥸','😎','🤓','🧐'],
     'Gesten': ['👋','🤚','🖐️','✋','🖖','👌','🤌','🤏','✌️','🤞','🤟','🤘','🤙','👈','👉','👆','🖕','👇','☝️','👍','👎','✊','👊','🤛','🤜','👏','🙌','👐','🤲','🤝','🙏'],
     'Herzen': ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💔','❤️‍🔥','❤️‍🩹','❣️','💕','💞','💓','💗','💖','💘','💝'],
     'Tiere': ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐷','🐸','🐵','🐔','🐧','🐦','🐤','🦆','🦅','🦉','🦇','🐺','🐗','🐴','🦄','🐝','🐛','🦋','🐌','🐞','🐢','🐍','🦎','🦖','🦕','🐙','🦑','🦐','🦞','🦀','🐡','🐠','🐟','🐬','🐳','🐋','🦈','🐊','🐅','🐆','🦓','🦍','🦧','🐘','🦛','🦏','🐪','🐫','🦒','🦘','🐃','🐂','🐄','🐎','🐖','🐏','🐑','🦙','🐐','🦌','🐕','🐩','🦮','🐈','🐓','🦃','🦚','🦜','🦢','🦩','🕊️','🐇','🦝','🦨','🦡','🦦','🦥','🐁','🐀','🐿️','🦔'],
