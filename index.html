@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.4</title>
+    <title>VilloChat - Version 3.5</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -34,7 +34,9 @@
             --bg: #f0f2f5; 
             --white: #ffffff; 
             --text-main: 'Inter', 'Noto Color Emoji', sans-serif; 
-            --text-heading: 'Playfair Display', 'Noto Color Emoji', serif; 
+            --text-heading: 'Playfair Display', 'Noto Color Emoji', serif;
+            --msg-font-size: 15px;
+            --my-bubble-color: #dcf8c6;
         }
         
         /* Dark Mode Variables */
@@ -72,8 +74,8 @@
             -ms-user-select: none;
         }
         
-        /* Allow selection in inputs and message content */
-        input, textarea, .msg div, #emoji-search, #chat-search-input, #search-input {
+        /* Allow selection only in input fields */
+        input, textarea, #emoji-search, #chat-search-input, #search-input, #alias-input {
             user-select: text;
             -webkit-user-select: text;
             -moz-user-select: text;
@@ -273,19 +275,26 @@
             border-radius: 12px; 
             margin-bottom: 10px; 
             max-width: 85%; 
-            font-size: 15px; 
+            font-size: var(--msg-font-size);
             box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
             word-wrap: break-word; 
         }
         .sent { 
             align-self: flex-end; 
-            background: var(--msg-sent); 
+            background: var(--my-bubble-color);
             border-bottom-right-radius: 2px; 
         }
         .received { 
             align-self: flex-start; 
             background: var(--msg-received); 
             border-bottom-left-radius: 2px; 
+        }
+        
+        .msg-edited {
+            font-size: 9px;
+            opacity: 0.5;
+            font-style: italic;
+            margin-left: 4px;
         }
         
         /* Reply Quote Styling */
@@ -338,6 +347,29 @@
             font-size: 16px;
             background: var(--input-bg);
             color: var(--text-color);
+        }
+        
+        /* Edit Mode */
+        #edit-mode-bar {
+            display: none;
+            background: var(--white);
+            padding: 10px 15px;
+            border-top: 1px solid var(--border-color);
+            align-items: center;
+            gap: 10px;
+        }
+        #edit-mode-bar.active {
+            display: flex;
+        }
+        #edit-mode-bar .edit-content {
+            flex-grow: 1;
+            font-size: 13px;
+            opacity: 0.7;
+        }
+        #edit-mode-bar .edit-cancel {
+            cursor: pointer;
+            font-size: 18px;
+            opacity: 0.5;
         }
         
         /* Reply Bar */
@@ -639,6 +671,27 @@
             transform: scale(1.1);
         }
         
+        /* Font Size Options */
+        .font-size-option {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--white);
+            color: var(--text-color);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        .font-size-option:hover {
+            background: var(--bg);
+        }
+        .font-size-option.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
         /* Emoji Picker */
         .emoji-item {
             font-size: 28px;
@@ -714,7 +767,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.4 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 3.5 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -767,8 +820,25 @@
                     <div class="accent-color-option" data-color="#424242" data-name="Schwarz" style="background:#424242;" title="Schwarz"></div>
                 </div>
                 
-                <label>Chat-Farbe:</label>
-                <input type="color" id="bg-color-picker" value="#e5ddd5" style="width:100%; height:40px; margin:10px 0;">
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Schriftgröße:</label>
+                <div style="display:flex; gap:8px; margin-bottom:15px;">
+                    <div class="font-size-option" data-size="13px" data-name="Klein">Klein</div>
+                    <div class="font-size-option" data-size="15px" data-name="Normal">Normal</div>
+                    <div class="font-size-option" data-size="17px" data-name="Groß">Groß</div>
+                    <div class="font-size-option" data-size="20px" data-name="Sehr Groß">XL</div>
+                </div>
+                
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Meine Bubble-Farbe:</label>
+                <input type="color" id="my-bubble-color-picker" value="#dcf8c6" style="width:100%; height:40px; margin:5px 0; cursor:pointer;">
+                
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Sound:</label>
+                <label style="display:flex; align-items:center; cursor:pointer; margin:5px 0;">
+                    <input type="checkbox" id="sound-toggle" style="width:auto; margin-right:10px;">
+                    <span>🔊 Benachrichtigungston bei neuen Nachrichten</span>
+                </label>
+                
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Chat-Hintergrund:</label>
+                <input type="color" id="bg-color-picker" value="#e5ddd5" style="width:100%; height:40px; margin:5px 0;">
                 <button onclick="logout()" style="background:#cc0000; width:100%; margin-top:10px;">Abmelden</button>
             </div>
         </div>
@@ -876,7 +946,15 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.4 🎨</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.5 ✏️</h3>
+                <ul style="line-height:1.8;">
+                    <li>✏️ <strong>Nachrichten bearbeiten</strong> - Kontextmenü → Bearbeiten, zeigt "(bearbeitet)"</li>
+                    <li>🎨 <strong>Eigene Bubble-Farbe</strong> - Color-Picker für gesendete Nachrichten</li>
+                    <li>🔤 <strong>Schriftgröße</strong> - Klein / Normal / Groß / XL</li>
+                    <li>🔊 <strong>Sound-Einstellungen</strong> - Benachrichtigungston bei neuen Nachrichten</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.4 🎨</h3>
                 <ul style="line-height:1.8;">
                     <li>📍 <strong>Scroll to Bottom Button</strong> - Erscheint beim Nach-Oben-Scrollen</li>
                     <li>🎨 <strong>13 Akzentfarben</strong> - Rot, Orange, Gold, Gelb, Limette, Grün, Himmelblau, Indigo, Blau, Violett, Pink, Pfirsich, Schwarz</li>
@@ -929,7 +1007,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.4</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.5</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -986,6 +1064,13 @@
                     <div id="reply-text"></div>
                 </div>
                 <span class="reply-cancel" onclick="cancelReply()">✕</span>
+            </div>
+            <div id="edit-mode-bar">
+                <div class="edit-content">
+                    <div style="font-weight:bold; margin-bottom:2px;">✏️ Nachricht bearbeiten</div>
+                    <div id="edit-preview"></div>
+                </div>
+                <span class="edit-cancel" onclick="cancelEdit()">✕</span>
             </div>
             <div id="input-area">
                 <button id="btn-emoji" onclick="openEmojiPicker()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;">😊</button>
@@ -1456,6 +1541,7 @@ function showApp() {
                     const msg = msgSnap.val();
                     if(msg.sender !== myUsername && !msg.read && activeChatId !== chatId) {
                         updateUnreadCount(n, getUnreadCount(n) + 1);
+                        playNotificationSound();
                         showNotification(`💬 Neue Nachricht von ${displayName}`, 'success');
                         showApp(); // Refresh to show badge
                     }
@@ -1607,6 +1693,8 @@ function startChat(n){
             ? `<span class="msg-status ${m.read ? 'check-read' : 'check-sent'}">${m.read ? '✓✓' : '✓'}</span>` 
             : '';
         
+        const editedMark = m.edited ? '<span class="msg-edited">(bearbeitet)</span>' : '';
+        
         const delIcon = m.sender===myUsername?`<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${s.key}')">🗑</span>`:'';
         const replyIcon = `<span class="msg-menu" onclick="replyToMsg('${s.key}', '${m.sender}', \`${m.text.replace(/`/g, '\\`')}\`)">↩️</span>`;
         
@@ -1617,7 +1705,7 @@ function startChat(n){
             d.style.backgroundColor = customColor;
         }
         
-        d.innerHTML = `${replyHTML}<div>${marked.parse(m.text)}</div>${reactionsHTML}<span class="msg-time">${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        d.innerHTML = `${replyHTML}<div>${marked.parse(m.text)}</div>${reactionsHTML}<span class="msg-time">${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
         
         // Add context menu listeners
         d.addEventListener('contextmenu', (e) => {
@@ -1729,6 +1817,21 @@ msgInput.onkeydown = (e) => {
 
 document.getElementById('btn-send').onclick = () => {
     if(!msgInput.value.trim() || !activeChatId) return;
+    
+    // Check if editing
+    if(editingMessageKey) {
+        const msgRef = ref(db, `chats/${activeChatId}/${editingMessageKey}`);
+        update(msgRef, {
+            text: msgInput.value.trim(),
+            edited: true,
+            editedAt: Date.now()
+        });
+        
+        cancelEdit();
+        msgInput.value = '';
+        showNotification('✅ Nachricht bearbeitet', 'success');
+        return;
+    }
     
     const msgData = {
         sender: myUsername,
@@ -2009,8 +2112,18 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     };
     menu.appendChild(replyItem);
     
-    // Delete option (only for own messages)
+    // Edit option (only for own messages)
     if(sender === myUsername) {
+        const editItem = document.createElement('div');
+        editItem.className = 'msg-context-item';
+        editItem.innerHTML = '<span class="icon">✏️</span><span>Bearbeiten</span>';
+        editItem.onclick = () => {
+            menu.classList.remove('show');
+            startEditingMessage(msgKey, msgText);
+        };
+        menu.appendChild(editItem);
+        
+        // Delete option
         const delItem = document.createElement('div');
         delItem.className = 'msg-context-item';
         delItem.innerHTML = '<span class="icon">🗑️</span><span>Löschen</span>';
@@ -2087,6 +2200,113 @@ document.addEventListener('click', (e) => {
         document.body.removeChild(picker);
     }
 });
+
+/* ------------------------------ */
+/* MESSAGE EDITING */
+/* ------------------------------ */
+let editingMessageKey = null;
+
+function startEditingMessage(msgKey, msgText) {
+    editingMessageKey = msgKey;
+    
+    // Fill input with current text
+    document.getElementById('msg-input').value = msgText;
+    
+    // Show edit bar
+    const editBar = document.getElementById('edit-mode-bar');
+    editBar.classList.add('active');
+    document.getElementById('edit-preview').textContent = msgText.substring(0, 50) + (msgText.length > 50 ? '...' : '');
+    
+    // Hide reply bar if open
+    cancelReply();
+    
+    // Focus input
+    document.getElementById('msg-input').focus();
+}
+
+window.cancelEdit = () => {
+    editingMessageKey = null;
+    document.getElementById('edit-mode-bar').classList.remove('active');
+    document.getElementById('msg-input').value = '';
+};
+
+/* ------------------------------ */
+/* FONT SIZE, BUBBLE COLOR & SOUND */
+/* ------------------------------ */
+function initFontSize() {
+    const savedSize = localStorage.getItem('villo_font_size') || '15px';
+    document.documentElement.style.setProperty('--msg-font-size', savedSize);
+    
+    document.querySelectorAll('.font-size-option').forEach(opt => {
+        if(opt.dataset.size === savedSize) {
+            opt.classList.add('active');
+        }
+        opt.onclick = () => {
+            const size = opt.dataset.size;
+            document.documentElement.style.setProperty('--msg-font-size', size);
+            localStorage.setItem('villo_font_size', size);
+            
+            document.querySelectorAll('.font-size-option').forEach(o => o.classList.remove('active'));
+            opt.classList.add('active');
+            
+            showNotification(`✅ Schriftgröße: ${opt.dataset.name}`, 'success');
+        };
+    });
+}
+
+function initBubbleColor() {
+    const savedColor = localStorage.getItem('villo_bubble_color') || '#dcf8c6';
+    document.documentElement.style.setProperty('--my-bubble-color', savedColor);
+    
+    const picker = document.getElementById('my-bubble-color-picker');
+    if(picker) {
+        picker.value = savedColor;
+        picker.oninput = () => {
+            const color = picker.value;
+            document.documentElement.style.setProperty('--my-bubble-color', color);
+            localStorage.setItem('villo_bubble_color', color);
+            showNotification('✅ Bubble-Farbe geändert', 'success');
+        };
+    }
+}
+
+function initSound() {
+    const soundEnabled = localStorage.getItem('villo_sound') === 'true';
+    const toggle = document.getElementById('sound-toggle');
+    if(toggle) {
+        toggle.checked = soundEnabled;
+        toggle.onchange = () => {
+            localStorage.setItem('villo_sound', toggle.checked);
+            showNotification(toggle.checked ? '🔊 Sound aktiviert' : '🔇 Sound deaktiviert', 'success');
+        };
+    }
+}
+
+function playNotificationSound() {
+    const soundEnabled = localStorage.getItem('villo_sound') === 'true';
+    if(!soundEnabled) return;
+    
+    // Simple beep using Web Audio API
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.2);
+    } catch(e) {
+        console.error('Sound error:', e);
+    }
+}
 
 /* ------------------------------ */
 /* USER INFO */
@@ -2229,6 +2449,15 @@ window.onload = () => {
     
     // Initialize accent color
     initAccentColorPicker();
+    
+    // Initialize font size
+    initFontSize();
+    
+    // Initialize bubble color
+    initBubbleColor();
+    
+    // Initialize sound
+    initSound();
     
     const s = localStorage.getItem('villo_session');
     if(s){ 
