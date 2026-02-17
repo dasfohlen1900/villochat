@@ -1168,32 +1168,52 @@
     </div>
     
     <div id="user-info-overlay" class="overlay">
-        <div class="modal">
+        <div class="modal" style="max-height:85vh;">
             <div class="modal-header">
                 <h2>Benutzer-Info</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('user-info-overlay')">✕</span>
             </div>
-            <div class="modal-body">
-                <div style="text-align:center; margin-bottom:20px;">
+            <div class="modal-body" style="max-height:calc(85vh - 60px); overflow-y:auto;">
+                <div style="text-align:center; margin-bottom:15px;">
                     <div id="info-avatar" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
-                    <h3 id="info-username" style="margin:0 0 5px 0;"></h3>
-                    <p id="info-status" style="color:#999; font-size:14px; margin:0;"></p>
+                    <h3 id="info-username" style="margin:0 0 4px 0;"></h3>
+                    <p id="info-status-text" style="color:#888; font-size:13px; margin:0 0 4px;"></p>
+                    <p id="info-online-status" style="font-size:13px; margin:0;"></p>
                 </div>
-                
-                <div style="border-top:1px solid var(--border-color); padding-top:15px;">
-                    <p style="margin:5px 0;"><strong>Status:</strong> <span id="info-online-status"></span></p>
-                    <p style="margin:5px 0;"><strong>Alias:</strong> <span id="info-alias"></span></p>
-                    <p id="info-status-text" style="margin:5px 0; font-size:13px; color:#888;"></p>
+
+                <!-- Stats grid -->
+                <div id="info-stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; padding:12px 0; border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
+                    <div style="background:var(--bg); border-radius:10px; padding:10px; text-align:center;">
+                        <div id="info-msg-count" style="font-size:20px; font-weight:bold; color:var(--primary);">…</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Nachrichten</div>
+                    </div>
+                    <div style="background:var(--bg); border-radius:10px; padding:10px; text-align:center;">
+                        <div id="info-emoji-stat" style="font-size:22px;">…</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Lieblings-Emoji</div>
+                    </div>
+                    <div style="background:var(--bg); border-radius:10px; padding:10px; text-align:center;">
+                        <div id="info-since" style="font-size:13px; font-weight:bold; color:var(--primary);">…</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Erste Nachricht</div>
+                    </div>
+                    <div style="background:var(--bg); border-radius:10px; padding:10px; text-align:center;">
+                        <div id="info-avg-len" style="font-size:20px; font-weight:bold; color:var(--primary);">…</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Ø Zeichen/Nachricht</div>
+                    </div>
                 </div>
-                
-                <div style="display:flex; gap:10px; margin:15px 0;">
+
+                <div style="padding-bottom:10px; border-bottom:1px solid var(--border-color); margin-bottom:12px;">
+                    <div style="font-size:12px; font-weight:600; opacity:0.5; margin-bottom:8px;">ALIAS & VERWALTUNG</div>
+                    <p style="margin:4px 0; font-size:13px;"><strong>Alias:</strong> <span id="info-alias"></span></p>
+                </div>
+
+                <div style="display:flex; gap:10px; margin-bottom:12px;">
                     <button id="btn-mute-contact" onclick="toggleMuteContact()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔇 Stumm</button>
                     <button id="btn-archive-contact" onclick="toggleArchiveContact()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🗂️ Archivieren</button>
                 </div>
-                
-                <label style="margin-top:5px; display:block; font-weight:500;">Chat-Bubble-Farbe:</label>
-                <input type="color" id="contact-color-picker" style="width:100%; height:40px; margin:10px 0; cursor:pointer;">
-                <button onclick="saveContactColor()" style="width:100%; margin-top:5px;">Farbe speichern</button>
+
+                <label style="display:block; font-weight:500; margin-bottom:5px;">Chat-Bubble-Farbe:</label>
+                <input type="color" id="contact-color-picker" style="width:100%; height:38px; margin:0 0 8px; cursor:pointer;">
+                <button onclick="saveContactColor()" style="width:100%;">Farbe speichern</button>
             </div>
         </div>
     </div>
@@ -3706,18 +3726,23 @@ window.openChangelog = () => {
     document.getElementById('changelog-overlay').style.display = 'flex';
 };
 
-window.openUserInfo = (contactName) => {
+window.openUserInfo = async (contactName) => {
     const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
     const displayName = aliases[contactName] || contactName;
     const contactColors = JSON.parse(localStorage.getItem('contact_colors') || '{}');
     const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
-    const settings = avatarSettings[contactName] || {};
+    const settings = avatarSettings[contactName] || avatarCache[contactName] || {};
     
     document.getElementById('info-username').textContent = contactName;
     document.getElementById('info-alias').textContent = displayName;
     document.getElementById('info-online-status').textContent = '—';
     document.getElementById('info-status-text').textContent = '';
     
+    // Reset stats to loading state
+    ['info-msg-count','info-emoji-stat','info-since','info-avg-len'].forEach(id => {
+        document.getElementById(id).textContent = '…';
+    });
+
     const avatar = document.getElementById('info-avatar');
     const avatarColor = settings.color || stringToColor(displayName);
     const avatarFont = settings.font || "'Playfair Display', serif";
@@ -3729,15 +3754,17 @@ window.openUserInfo = (contactName) => {
     colorPicker.value = contactColors[contactName] || '#ffffff';
     colorPicker.dataset.contactName = contactName;
     
-    // Update mute/archive buttons
     updateUserInfoButtons(contactName);
-    
-    // Check online status and status text from Firebase
+    document.getElementById('user-info-overlay').style.display = 'flex';
+
+    // Load online status + status text in parallel
     get(ref(db, `online/${contactName}`)).then(snap => {
         if(snap.exists()) {
             const data = snap.val();
             const isOnline = data.status && (Date.now() - data.lastSeen < 60000);
             document.getElementById('info-online-status').textContent = isOnline ? '🟢 Online' : '⚫ Offline';
+        } else {
+            document.getElementById('info-online-status').textContent = '⚫ Offline';
         }
     });
     
@@ -3746,8 +3773,54 @@ window.openUserInfo = (contactName) => {
             document.getElementById('info-status-text').textContent = `💬 "${snap.val()}"`;
         }
     });
+
+    // Load chat stats for this contact
+    const chatId = myUsername < contactName
+        ? `${myUsername}_${contactName}`
+        : `${contactName}_${myUsername}`;
     
-    document.getElementById('user-info-overlay').style.display = 'flex';
+    try {
+        const snap = await get(ref(db, `chats/${chatId}`));
+        if(!snap.exists()) {
+            ['info-msg-count','info-since','info-avg-len'].forEach(id => {
+                document.getElementById(id).textContent = '—';
+            });
+            document.getElementById('info-emoji-stat').textContent = '—';
+            return;
+        }
+
+        let msgCount = 0;
+        let totalChars = 0;
+        let firstTs = null;
+        const emojiCount = {};
+
+        snap.forEach(child => {
+            const m = child.val();
+            if(m.sender !== contactName || m.deletedForAll) return;
+            msgCount++;
+            totalChars += (m.text || '').length;
+            if(!firstTs || m.timestamp < firstTs) firstTs = m.timestamp;
+
+            const emojis = (m.text || '').match(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu) || [];
+            emojis.forEach(e => { emojiCount[e] = (emojiCount[e] || 0) + 1; });
+        });
+
+        document.getElementById('info-msg-count').textContent =
+            msgCount > 0 ? msgCount.toLocaleString('de-DE') : '0';
+
+        document.getElementById('info-avg-len').textContent =
+            msgCount > 0 ? Math.round(totalChars / msgCount) : '—';
+
+        document.getElementById('info-since').textContent = firstTs
+            ? new Date(firstTs).toLocaleDateString('de-DE', { day:'2-digit', month:'short', year:'numeric' })
+            : '—';
+
+        const topEmoji = Object.entries(emojiCount).sort((a,b) => b[1]-a[1])[0];
+        document.getElementById('info-emoji-stat').textContent = topEmoji ? topEmoji[0] : '—';
+
+    } catch(e) {
+        console.error('Stats error:', e);
+    }
 };
 
 window.saveAvatarSettings = () => {
