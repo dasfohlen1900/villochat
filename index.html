@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.8.1</title>
+    <title>VilloChat - Version 3.8.2</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1005,7 +1005,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.8.1 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 3.8.2 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1225,7 +1225,14 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.8.1 🔑</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.8.2 🐛</h3>
+                <ul style="line-height:1.8;">
+                    <li>📍 <strong>Kontextmenü-Position</strong> — bleibt jetzt immer im sichtbaren Bereich, auch an Bildschirmrändern</li>
+                    <li>✏️ <strong>Bearbeiten-Fix</strong> — Nachrichtentext wurde korrekt gespeichert</li>
+                    <li>🗑️ <strong>Für alle löschen-Fix</strong> — Kontextmenü nach dem Löschen korrekt deaktiviert</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.8.1 🔑</h3>
                 <ul style="line-height:1.8;">
                     <li>🔑 <strong>PIN ändern</strong> — Einstellungen → PIN ändern, mit Verifikation des alten PINs</li>
                     <li>❓ <strong>Hilfesystem</strong> — 7 Artikel: Erste Schritte, Nachrichten, Kontakte, Design, Suche, Sicherheit, Profil</li>
@@ -1436,7 +1443,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.8.1</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.8.2</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -2015,6 +2022,7 @@ function showApp() {
             
             const d = document.createElement('div');
             d.className = 'contact-item' + (isPinned ? ' pinned' : '');
+            d.dataset.contact = n;
             
             d.innerHTML = `
                 ${getAvatarHTML(displayName, false)} 
@@ -2044,7 +2052,8 @@ function showApp() {
                             playNotificationSound();
                             showNotification(`💬 Neue Nachricht von ${displayName}`, 'success');
                         }
-                        showApp();
+                        // Only update this contact's badge, not the whole list
+                        refreshContactBadge(n);
                     }
                 });
             }
@@ -2113,6 +2122,69 @@ async function addGegenseitig(target) {
 }
 
 /* ------------------------------ */
+/* ------------------------------ */
+/* TARGETED BADGE UPDATE (no full re-render) */
+/* ------------------------------ */
+function refreshContactBadge(contactName) {
+    // Find the contact item in the DOM and update badge without re-rendering the whole list
+    const listEl = document.getElementById('contacts-list');
+    if(!listEl) return;
+    const items = listEl.querySelectorAll('.contact-item');
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    const displayName = aliases[contactName] || contactName;
+    items.forEach(item => {
+        if(item.dataset.contact === contactName) {
+            const hasUnread = getUnreadCount(contactName) > 0;
+            let badge = item.querySelector('.unread-badge');
+            if(hasUnread && !badge) {
+                badge = document.createElement('span');
+                badge.className = 'unread-badge';
+                const editBtn = item.querySelector('.edit-contact');
+                if(editBtn) item.insertBefore(badge, editBtn);
+                else item.appendChild(badge);
+            } else if(!hasUnread && badge) {
+                badge.remove();
+            }
+        }
+    });
+}
+
+/* ------------------------------ */
+/* MESSAGE RENDER HELPER */
+/* ------------------------------ */
+function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
+    if(m.deletedForAll) {
+        d.innerHTML = `<em style="opacity:0.4; font-size:12px;">🗑️ Nachricht gelöscht</em>`;
+        d.style.background = 'transparent';
+        d.style.boxShadow = 'none';
+        return;
+    }
+    d.style.background = '';
+    d.style.boxShadow = '';
+    const customColor = contactColors[m.sender];
+    if(customColor && m.sender !== myUsername) d.style.backgroundColor = customColor;
+    let replyHTML = '';
+    if(m.replyTo) {
+        replyHTML = `<div class="reply-quote"><div class="reply-sender">${m.replyTo.sender}</div><div>${m.replyTo.text.substring(0,50)}${m.replyTo.text.length>50?'...':''}</div></div>`;
+    }
+    let reactionsHTML = '';
+    if(m.reactions) {
+        reactionsHTML = '<div class="msg-reactions">';
+        Object.entries(m.reactions).forEach(([emoji, users]) => {
+            const hasMyReaction = users.includes(myUsername);
+            reactionsHTML += `<span class="msg-reaction ${hasMyReaction?'my-reaction':''}" onclick="toggleReaction('${msgKey}','${emoji}')">${emoji} ${users.length}</span>`;
+        });
+        reactionsHTML += '</div>';
+    }
+    const checkmark     = m.sender===myUsername ? `<span class="msg-status ${m.read?'check-read':'check-sent'}">${m.read?'✓✓':'✓'}</span>` : '';
+    const editedMark    = m.edited    ? '<span class="msg-edited">(bearbeitet)</span>' : '';
+    const forwardedMark = m.forwarded ? '<div class="msg-forwarded">↪️ Weitergeleitet</div>' : '';
+    const delIcon       = m.sender===myUsername ? `<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${msgKey}')">🗑</span>` : '';
+    const safeText      = (m.text||'').replace(/`/g,'\\`');
+    const replyIcon     = `<span class="msg-menu" onclick="replyToMsg('${msgKey}','${m.sender}',\`${safeText}\`)">↩️</span>`;
+    d.innerHTML = `${forwardedMark}${replyHTML}${renderMessageContent(m.text||'')}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+}
+
 /* START CHAT & MESSAGES */
 /* ------------------------------ */
 let onlineStatusListener = null;
@@ -2182,8 +2254,17 @@ function startChat(n){
 
     chatRef = ref(db, 'chats/' + activeChatId);
     
-    let lastDate = null;
+    // Cache outside loop — avoid repeated JSON.parse on every message
+    const contactColors = JSON.parse(localStorage.getItem('contact_colors') || '{}');
+    let lastDate = '';
+    let isInitialLoad = true;
     
+    // Only auto-scroll during initial load or when already near bottom
+    const shouldAutoScroll = () => {
+        const c = messagesContainer;
+        return isInitialLoad || (c.scrollHeight - c.scrollTop - c.clientHeight < 120);
+    };
+
     onChildAdded(chatRef, (s) => {
         const m = s.val(); 
         const msgDate = getDateLabel(m.timestamp);
@@ -2210,64 +2291,11 @@ function startChat(n){
             hour:'2-digit', minute:'2-digit'
         });
         
-        // Reply quote
-        let replyHTML = '';
-        if(m.replyTo) {
-            replyHTML = `<div class="reply-quote">
-                <div class="reply-sender">${m.replyTo.sender}</div>
-                <div>${m.replyTo.text.substring(0, 50)}${m.replyTo.text.length > 50 ? '...' : ''}</div>
-            </div>`;
-        }
-        
-        // Reactions
-        let reactionsHTML = '';
-        if(m.reactions) {
-            reactionsHTML = '<div class="msg-reactions">';
-            Object.entries(m.reactions).forEach(([emoji, users]) => {
-                const count = users.length;
-                const hasMyReaction = users.includes(myUsername);
-                reactionsHTML += `<span class="msg-reaction ${hasMyReaction ? 'my-reaction' : ''}" onclick="toggleReaction('${s.key}', '${emoji}')">${emoji} ${count}</span>`;
-            });
-            reactionsHTML += '</div>';
-        }
-        
-        // Lesebestätigungen
-        const checkmark = m.sender === myUsername 
-            ? `<span class="msg-status ${m.read ? 'check-read' : 'check-sent'}">${m.read ? '✓✓' : '✓'}</span>` 
-            : '';
-        
-        // Skip deleted-for-all messages — show placeholder
-        if(m.deletedForAll) {
-            d.innerHTML = `<em style="opacity:0.4; font-size:12px;">🗑️ Nachricht gelöscht</em>`;
-            d.style.background = 'transparent';
-            d.style.boxShadow = 'none';
-            container.appendChild(d);
-            return;
-        }
-        
-        const editedMark = m.edited ? '<span class="msg-edited">(bearbeitet)</span>' : '';
-        const forwardedMark = m.forwarded ? '<div class="msg-forwarded">↪️ Weitergeleitet</div>' : '';
-        
-        const delIcon = m.sender===myUsername?`<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${s.key}')">🗑</span>`:'';
-        const replyIcon = `<span class="msg-menu" onclick="replyToMsg('${s.key}', '${m.sender}', \`${m.text.replace(/`/g, '\\`')}\`)">↩️</span>`;
-        
-        // Get custom color for this contact
-        const contactColors = JSON.parse(localStorage.getItem('contact_colors') || '{}');
-        const customColor = contactColors[m.sender];
-        if(customColor && m.sender !== myUsername) {
-            d.style.backgroundColor = customColor;
-        }
-        
-        const renderedContent = renderMessageContent(m.text);
-        d.innerHTML = `${forwardedMark}${replyHTML}${renderedContent}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        renderMessageEl(d, m, s.key, time, fullDate, replyIcon => replyIcon, contactColors);
         
         // Track unread for scroll badge
         if(m.sender !== myUsername && !m.read) {
-            const container = document.getElementById('messages-container');
-            if(container) {
-                const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
-                if(!isNearBottom) updateScrollBadge(unreadScrollCount + 1);
-            }
+            if(!shouldAutoScroll()) updateScrollBadge(unreadScrollCount + 1);
         }
         
         // Add context menu listeners
@@ -2286,14 +2314,51 @@ function startChat(n){
         d.addEventListener('touchend', () => clearTimeout(pressTimer));
         d.addEventListener('touchmove', () => clearTimeout(pressTimer));
         
-        messagesContainer.appendChild(d); 
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        messagesContainer.appendChild(d);
+        if(shouldAutoScroll()) messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
         // Nachricht als gelesen markieren
         if(m.sender !== myUsername && !m.read) {
             set(ref(db, `chats/${activeChatId}/${s.key}/read`), true);
         }
     });
+    
+    // Live updates for edited/deleted messages
+    onChildChanged(chatRef, (s) => {
+        const m = s.val();
+        const el = document.getElementById(`m-${s.key}`);
+        if(!el) return;
+        const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        const fullDate = new Date(m.timestamp).toLocaleString('de-DE', {
+            day:'2-digit', month:'2-digit', year:'numeric',
+            hour:'2-digit', minute:'2-digit'
+        });
+        // Update cached text on element
+        el.dataset.msgText = m.text || '';
+        renderMessageEl(el, m, s.key, time, fullDate, () => {}, contactColors);
+        
+        // Re-bind context menu with fresh data (fixes edit & delete-for-all)
+        const newClone = el.cloneNode(true);   // true = deep clone, keeps id + dataset
+        el.parentNode.replaceChild(newClone, el);
+        // Remove all old listeners by re-assigning innerHTML just for safety
+        newClone.innerHTML = newClone.innerHTML;
+        
+        if(!m.deletedForAll) {
+            newClone.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showMessageContextMenu(e, s.key, m.text || '', m.sender);
+            });
+            let pressTimer;
+            newClone.addEventListener('touchstart', (e) => {
+                pressTimer = setTimeout(() => showMessageContextMenu(e.touches[0], s.key, m.text || '', m.sender), 500);
+            });
+            newClone.addEventListener('touchend', () => clearTimeout(pressTimer));
+            newClone.addEventListener('touchmove', () => clearTimeout(pressTimer));
+        }
+    });
+    
+    // Mark initial load done after first paint
+    requestAnimationFrame(() => { isInitialLoad = false; });
     
     onChildRemoved(chatRef, s => {
         const el = document.getElementById("m-"+s.key);
@@ -2365,11 +2430,26 @@ window.closeChat = () => {
 /* SEND MESSAGE & TYPING */
 /* ------------------------------ */
 const msgInput = document.getElementById('msg-input');
+
+// Merged oninput: typing indicator + auto-resize (both in one handler)
+let typingDebounce = null;
+let isTyping = false;
 msgInput.oninput = () => {
-    if(activeChatId){
-        set(ref(db, `typing/${activeChatId}/${myUsername}`), true);
-        clearTimeout(window.tOut);
-        window.tOut = setTimeout(()=>set(ref(db, `typing/${activeChatId}/${myUsername}`),false),2000);
+    // Auto-resize
+    msgInput.style.height = 'auto';
+    msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+    
+    // Typing indicator with debounce - only write to Firebase when state changes
+    if(activeChatId) {
+        if(!isTyping) {
+            isTyping = true;
+            set(ref(db, `typing/${activeChatId}/${myUsername}`), true);
+        }
+        clearTimeout(typingDebounce);
+        typingDebounce = setTimeout(() => {
+            isTyping = false;
+            set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
+        }, 2000);
     }
 };
 
@@ -2381,26 +2461,22 @@ msgInput.onkeydown = (e) => {
     }
 };
 
-// Auto-resize textarea
-msgInput.oninput = () => {
-    msgInput.style.height = 'auto';
-    msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
-};
-
 document.getElementById('btn-send').onclick = () => {
     if(!msgInput.value.trim() || !activeChatId) return;
     
     // Check if editing
     if(editingMessageKey) {
+        const newText = msgInput.value.trim();
         const msgRef = ref(db, `chats/${activeChatId}/${editingMessageKey}`);
         update(msgRef, {
-            text: msgInput.value.trim(),
+            text: newText,
             edited: true,
             editedAt: Date.now()
         });
-        
-        cancelEdit();
+        editingMessageKey = null;
+        document.getElementById('edit-mode-bar').classList.remove('active');
         msgInput.value = '';
+        msgInput.style.height = 'auto';
         showNotification('✅ Nachricht bearbeitet', 'success');
         return;
     }
@@ -2746,10 +2822,24 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
         menu.appendChild(delAllItem);
     }
     
-    // Position menu
-    menu.style.left = e.clientX + 'px';
-    menu.style.top = e.clientY + 'px';
+    // Position menu — clamp to viewport so it never goes off-screen
     menu.classList.add('show');
+    
+    const menuW = menu.offsetWidth  || 200;
+    const menuH = menu.offsetHeight || 250;
+    const vw    = window.innerWidth;
+    const vh    = window.innerHeight;
+    
+    let x = e.clientX;
+    let y = e.clientY;
+    
+    if(x + menuW > vw - 8)  x = vw - menuW - 8;
+    if(y + menuH > vh - 8)  y = vh - menuH - 8;
+    if(x < 8) x = 8;
+    if(y < 8) y = 8;
+    
+    menu.style.left = x + 'px';
+    menu.style.top  = y + 'px';
 }
 
 function showReactionPicker(e, msgKey) {
@@ -3002,12 +3092,16 @@ window.deleteMsgForAll = (mid) => {
     yesBtn.replaceWith(yesBtn.cloneNode(true));
     const newYes = document.getElementById('confirm-yes');
     newYes.onclick = async () => {
-        // Replace content with deleted marker instead of removing
         await update(ref(db, `chats/${activeChatId}/${mid}`), {
             text: '',
             deletedForAll: true,
             deletedAt: Date.now()
         });
+        // If this was the pinned message, unpin it too
+        const pinnedKey = `pinned_${activeChatId}`;
+        if(localStorage.getItem(pinnedKey) === mid) {
+            unpinMessage();
+        }
         closeOverlay('confirm-overlay');
         showNotification('✅ Nachricht für alle gelöscht', 'success');
     };
