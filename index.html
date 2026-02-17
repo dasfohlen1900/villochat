@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.6</title>
+    <title>VilloChat - Version 3.7</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -298,6 +298,116 @@
         }
         body.bubble-minimal .sent { border-bottom-right-radius: 0 !important; }
         body.bubble-minimal .received { border-bottom-left-radius: 0 !important; }
+        
+        /* Image preview in messages */
+        .msg-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            display: block;
+            margin: 4px 0;
+            cursor: pointer;
+            object-fit: contain;
+        }
+        .msg-image:hover { opacity: 0.9; }
+        
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 20000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        #lightbox img {
+            max-width: 95vw;
+            max-height: 95vh;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        #lightbox.show { display: flex; }
+        
+        /* Embed card */
+        .msg-embed {
+            margin: 6px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.05);
+        }
+        .msg-embed iframe {
+            width: 100%;
+            max-width: 360px;
+            height: 200px;
+            border: none;
+            display: block;
+        }
+        .msg-embed-thumb {
+            position: relative;
+            cursor: pointer;
+        }
+        .msg-embed-thumb img {
+            width: 100%;
+            max-width: 360px;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+        }
+        .msg-embed-play {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.3);
+        }
+        .msg-embed-play span {
+            font-size: 48px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        .msg-embed-info {
+            padding: 8px 10px;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+        
+        /* Forward indicator */
+        .msg-forwarded {
+            font-size: 11px;
+            opacity: 0.6;
+            font-style: italic;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Forward contact picker */
+        .forward-contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .forward-contact-item:hover { background: var(--bg); }
+        .forward-contact-item.selected { background: rgba(7,94,84,0.1); }
+        .forward-contact-item .fwd-check {
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+        .forward-contact-item.selected .fwd-check {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
         
         /* Timestamp tooltip */
         .msg-time {
@@ -858,7 +968,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.6 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 3.7 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1054,7 +1164,15 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.6 🔍</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.7 📤</h3>
+                <ul style="line-height:1.8;">
+                    <li>📤 <strong>Weiterleiten</strong> - Kontextmenü → Kontakte auswählen → senden</li>
+                    <li>🖼️ <strong>Bild-URLs</strong> - .jpg/.png/.gif/.webp werden automatisch als Bild angezeigt</li>
+                    <li>🎬 <strong>Embed-Vorschau</strong> - YouTube, Vimeo, Twitter/X werden eingebettet</li>
+                    <li>🔍 <strong>Lightbox</strong> - Klick auf Bild öffnet Vollbild-Ansicht</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.6 🔍</h3>
                 <ul style="line-height:1.8;">
                     <li>✏️ <strong>Bearbeiten (Fix)</strong> - Nachrichten korrekt bearbeitbar</li>
                     <li>🗂️ <strong>Chats archivieren</strong> - Aus Hauptliste ausblenden</li>
@@ -1136,11 +1254,31 @@
             </div>
         </div>
     </div>
+    
+    <div id="forward-overlay" class="overlay">
+        <div class="modal" style="max-height:80vh;">
+            <div class="modal-header">
+                <h2>📤 Weiterleiten an...</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('forward-overlay')">✕</span>
+            </div>
+            <div style="padding:10px 15px; border-bottom:1px solid var(--border-color); background:var(--bg);">
+                <div id="forward-preview" style="font-size:13px; opacity:0.7; padding:8px; background:var(--white); border-radius:8px; border-left:3px solid var(--primary); max-height:60px; overflow:hidden;"></div>
+            </div>
+            <div id="forward-contacts-list" style="max-height:50vh; overflow-y:auto;"></div>
+            <div style="padding:12px 15px; border-top:1px solid var(--border-color);">
+                <button id="forward-send-btn" onclick="sendForward()" style="width:100%; background:var(--primary);" disabled>Weiterleiten (0 ausgewählt)</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="lightbox" onclick="closeLightbox()">
+        <img id="lightbox-img" src="" alt="">
+    </div>
 
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.6</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.7</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -1926,6 +2064,7 @@ function startChat(n){
             : '';
         
         const editedMark = m.edited ? '<span class="msg-edited">(bearbeitet)</span>' : '';
+        const forwardedMark = m.forwarded ? '<div class="msg-forwarded">↪️ Weitergeleitet</div>' : '';
         
         const delIcon = m.sender===myUsername?`<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${s.key}')">🗑</span>`:'';
         const replyIcon = `<span class="msg-menu" onclick="replyToMsg('${s.key}', '${m.sender}', \`${m.text.replace(/`/g, '\\`')}\`)">↩️</span>`;
@@ -1937,7 +2076,8 @@ function startChat(n){
             d.style.backgroundColor = customColor;
         }
         
-        d.innerHTML = `${replyHTML}<div>${marked.parse(m.text)}</div>${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        const renderedContent = renderMessageContent(m.text);
+        d.innerHTML = `${forwardedMark}${replyHTML}${renderedContent}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
         
         // Track unread for scroll badge
         if(m.sender !== myUsername && !m.read) {
@@ -2353,6 +2493,16 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     };
     menu.appendChild(replyItem);
     
+    // Forward option
+    const fwdItem = document.createElement('div');
+    fwdItem.className = 'msg-context-item';
+    fwdItem.innerHTML = '<span class="icon">📤</span><span>Weiterleiten</span>';
+    fwdItem.onclick = () => {
+        menu.classList.remove('show');
+        openForwardDialog(msgText);
+    };
+    menu.appendChild(fwdItem);
+    
     // Edit option (only for own messages)
     if(sender === myUsername) {
         const editItem = document.createElement('div');
@@ -2548,6 +2698,163 @@ function playNotificationSound() {
         console.error('Sound error:', e);
     }
 }
+
+/* ------------------------------ */
+/* FORWARD MESSAGE */
+/* ------------------------------ */
+let forwardText = '';
+let forwardSelectedContacts = new Set();
+
+window.openForwardDialog = (text) => {
+    forwardText = text;
+    forwardSelectedContacts.clear();
+    
+    document.getElementById('forward-preview').textContent = text.substring(0, 150) + (text.length > 150 ? '...' : '');
+    document.getElementById('forward-send-btn').textContent = 'Weiterleiten (0 ausgewählt)';
+    document.getElementById('forward-send-btn').disabled = true;
+    
+    const contacts = JSON.parse(localStorage.getItem(`contacts_${myUsername}`) || '[]');
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    const list = document.getElementById('forward-contacts-list');
+    list.innerHTML = '';
+    
+    contacts.forEach(name => {
+        const displayName = aliases[name] || name;
+        const item = document.createElement('div');
+        item.className = 'forward-contact-item';
+        item.dataset.contact = name;
+        item.innerHTML = `
+            ${getAvatarHTML(displayName, false)}
+            <span style="flex:1;">${displayName}</span>
+            <div class="fwd-check"></div>
+        `;
+        item.onclick = () => {
+            if(forwardSelectedContacts.has(name)) {
+                forwardSelectedContacts.delete(name);
+                item.classList.remove('selected');
+            } else {
+                forwardSelectedContacts.add(name);
+                item.classList.add('selected');
+            }
+            const count = forwardSelectedContacts.size;
+            const btn = document.getElementById('forward-send-btn');
+            btn.textContent = count > 0 ? `Weiterleiten (${count})` : 'Weiterleiten (0 ausgewählt)';
+            btn.disabled = count === 0;
+        };
+        list.appendChild(item);
+    });
+    
+    document.getElementById('forward-overlay').style.display = 'flex';
+};
+
+window.sendForward = async () => {
+    if(forwardSelectedContacts.size === 0) return;
+    
+    const promises = [...forwardSelectedContacts].map(async (contact) => {
+        const chatId = myUsername < contact ? `${myUsername}_${contact}` : `${contact}_${myUsername}`;
+        await push(ref(db, `chats/${chatId}`), {
+            sender: myUsername,
+            text: forwardText,
+            timestamp: Date.now(),
+            read: false,
+            forwarded: true
+        });
+    });
+    
+    await Promise.all(promises);
+    closeOverlay('forward-overlay');
+    showNotification(`✅ An ${forwardSelectedContacts.size} Kontakt(e) weitergeleitet`, 'success');
+};
+
+/* ------------------------------ */
+/* IMAGE & EMBED DETECTION */
+/* ------------------------------ */
+function isImageUrl(url) {
+    return /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(url.trim());
+}
+
+function getYouTubeId(url) {
+    const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
+}
+
+function getVimeoId(url) {
+    const m = url.match(/vimeo\.com\/(\d+)/);
+    return m ? m[1] : null;
+}
+
+function isTwitterUrl(url) {
+    return /twitter\.com\/\S+\/status\/\d+/.test(url) || /x\.com\/\S+\/status\/\d+/.test(url);
+}
+
+function renderMessageContent(text) {
+    // Check for plain image URL (whole message or standalone line)
+    const lines = text.trim().split('\n');
+    const results = [];
+    
+    for(const line of lines) {
+        const trimmed = line.trim();
+        
+        if(isImageUrl(trimmed)) {
+            results.push(`<img class="msg-image" src="${trimmed}" alt="Bild" onclick="openLightbox('${trimmed}')" onerror="this.style.display='none'">`);
+            continue;
+        }
+        
+        const ytId = getYouTubeId(trimmed);
+        if(ytId) {
+            results.push(`
+                <div class="msg-embed">
+                    <div class="msg-embed-thumb" onclick="this.innerHTML='<iframe src=\\'https://www.youtube.com/embed/${ytId}?autoplay=1\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
+                        <img src="https://img.youtube.com/vi/${ytId}/mqdefault.jpg" onerror="this.style.background='#000'">
+                        <div class="msg-embed-play"><span>▶️</span></div>
+                    </div>
+                    <div class="msg-embed-info">▶ YouTube</div>
+                </div>
+            `);
+            continue;
+        }
+        
+        const vimeoId = getVimeoId(trimmed);
+        if(vimeoId) {
+            results.push(`
+                <div class="msg-embed">
+                    <div class="msg-embed-thumb" onclick="this.innerHTML='<iframe src=\\'https://player.vimeo.com/video/${vimeoId}?autoplay=1\\' allowfullscreen allow=\\'autoplay\\'></iframe>'">
+                        <img src="https://vumbnail.com/${vimeoId}.jpg" onerror="this.style.background='#1ab7ea'; this.style.height='180px'">
+                        <div class="msg-embed-play"><span>▶️</span></div>
+                    </div>
+                    <div class="msg-embed-info">▶ Vimeo</div>
+                </div>
+            `);
+            continue;
+        }
+        
+        if(isTwitterUrl(trimmed)) {
+            results.push(`
+                <div class="msg-embed" style="padding:10px;">
+                    <div style="font-size:13px; display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                        <span style="font-size:18px;">🐦</span>
+                        <strong>Twitter / X</strong>
+                    </div>
+                    <a href="${trimmed}" target="_blank" style="color:var(--primary); font-size:12px; word-break:break-all;">${trimmed}</a>
+                </div>
+            `);
+            continue;
+        }
+        
+        results.push(marked.parse(line));
+    }
+    
+    return results.join('');
+}
+
+window.openLightbox = (src) => {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('show');
+};
+
+window.closeLightbox = () => {
+    document.getElementById('lightbox').classList.remove('show');
+};
 
 /* ------------------------------ */
 /* STATUS TEXT */
