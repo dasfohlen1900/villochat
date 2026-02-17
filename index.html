@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.10</title>
+    <title>VilloChat - Version 3.10.1</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1031,7 +1031,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.10 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 3.10.1 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1257,7 +1257,13 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.10 📲</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.10.1 📚</h3>
+                <ul style="line-height:1.8;">
+                    <li>📚 <strong>Hilfe-System erweitert</strong> — Alle 7 Artikel komplett überarbeitet: PWA-Installation, Polls, Notizen, Swipe, Kontakt-Stats, alle Features dokumentiert</li>
+                    <li>✨ <strong>Neuer Artikel</strong> — "Alle Features im Überblick" als schnelle Referenz</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.10 📲</h3>
                 <ul style="line-height:1.8;">
                     <li>📲 <strong>PWA / Installierbar</strong> — Service Worker, Manifest, Install-Button erscheint in Einstellungen</li>
                     <li>⌨️ <strong>Neue Shortcuts</strong> — Ctrl+D (Nachricht löschen), Ctrl+R (Antworten), Ctrl+P (Anpinnen), Ctrl+B (User-Info)</li>
@@ -1509,7 +1515,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.10</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.10.1</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -3333,6 +3339,8 @@ const helpArticles = [
             <p>Tippe den genauen Benutzernamen in das Suchfeld (linke Sidebar) und drücke <strong>+</strong>. Der Kontakt erscheint sofort in deiner Liste.</p>
             <h4>Chatten</h4>
             <p>Klicke auf einen Kontakt, schreibe deine Nachricht und sende mit <strong>Enter</strong>. Für eine neue Zeile nutze <strong>Shift+Enter</strong>.</p>
+            <h4>Als App installieren (PWA)</h4>
+            <p>VilloChat kann als eigenständige App installiert werden. Nach ein paar Sekunden erscheint der <strong>📲 Als App installieren</strong> Button in den Einstellungen. Klicke darauf und folge den Anweisungen deines Browsers. Die App funktioniert dann auch offline!</p>
         `
     },
     {
@@ -3347,12 +3355,20 @@ const helpArticles = [
                 <li><strong>**fett**</strong> → <strong>fett</strong></li>
                 <li><em>_kursiv_</em> → <em>kursiv</em></li>
                 <li><code>\`code\`</code> → <code>code</code></li>
-                <li>~~durchgestrichen~~</li>
+                <li>~~durchgestrichen~~ → <del>durchgestrichen</del></li>
             </ul>
             <h4>Bilder & Embeds</h4>
-            <p>Sende einfach eine URL, die auf <code>.jpg .png .gif .webp</code> endet — das Bild wird direkt angezeigt. YouTube- und Vimeo-Links werden als einbettbare Vorschau dargestellt.</p>
+            <p>Sende einfach eine URL, die auf <code>.jpg .png .gif .webp</code> endet — das Bild wird direkt angezeigt. YouTube- und Vimeo-Links werden als einbettbare Vorschau dargestellt. Klick auf Bilder öffnet eine Vollbild-Ansicht.</p>
+            <h4>Abstimmungen erstellen</h4>
+            <p>Klicke auf das <strong>📊-Icon</strong> links neben dem Eingabefeld. Gib eine Frage und 2–4 Optionen ein. Jeder kann abstimmen und die Ergebnisse werden live mit Balken und Prozentzahlen angezeigt. Stimmen können geändert werden!</p>
+            <h4>Nachrichten bearbeiten</h4>
+            <p>Rechtsklick auf deine eigene Nachricht → <strong>Bearbeiten</strong>. Der Text wird ins Eingabefeld geladen, bearbeite ihn und drücke Enter. Die Nachricht zeigt dann "(bearbeitet)" an.</p>
+            <h4>Für alle löschen</h4>
+            <p>Rechtsklick auf eigene Nachricht → <strong>Für alle löschen</strong>. Die Nachricht wird bei beiden Nutzern durch "🗑️ Nachricht gelöscht" ersetzt.</p>
+            <h4>Nachrichten weiterleiten</h4>
+            <p>Rechtsklick → <strong>Weiterleiten</strong> → Kontakte auswählen → senden. Die Nachricht wird mit "↪️ Weitergeleitet" markiert.</p>
             <h4>Gepinnte Nachricht</h4>
-            <p>Angeheftete Nachrichten erscheinen als Banner unter dem Chat-Header. Klicke darauf, um zur Nachricht zu springen. ✕ löst die Nachricht wieder.</p>
+            <p>Angeheftete Nachrichten erscheinen als Banner unter dem Chat-Header. Klicke darauf, um zur Nachricht zu springen. ✕ löst die Nachricht wieder. Nur eine Nachricht pro Chat kann gepinnt sein.</p>
         `
     },
     {
@@ -3365,9 +3381,13 @@ const helpArticles = [
             <h4>Kontakt anpinnen</h4>
             <p>Gepinnte Kontakte erscheinen immer oben in der Liste. Klicke auf 📌 im Alias-Dialog.</p>
             <h4>Kontakt stummschalten</h4>
-            <p>Öffne die User-Info (Klick auf Chat-Header) → 🔇 Stumm. Stummgeschaltete Kontakte senden keine Benachrichtigungen oder Töne.</p>
+            <p>Öffne die User-Info (Klick auf Chat-Header) → 🔇 Stumm. Stummgeschaltete Kontakte senden keine Benachrichtigungen oder Töne mehr.</p>
             <h4>Chat archivieren</h4>
-            <p>User-Info → 🗂️ Archivieren. Archivierte Chats verschwinden aus der Hauptliste und erscheinen im ausklappbaren Archiv-Bereich am Ende.</p>
+            <p>User-Info → 🗂️ Archivieren. Archivierte Chats verschwinden aus der Hauptliste und erscheinen im ausklappbaren <strong>Archiv-Bereich</strong> am Ende der Kontaktliste.</p>
+            <h4>Kontakt-Notizen</h4>
+            <p>In der User-Info findest du ganz unten ein <strong>Notiz-Feld</strong>. Hier kannst du private Notizen zu diesem Kontakt speichern (z.B. Telefonnummer, Geburtstag). Diese Notizen sind <strong>nur für dich sichtbar</strong> und werden lokal gespeichert.</p>
+            <h4>Bubble-Farbe pro Kontakt</h4>
+            <p>Klicke auf den Chat-Header → User-Info → <strong>Chat-Bubble-Farbe</strong> → Color-Picker → speichern. Die Nachrichten dieses Kontakts erscheinen dann in deiner gewählten Farbe.</p>
         `
     },
     {
@@ -3375,16 +3395,22 @@ const helpArticles = [
         icon: '🎨',
         title: 'Design & Personalisierung',
         body: `
-            <h4>Akzentfarbe</h4>
-            <p>Einstellungen → Akzentfarbe → 13 Farben wählbar. Betrifft Header, Buttons und Highlights.</p>
-            <h4>Bubble-Stil</h4>
-            <p>Einstellungen → Bubble-Stil: <strong>Rund</strong> (Standard), <strong>Eckig</strong> oder <strong>Minimal</strong> (kein Schatten).</p>
-            <h4>Mein Avatar</h4>
-            <p>Einstellungen → Mein Avatar: Eigene Farbe und Schriftart wählen. Wird in Firebase gespeichert und für alle Kontakte sichtbar.</p>
-            <h4>Eigene Bubble-Farbe pro Kontakt</h4>
-            <p>Klicke auf den Chat-Header → User-Info → Chat-Bubble-Farbe → Color-Picker → speichern.</p>
             <h4>Theme</h4>
-            <p>System (folgt OS), Hell oder Dunkel — wählbar in den Einstellungen.</p>
+            <p>Einstellungen → Design: <strong>System</strong> (folgt deinem Betriebssystem), <strong>Hell</strong> oder <strong>Dunkel</strong>.</p>
+            <h4>Akzentfarbe</h4>
+            <p>Einstellungen → Akzentfarbe → <strong>13 Farben</strong> wählbar (Rot, Orange, Gold, Gelb, Limette, Grün, Himmelblau, Indigo, Blau, Violett, Pink, Pfirsich, Schwarz). Betrifft Header, Buttons und Highlights.</p>
+            <h4>Bubble-Stil</h4>
+            <p>Einstellungen → Bubble-Stil: <strong>Rund</strong> (Standard mit 12px Radius), <strong>Eckig</strong> (4px, scharf) oder <strong>Minimal</strong> (6px, kein Schatten).</p>
+            <h4>Schriftgröße</h4>
+            <p>Einstellungen → Schriftgröße: <strong>Klein</strong> (13px), <strong>Normal</strong> (15px), <strong>Groß</strong> (17px) oder <strong>XL</strong> (20px).</p>
+            <h4>Mein Avatar</h4>
+            <p>Einstellungen → Mein Avatar: Eigene <strong>Farbe</strong> und <strong>Schriftart</strong> wählen. Wird in Firebase gespeichert und ist für alle Kontakte sichtbar.</p>
+            <h4>Eigene Bubble-Farbe</h4>
+            <p>Einstellungen → <strong>Meine Bubble-Farbe</strong> → Color-Picker → alle deine gesendeten Nachrichten erscheinen in dieser Farbe (Standard: grün).</p>
+            <h4>Chat-Hintergrund</h4>
+            <p>Einstellungen → <strong>Chat-Hintergrund</strong> → Color-Picker → ändert die Hintergrundfarbe des Chat-Bereichs.</p>
+            <h4>Status-Text</h4>
+            <p>Einstellungen → <strong>Mein Status</strong> → z.B. "Verfügbar", "Beschäftigt" oder eine eigene Nachricht. Wird in Firebase gespeichert und andere sehen es in deiner User-Info.</p>
         `
     },
     {
@@ -3393,9 +3419,11 @@ const helpArticles = [
         title: 'Suche & Navigation',
         body: `
             <h4>Globale Suche</h4>
-            <p>🔍-Button in der Sidebar durchsucht alle deine Chats gleichzeitig. Klick auf ein Ergebnis öffnet den Chat und springt zur Nachricht.</p>
+            <p>🔍-Button in der Sidebar durchsucht <strong>alle deine Chats gleichzeitig</strong>. Klick auf ein Ergebnis öffnet den Chat und springt zur Nachricht (die wird kurz hervorgehoben).</p>
             <h4>In Chat suchen</h4>
-            <p>Dreipunkt-Menü (⋮) → Nachricht suchen, oder <strong>Ctrl+F</strong>.</p>
+            <p>Dreipunkt-Menü (⋮) → Nachricht suchen, oder drücke <strong>Ctrl+F</strong> im Chat.</p>
+            <h4>Mobile: Swipe zurück</h4>
+            <p>Auf Mobilgeräten kannst du den Chat nach <strong>rechts wischen</strong> um ihn zu schließen. Der Chat folgt deinem Finger und schließt sich ab ~80px Bewegung.</p>
             <h4>Keyboard Shortcuts</h4>
             <ul>
                 <li><strong>Ctrl+K</strong> — Kontaktsuche fokussieren</li>
@@ -3408,6 +3436,7 @@ const helpArticles = [
                 <li><strong>Ctrl+,</strong> — Einstellungen öffnen</li>
                 <li><strong>Escape</strong> — Bearbeiten/Antworten abbrechen, Overlays/Chat schließen</li>
             </ul>
+            <p style="font-size:12px; opacity:0.6; margin-top:8px;"><em>Hinweis: Shortcuts funktionieren nicht während du in einem Eingabefeld tippst (außer Escape).</em></p>
         `
     },
     {
@@ -3416,28 +3445,83 @@ const helpArticles = [
         title: 'Sicherheit & Datenschutz',
         body: `
             <h4>PIN ändern</h4>
-            <p>Einstellungen → PIN ändern. Du brauchst deinen aktuellen PIN. Das Format ist <strong>xxxx-xxxx</strong>.</p>
+            <p>Einstellungen → <strong>🔑 PIN ändern</strong>. Du brauchst deinen aktuellen PIN zur Verifikation. Das Format ist <strong>xxxx-xxxx</strong> (8 Ziffern).</p>
             <h4>Verschlüsselung</h4>
-            <p>⚠️ VilloChat verwendet <strong>keine Ende-zu-Ende-Verschlüsselung</strong>. Nachrichten werden unverschlüsselt in der Firebase-Datenbank gespeichert. Teile keine hochsensiblen Informationen.</p>
+            <p>⚠️ VilloChat verwendet <strong>keine Ende-zu-Ende-Verschlüsselung</strong>. Nachrichten werden unverschlüsselt in der Firebase Realtime Database gespeichert. Teile keine hochsensiblen Informationen wie Passwörter oder Kreditkartendaten.</p>
             <h4>Lokale Daten</h4>
-            <p>Einstellungen, Farben, Alias-Namen, Theme und Session werden im <strong>localStorage</strong> deines Browsers gespeichert. Sie gehen verloren, wenn du den Browser-Cache löschst.</p>
+            <p>Folgende Daten werden im <strong>localStorage</strong> deines Browsers gespeichert und gehen verloren, wenn du den Browser-Cache löschst:</p>
+            <ul style="font-size:13px;">
+                <li>Einstellungen (Theme, Farben, Schriftgröße, Bubble-Stil)</li>
+                <li>Kontakt-Aliase und Pinning-Status</li>
+                <li>Chat-Farben pro Kontakt</li>
+                <li>Stummgeschaltete & archivierte Chats</li>
+                <li>Kontakt-Notizen (nur lokal!)</li>
+                <li>Session-Token für Auto-Login</li>
+            </ul>
+            <h4>Firebase-Daten</h4>
+            <p>In Firebase werden gespeichert: Nachrichten, Abstimmungen, Avatar-Einstellungen, Status-Text, Online-Status, Kontaktliste.</p>
             <h4>Abmelden</h4>
-            <p>Einstellungen → Abmelden. Dein Account und deine Nachrichten bleiben in Firebase erhalten.</p>
+            <p>Einstellungen → <strong>Abmelden</strong>. Dein Account und deine Nachrichten bleiben in Firebase erhalten. Du kannst dich jederzeit wieder einloggen.</p>
         `
     },
     {
         id: 'profile',
         icon: '👤',
-        title: 'Mein Profil',
+        title: 'Mein Profil & Statistiken',
         body: `
             <h4>Profilseite öffnen</h4>
             <p>Klicke auf deinen <strong>Namen in der Sidebar</strong> (oben links) um dein Profil zu öffnen.</p>
             <h4>Statistiken</h4>
-            <p>Dein Profil zeigt: gesendete Nachrichten, Anzahl Kontakte, Lieblings-Emoji und das Datum deiner ersten Nachricht.</p>
-            <h4>Top-Kontakte</h4>
-            <p>Die 5 Kontakte, mit denen du am meisten geschrieben hast, werden angezeigt.</p>
+            <p>Dein Profil zeigt live:</p>
+            <ul style="font-size:13px;">
+                <li><strong>Gesendete Nachrichten</strong> — Gesamt über alle Chats</li>
+                <li><strong>Anzahl Kontakte</strong> — Wie viele Personen in deiner Liste</li>
+                <li><strong>Lieblings-Emoji</strong> — Das am häufigsten verwendete Emoji</li>
+                <li><strong>Dabei seit</strong> — Datum deiner ersten gesendeten Nachricht</li>
+            </ul>
+            <h4>Top 5 Kontakte</h4>
+            <p>Die 5 Kontakte, mit denen du am meisten geschrieben hast, werden mit Nachrichtenanzahl aufgelistet.</p>
+            <h4>Kontakt-Profile</h4>
+            <p>Klicke auf den Chat-Header oder drücke <strong>Ctrl+B</strong> um die User-Info eines Kontakts zu sehen. Dort siehst du:</p>
+            <ul style="font-size:13px;">
+                <li>Avatar, Name, Alias, Online-Status</li>
+                <li>Status-Text (falls gesetzt)</li>
+                <li><strong>Statistiken</strong>: Anzahl Nachrichten, Lieblings-Emoji, erste Nachricht, durchschnittliche Zeichenanzahl</li>
+                <li>Verwaltungsoptionen: Stumm, Archivieren, Farbe, Notizen</li>
+            </ul>
             <h4>Bearbeiten</h4>
-            <p>Klicke auf den Avatar oder „✏️ Bearbeiten" um in die Einstellungen zu gelangen und Avatar oder Status zu ändern.</p>
+            <p>Klicke auf den Avatar in deinem Profil oder „✏️ Bearbeiten" um zu den Einstellungen zu gelangen und Avatar, Status-Text oder andere Optionen zu ändern.</p>
+        `
+    },
+    {
+        id: 'features',
+        icon: '✨',
+        title: 'Alle Features im Überblick',
+        body: `
+            <h4>💬 Nachrichten</h4>
+            <p>Senden, Bearbeiten, Löschen, Für alle löschen, Kopieren, Weiterleiten, Antworten, Reaktionen (6 Quick-Emojis), Markdown-Formatierung, Bilder via URL, YouTube/Vimeo-Embeds, Anpinnen</p>
+            <h4>📊 Abstimmungen</h4>
+            <p>Polls mit 2–4 Optionen erstellen, abstimmen, Stimme ändern, Live-Ergebnisse mit Balken</p>
+            <h4>👥 Kontakte</h4>
+            <p>Suchen, Hinzufügen, Aliase vergeben, Anpinnen, Stummschalten, Archivieren, Farbe anpassen, private Notizen</p>
+            <h4>🎨 Design</h4>
+            <p>3 Themes, 13 Akzentfarben, 3 Bubble-Stile, 4 Schriftgrößen, eigene Bubble-Farbe, Chat-Hintergrund, Avatar anpassen, Status-Text</p>
+            <h4>🔍 Suche</h4>
+            <p>Globale Suche über alle Chats, Chat-interne Suche, Spring-zu-Nachricht</p>
+            <h4>👤 Profile</h4>
+            <p>Eigenes Profil mit Statistiken & Top-Kontakten, Kontakt-Profile mit Stats</p>
+            <h4>⌨️ Shortcuts</h4>
+            <p>9 Keyboard-Shortcuts (Ctrl+K/F/E/B/D/R/P/,, Escape)</p>
+            <h4>📲 PWA</h4>
+            <p>Installierbar als App, Offline-fähig, Service Worker</p>
+            <h4>📱 Mobile</h4>
+            <p>Swipe-zurück-Geste, Touch-optimiert, Responsive Design</p>
+            <h4>🔐 Sicherheit</h4>
+            <p>PIN-Login, PIN ändern, Verschlüsselungshinweis</p>
+            <h4>📥 Export</h4>
+            <p>Chat als .txt exportieren mit Timestamps</p>
+            <h4>🔧 Sonstiges</h4>
+            <p>Online-Status (60s Fenster), Read-Receipts (✓/✓✓), Typing-Indikator, Scroll-to-Bottom mit Badge, Emoji-Picker (900+), Changelog, Hilfe-System</p>
         `
     }
 ];
