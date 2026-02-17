@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.5</title>
+    <title>VilloChat - Version 3.6</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -37,6 +37,7 @@
             --text-heading: 'Playfair Display', 'Noto Color Emoji', serif;
             --msg-font-size: 15px;
             --my-bubble-color: #dcf8c6;
+            --bubble-radius: 12px;
         }
         
         /* Dark Mode Variables */
@@ -272,7 +273,7 @@
         }
         .msg { 
             padding: 10px 14px; 
-            border-radius: 12px; 
+            border-radius: var(--bubble-radius);
             margin-bottom: 10px; 
             max-width: 85%; 
             font-size: var(--msg-font-size);
@@ -288,6 +289,96 @@
             align-self: flex-start; 
             background: var(--msg-received); 
             border-bottom-left-radius: 2px; 
+        }
+        
+        /* Minimal bubble style */
+        body.bubble-minimal .msg {
+            box-shadow: none;
+            border-radius: 6px !important;
+        }
+        body.bubble-minimal .sent { border-bottom-right-radius: 0 !important; }
+        body.bubble-minimal .received { border-bottom-left-radius: 0 !important; }
+        
+        /* Timestamp tooltip */
+        .msg-time {
+            font-size: 9px;
+            display: block;
+            text-align: right;
+            opacity: 0.5;
+            margin-top: 4px;
+            position: relative;
+        }
+        .msg-time .full-date {
+            display: none;
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            background: rgba(0,0,0,0.75);
+            color: white;
+            padding: 3px 7px;
+            border-radius: 6px;
+            font-size: 10px;
+            white-space: nowrap;
+            z-index: 10;
+        }
+        .msg-time:hover .full-date { display: block; }
+        
+        /* Archived / Muted badges */
+        .contact-item .muted-icon {
+            font-size: 13px;
+            opacity: 0.5;
+            margin-left: 4px;
+        }
+        .contact-item .archived-icon {
+            font-size: 13px;
+            opacity: 0.5;
+            margin-left: 4px;
+        }
+        
+        /* Archive section */
+        .archive-header {
+            padding: 8px 15px;
+            font-size: 12px;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-top: 1px solid var(--border-color);
+        }
+        .archive-header:hover { background: var(--bg); }
+        
+        /* Status text under name */
+        .contact-status {
+            font-size: 11px;
+            opacity: 0.5;
+            margin-top: 1px;
+        }
+        
+        /* Global search */
+        #global-search-overlay .search-result-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        #global-search-overlay .search-result-item:hover { background: var(--bg); }
+        #global-search-overlay .search-result-chat { font-size: 11px; color: var(--primary); margin-bottom: 3px; }
+        #global-search-overlay .search-result-text { font-size: 13px; }
+        #global-search-overlay .search-result-text mark { background: yellow; border-radius: 2px; }
+        
+        /* Scroll badge */
+        #scroll-to-bottom .scroll-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #dc3545;
+            color: white;
+            border-radius: 10px;
+            font-size: 10px;
+            padding: 1px 5px;
+            min-width: 16px;
+            text-align: center;
         }
         
         .msg-edited {
@@ -755,19 +846,19 @@
     <div class="notification-toast" id="notification-toast"></div>
     
     <div id="settings-overlay" class="overlay">
-        <div class="modal">
+        <div class="modal" style="max-height:750px;">
             <div class="modal-header">
                 <h2>Einstellungen</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('settings-overlay')">✕</span>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="max-height:650px; overflow-y:auto;">
                 <div style="text-align:center; margin-bottom:15px;">
                     <div id="settings-avatar-preview" style="width:60px; height:60px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:bold; color:white;"></div>
                 </div>
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.5 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 3.6 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -831,11 +922,22 @@
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Meine Bubble-Farbe:</label>
                 <input type="color" id="my-bubble-color-picker" value="#dcf8c6" style="width:100%; height:40px; margin:5px 0; cursor:pointer;">
                 
-                <!---<label style="margin:15px 0 5px 0; display:block; font-weight:500;">Sound:</label>
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Sound:</label>
                 <label style="display:flex; align-items:center; cursor:pointer; margin:5px 0;">
                     <input type="checkbox" id="sound-toggle" style="width:auto; margin-right:10px;">
                     <span>🔊 Benachrichtigungston bei neuen Nachrichten</span>
-                </label>--->
+                </label>
+                
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Status:</label>
+                <input type="text" id="status-text-input" placeholder="z.B. Verfügbar, Beschäftigt..." maxlength="60" style="width:100%; margin:5px 0;">
+                <button onclick="saveStatusText()" style="width:100%; margin-top:5px;">Status speichern</button>
+                
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Bubble-Stil:</label>
+                <div style="display:flex; gap:8px; margin-bottom:5px;">
+                    <div class="font-size-option" data-style="rounded" onclick="setBubbleStyle('rounded')" style="font-size:12px;">● Rund</div>
+                    <div class="font-size-option" data-style="square" onclick="setBubbleStyle('square')" style="font-size:12px;">■ Eckig</div>
+                    <div class="font-size-option" data-style="minimal" onclick="setBubbleStyle('minimal')" style="font-size:12px;">– Minimal</div>
+                </div>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Chat-Hintergrund:</label>
                 <input type="color" id="bg-color-picker" value="#e5ddd5" style="width:100%; height:40px; margin:5px 0;">
@@ -930,9 +1032,15 @@
                 <div style="border-top:1px solid var(--border-color); padding-top:15px;">
                     <p style="margin:5px 0;"><strong>Status:</strong> <span id="info-online-status"></span></p>
                     <p style="margin:5px 0;"><strong>Alias:</strong> <span id="info-alias"></span></p>
+                    <p id="info-status-text" style="margin:5px 0; font-size:13px; color:#888;"></p>
                 </div>
                 
-                <label style="margin-top:15px; display:block; font-weight:500;">Chat-Bubble-Farbe:</label>
+                <div style="display:flex; gap:10px; margin:15px 0;">
+                    <button id="btn-mute-contact" onclick="toggleMuteContact()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔇 Stumm</button>
+                    <button id="btn-archive-contact" onclick="toggleArchiveContact()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🗂️ Archivieren</button>
+                </div>
+                
+                <label style="margin-top:5px; display:block; font-weight:500;">Chat-Bubble-Farbe:</label>
                 <input type="color" id="contact-color-picker" style="width:100%; height:40px; margin:10px 0; cursor:pointer;">
                 <button onclick="saveContactColor()" style="width:100%; margin-top:5px;">Farbe speichern</button>
             </div>
@@ -946,7 +1054,19 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.5 ✏️</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.6 🔍</h3>
+                <ul style="line-height:1.8;">
+                    <li>✏️ <strong>Bearbeiten (Fix)</strong> - Nachrichten korrekt bearbeitbar</li>
+                    <li>🗂️ <strong>Chats archivieren</strong> - Aus Hauptliste ausblenden</li>
+                    <li>🔇 <strong>Stummschalten</strong> - Keine Notifications für einzelne Chats</li>
+                    <li>📝 <strong>Status-Text</strong> - z.B. "Verfügbar", "Beschäftigt"</li>
+                    <li>💬 <strong>Bubble-Stil</strong> - Rund / Eckig / Minimal</li>
+                    <li>📍 <strong>Scroll-Badge</strong> - Zeigt Anzahl ungelesener Nachrichten</li>
+                    <li>⏱️ <strong>Hover-Datum</strong> - Vollständiges Datum beim Hovern</li>
+                    <li>🔍 <strong>Globale Suche</strong> - Über alle Chats suchen</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.5 ✏️</h3>
                 <ul style="line-height:1.8;">
                     <li>✏️ <strong>Nachrichten bearbeiten</strong> - Kontextmenü → Bearbeiten, zeigt "(bearbeitet)"</li>
                     <li>🎨 <strong>Eigene Bubble-Farbe</strong> - Color-Picker für gesendete Nachrichten</li>
@@ -970,7 +1090,7 @@
                     <li>💬 <strong>Custom Bubble-Farbe</strong> - Pro Kontakt einstellbar</li>
                 </ul>
 
-                <h3 style="color:var(--primary);">Version 3.2.3 🎉</h3>
+                <h3 style="color:var(--primary);">Version 3.2 🎉</h3>
                 <ul style="line-height:1.8;">
                     <li>🌓 <strong>Theme-System</strong> - System / Hell / Dunkel</li>
                     <li>💬 <strong>Empty States</strong> - "Kein Chat" & "Keine Kontakte"</li>
@@ -1004,10 +1124,23 @@
         </div>
     </div>
 
+    <div id="global-search-overlay" class="overlay">
+        <div class="modal" style="max-width:500px; max-height:80vh;">
+            <div class="modal-header">
+                <h2>🔍 Globale Suche</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('global-search-overlay')">✕</span>
+            </div>
+            <div class="modal-body" style="padding:10px;">
+                <input type="text" id="global-search-input" placeholder="In allen Chats suchen..." style="width:100%; padding:10px; margin-bottom:10px;">
+                <div id="global-search-results" style="max-height:50vh; overflow-y:auto;"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.5</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.6</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -1024,7 +1157,10 @@
         <div id="sidebar">
             <div class="header">
                 <h2 id="my-name-display">Profil</h2>
-                <span class="settings-btn" onclick="openSettings()">⚙️</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <span style="cursor:pointer; font-size:18px;" onclick="openGlobalSearch()" title="Globale Suche">🔍</span>
+                    <span class="settings-btn" onclick="openSettings()">⚙️</span>
+                </div>
             </div>
             <div style="padding:10px; display:flex; gap:5px; background:var(--bg);">
                 <input type="text" id="search-input" placeholder="User suchen..." style="margin:0;">
@@ -1035,7 +1171,7 @@
 
         <div id="main-chat">
             <div class="encryption-notice" id="encryption-notice">
-                🔒 Nachrichten sind per <em>aero</em>Secure Ende-zu-Ende verschlüsselt.<br>Wir achten zusätzlich auf Sicherheit und Datenschutz.
+                🔓 Nachrichten sind nicht Ende-zu-Ende verschlüsselt
             </div>
             <div class="header">
                 <span class="back-btn" onclick="closeChat()">←</span>
@@ -1084,7 +1220,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
-    getDatabase, ref, set, get, push,
+    getDatabase, ref, set, get, push, update,
     onChildAdded, onChildRemoved, onChildChanged,
     remove, onValue, off,
     query, orderByChild, startAt, endAt
@@ -1118,16 +1254,50 @@ function stringToColor(str) {
     for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
     return `hsl(${Math.abs(hash) % 360},65%,40%)`;
 }
+
+// Cache for Firebase avatar data
+const avatarCache = {};
+
+async function fetchAvatarFromFirebase(name) {
+    if(avatarCache[name]) return avatarCache[name];
+    try {
+        const snap = await get(ref(db, `accounts/${name}/avatar`));
+        if(snap.exists()) {
+            const data = snap.val();
+            avatarCache[name] = data;
+            // Also update localStorage for offline use
+            const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+            avatarSettings[name] = data;
+            localStorage.setItem('avatar_settings', JSON.stringify(avatarSettings));
+            return data;
+        }
+    } catch(e) {}
+    return null;
+}
+
 function getAvatarHTML(name, showOnline = false) {
     const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
-    const settings = avatarSettings[name] || {};
+    const settings = avatarSettings[name] || avatarCache[name] || {};
     
     const color = settings.color || stringToColor(name);
     const font = settings.font || "'Playfair Display', serif";
     const letter = name.charAt(0);
     const onlineIndicator = showOnline ? '<div class="online-indicator"></div>' : '';
     
-    return `<div class="avatar" style="background:${color}; font-family:${font}">${letter}${onlineIndicator}</div>`;
+    // Async fetch in background to update on next render
+    if(!avatarCache[name]) {
+        fetchAvatarFromFirebase(name).then(data => {
+            if(data) {
+                // Refresh avatar elements for this user
+                document.querySelectorAll(`[data-avatar-name="${name}"]`).forEach(el => {
+                    el.style.background = data.color || stringToColor(name);
+                    el.style.fontFamily = data.font || "'Playfair Display', serif";
+                });
+            }
+        });
+    }
+    
+    return `<div class="avatar" style="background:${color}; font-family:${font}" data-avatar-name="${name}">${letter}${onlineIndicator}</div>`;
 }
 
 /* ------------------------------ */
@@ -1293,18 +1463,27 @@ window.openSettings = () => {
     document.getElementById('settings-overlay').style.display = 'flex';
 };
 
-window.saveMyAvatar = () => {
+window.saveMyAvatar = async () => {
     const colorPicker = document.getElementById('my-avatar-color-picker');
     const fontPicker = document.getElementById('my-avatar-font-picker');
     
-    const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
-    avatarSettings[myUsername] = {
+    const avatarData = {
         color: colorPicker.value,
         font: fontPicker.value
     };
+    
+    // Save to localStorage
+    const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+    avatarSettings[myUsername] = avatarData;
     localStorage.setItem('avatar_settings', JSON.stringify(avatarSettings));
     
-    showNotification('✅ Dein Avatar wurde gespeichert', 'success');
+    // Save to Firebase so others can see it
+    try {
+        await set(ref(db, `accounts/${myUsername}/avatar`), avatarData);
+        showNotification('✅ Avatar gespeichert & synchronisiert', 'success');
+    } catch(e) {
+        showNotification('✅ Avatar lokal gespeichert', 'success');
+    }
     
     // Refresh to apply changes everywhere
     showApp();
@@ -1336,10 +1515,8 @@ document.addEventListener('click', (e) => {
 /* ------------------------------ */
 window.scrollToBottom = () => {
     const container = document.getElementById('messages-container');
-    container.scrollTo({
-        top: container.scrollHeight,
-        behavior: 'smooth'
-    });
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+    updateScrollBadge(0);
 };
 
 // Show/hide scroll button based on scroll position
@@ -1474,6 +1651,9 @@ function showApp() {
     const theme = localStorage.getItem('villo_theme') || 'system';
     applyTheme(theme);
 
+    // Preload own avatar from Firebase
+    fetchAvatarFromFirebase(myUsername);
+
     // Remove old listener
     if(contactsListener) off(contactsListener);
     
@@ -1514,9 +1694,16 @@ function showApp() {
             return a.localeCompare(b);
         });
 
-        contacts.forEach(n => {
+        const archived = getArchivedChats();
+        const muted = getMutedChats();
+        const activeContacts = contacts.filter(n => !archived.includes(n));
+        const archivedContacts = contacts.filter(n => archived.includes(n));
+        
+        // Render active contacts
+        activeContacts.forEach(n => {
             const displayName = aliases[n] || n;
             const isPinned = pinned.includes(n);
+            const isMuted = muted.includes(n);
             const hasUnread = getUnreadCount(n) > 0;
             
             const d = document.createElement('div');
@@ -1524,9 +1711,14 @@ function showApp() {
             
             d.innerHTML = `
                 ${getAvatarHTML(displayName, false)} 
-                <span>${displayName}${isPinned ? '<span class="pin-icon">📌</span>' : ''}</span>
+                <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <span>${displayName}${isPinned ? '<span class="pin-icon">📌</span>' : ''}</span>
+                        ${isMuted ? '<span class="muted-icon">🔇</span>' : ''}
+                    </div>
+                </div>
                 ${hasUnread ? '<span class="unread-badge"></span>' : ''}
-                <span class="edit-contact" style="margin-left:auto; cursor:pointer;" onclick="event.stopPropagation(); editContactAlias('${n}')">✎</span>
+                <span class="edit-contact" style="margin-left:4px; cursor:pointer;" onclick="event.stopPropagation(); editContactAlias('${n}')">✎</span>
                 <span class="del-contact" style="margin-left:5px; cursor:pointer;" onclick="event.stopPropagation(); removeContact('${n}')">✕</span>
             `;
             
@@ -1541,13 +1733,46 @@ function showApp() {
                     const msg = msgSnap.val();
                     if(msg.sender !== myUsername && !msg.read && activeChatId !== chatId) {
                         updateUnreadCount(n, getUnreadCount(n) + 1);
-                        playNotificationSound();
-                        showNotification(`💬 Neue Nachricht von ${displayName}`, 'success');
-                        showApp(); // Refresh to show badge
+                        if(!isContactMuted(n)) {
+                            playNotificationSound();
+                            showNotification(`💬 Neue Nachricht von ${displayName}`, 'success');
+                        }
+                        showApp();
                     }
                 });
             }
         });
+        
+        // Archive section
+        if(archivedContacts.length > 0) {
+            let archiveOpen = localStorage.getItem('villo_archive_open') === 'true';
+            
+            const archiveHeader = document.createElement('div');
+            archiveHeader.className = 'archive-header';
+            archiveHeader.innerHTML = `🗂️ Archiviert (${archivedContacts.length}) ${archiveOpen ? '▲' : '▼'}`;
+            archiveHeader.onclick = () => {
+                archiveOpen = !archiveOpen;
+                localStorage.setItem('villo_archive_open', archiveOpen);
+                showApp();
+            };
+            list.appendChild(archiveHeader);
+            
+            if(archiveOpen) {
+                archivedContacts.forEach(n => {
+                    const displayName = aliases[n] || n;
+                    const d = document.createElement('div');
+                    d.className = 'contact-item';
+                    d.style.opacity = '0.7';
+                    d.innerHTML = `
+                        ${getAvatarHTML(displayName, false)}
+                        <span>${displayName} <span class="archived-icon">🗂️</span></span>
+                        <span class="del-contact" style="margin-left:auto; cursor:pointer;" onclick="event.stopPropagation(); removeContact('${n}')">✕</span>
+                    `;
+                    d.onclick = () => startChat(n);
+                    list.appendChild(d);
+                });
+            }
+        }
     }, { onlyOnce: false });
 }
 
@@ -1593,6 +1818,9 @@ function startChat(n){
 
     activeChatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
     activeContactName = n;
+    
+    // Pre-fetch contact's avatar from Firebase
+    fetchAvatarFromFirebase(n);
     
     // Mark chat as read
     markChatAsRead(activeChatId);
@@ -1666,6 +1894,10 @@ function startChat(n){
         d.dataset.msgSender = m.sender;
         
         const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        const fullDate = new Date(m.timestamp).toLocaleString('de-DE', {
+            day:'2-digit', month:'2-digit', year:'numeric',
+            hour:'2-digit', minute:'2-digit'
+        });
         
         // Reply quote
         let replyHTML = '';
@@ -1705,7 +1937,16 @@ function startChat(n){
             d.style.backgroundColor = customColor;
         }
         
-        d.innerHTML = `${replyHTML}<div>${marked.parse(m.text)}</div>${reactionsHTML}<span class="msg-time">${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        d.innerHTML = `${replyHTML}<div>${marked.parse(m.text)}</div>${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        
+        // Track unread for scroll badge
+        if(m.sender !== myUsername && !m.read) {
+            const container = document.getElementById('messages-container');
+            if(container) {
+                const isNearBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 200;
+                if(!isNearBottom) updateScrollBadge(unreadScrollCount + 1);
+            }
+        }
         
         // Add context menu listeners
         d.addEventListener('contextmenu', (e) => {
@@ -2309,6 +2550,209 @@ function playNotificationSound() {
 }
 
 /* ------------------------------ */
+/* STATUS TEXT */
+/* ------------------------------ */
+window.saveStatusText = async () => {
+    const statusText = document.getElementById('status-text-input').value.trim();
+    localStorage.setItem('villo_status', statusText);
+    try {
+        await set(ref(db, `accounts/${myUsername}/status`), statusText);
+        showNotification('✅ Status gespeichert', 'success');
+    } catch(e) {
+        showNotification('✅ Status lokal gespeichert', 'success');
+    }
+};
+
+function initStatusText() {
+    const savedStatus = localStorage.getItem('villo_status') || '';
+    const input = document.getElementById('status-text-input');
+    if(input) input.value = savedStatus;
+}
+
+/* ------------------------------ */
+/* BUBBLE STYLE */
+/* ------------------------------ */
+function setBubbleStyle(style) {
+    localStorage.setItem('villo_bubble_style', style);
+    applyBubbleStyle(style);
+    document.querySelectorAll('[data-style]').forEach(el => {
+        el.classList.toggle('active', el.dataset.style === style);
+    });
+    const names = { rounded: 'Rund', square: 'Eckig', minimal: 'Minimal' };
+    showNotification(`✅ Bubble-Stil: ${names[style]}`, 'success');
+}
+
+function applyBubbleStyle(style) {
+    document.body.classList.remove('bubble-minimal');
+    if(style === 'square') {
+        document.documentElement.style.setProperty('--bubble-radius', '4px');
+    } else if(style === 'minimal') {
+        document.documentElement.style.setProperty('--bubble-radius', '6px');
+        document.body.classList.add('bubble-minimal');
+    } else {
+        document.documentElement.style.setProperty('--bubble-radius', '12px');
+    }
+}
+
+function initBubbleStyle() {
+    const saved = localStorage.getItem('villo_bubble_style') || 'rounded';
+    applyBubbleStyle(saved);
+    document.querySelectorAll('[data-style]').forEach(el => {
+        el.classList.toggle('active', el.dataset.style === saved);
+    });
+}
+
+/* ------------------------------ */
+/* MUTE & ARCHIVE */
+/* ------------------------------ */
+function getMutedChats() { return JSON.parse(localStorage.getItem('villo_muted') || '[]'); }
+function getArchivedChats() { return JSON.parse(localStorage.getItem('villo_archived') || '[]'); }
+
+function isContactMuted(name) { return getMutedChats().includes(name); }
+function isContactArchived(name) { return getArchivedChats().includes(name); }
+
+window.toggleMuteContact = () => {
+    const name = document.getElementById('info-username').textContent;
+    const muted = getMutedChats();
+    const idx = muted.indexOf(name);
+    if(idx === -1) { muted.push(name); } else { muted.splice(idx, 1); }
+    localStorage.setItem('villo_muted', JSON.stringify(muted));
+    updateUserInfoButtons(name);
+    showNotification(idx === -1 ? `🔇 ${name} stummgeschaltet` : `🔊 ${name} nicht mehr stumm`, 'success');
+    showApp();
+};
+
+window.toggleArchiveContact = () => {
+    const name = document.getElementById('info-username').textContent;
+    const archived = getArchivedChats();
+    const idx = archived.indexOf(name);
+    if(idx === -1) { archived.push(name); } else { archived.splice(idx, 1); }
+    localStorage.setItem('villo_archived', JSON.stringify(archived));
+    updateUserInfoButtons(name);
+    showNotification(idx === -1 ? `🗂️ Chat archiviert` : `📤 Chat aus Archiv`, 'success');
+    closeOverlay('user-info-overlay');
+    showApp();
+};
+
+function updateUserInfoButtons(name) {
+    const muteBtn = document.getElementById('btn-mute-contact');
+    const archiveBtn = document.getElementById('btn-archive-contact');
+    if(muteBtn) {
+        const isMuted = isContactMuted(name);
+        muteBtn.textContent = isMuted ? '🔊 Laut' : '🔇 Stumm';
+        muteBtn.style.background = isMuted ? 'var(--primary)' : 'var(--bg)';
+        muteBtn.style.color = isMuted ? 'white' : 'var(--text-color)';
+    }
+    if(archiveBtn) {
+        const isArc = isContactArchived(name);
+        archiveBtn.textContent = isArc ? '📤 Aus Archiv' : '🗂️ Archivieren';
+        archiveBtn.style.background = isArc ? 'var(--primary)' : 'var(--bg)';
+        archiveBtn.style.color = isArc ? 'white' : 'var(--text-color)';
+    }
+}
+
+/* ------------------------------ */
+/* SCROLL BADGE WITH UNREAD COUNT */
+/* ------------------------------ */
+let unreadScrollCount = 0;
+
+function updateScrollBadge(count) {
+    unreadScrollCount = count;
+    const btn = document.getElementById('scroll-to-bottom');
+    if(!btn) return;
+    
+    let badge = btn.querySelector('.scroll-badge');
+    if(count > 0) {
+        if(!badge) {
+            badge = document.createElement('span');
+            badge.className = 'scroll-badge';
+            btn.appendChild(badge);
+        }
+        badge.textContent = count > 99 ? '99+' : count;
+        btn.classList.add('show');
+    } else {
+        if(badge) badge.remove();
+    }
+}
+
+/* ------------------------------ */
+/* GLOBAL SEARCH */
+/* ------------------------------ */
+window.openGlobalSearch = () => {
+    document.getElementById('global-search-overlay').style.display = 'flex';
+    document.getElementById('global-search-input').focus();
+    document.getElementById('global-search-results').innerHTML = '';
+    document.getElementById('global-search-input').value = '';
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('global-search-input');
+    if(input) {
+        let searchTimeout;
+        input.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if(query.length < 2) {
+                document.getElementById('global-search-results').innerHTML = '<p style="padding:15px; opacity:0.5; text-align:center;">Mindestens 2 Zeichen eingeben</p>';
+                return;
+            }
+            searchTimeout = setTimeout(() => globalSearch(query), 300);
+        });
+    }
+});
+
+async function globalSearch(query) {
+    const results = document.getElementById('global-search-results');
+    results.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Suche läuft...</p>';
+    
+    const contacts = JSON.parse(localStorage.getItem(`contacts_${myUsername}`) || '[]');
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    const found = [];
+    
+    for(const contact of contacts) {
+        const chatId = myUsername < contact ? `${myUsername}_${contact}` : `${contact}_${myUsername}`;
+        try {
+            const snap = await get(ref(db, `chats/${chatId}`));
+            if(snap.exists()) {
+                snap.forEach(child => {
+                    const m = child.val();
+                    if(m.text && m.text.toLowerCase().includes(query.toLowerCase())) {
+                        found.push({ contact, chatId, msgKey: child.key, text: m.text, sender: m.sender, timestamp: m.timestamp });
+                    }
+                });
+            }
+        } catch(e) {}
+    }
+    
+    if(found.length === 0) {
+        results.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Keine Ergebnisse</p>';
+        return;
+    }
+    
+    results.innerHTML = '';
+    found.sort((a,b) => b.timestamp - a.timestamp).slice(0, 50).forEach(item => {
+        const displayName = aliases[item.contact] || item.contact;
+        const hl = item.text.replace(new RegExp(`(${query})`, 'gi'), '<mark>$1</mark>');
+        const div = document.createElement('div');
+        div.className = 'search-result-item';
+        div.innerHTML = `
+            <div class="search-result-chat">💬 ${displayName}</div>
+            <div class="search-result-text">${hl.substring(0, 100)}${item.text.length > 100 ? '...' : ''}</div>
+            <div style="font-size:10px; opacity:0.4; margin-top:3px;">${new Date(item.timestamp).toLocaleString('de-DE')}</div>
+        `;
+        div.onclick = () => {
+            closeOverlay('global-search-overlay');
+            startChat(item.contact);
+            setTimeout(() => {
+                const el = document.getElementById(`m-${item.msgKey}`);
+                if(el) { el.scrollIntoView({ behavior:'smooth', block:'center' }); el.style.outline = '2px solid var(--primary)'; setTimeout(() => el.style.outline = '', 2000); }
+            }, 1000);
+        };
+        results.appendChild(div);
+    });
+}
+
+/* ------------------------------ */
 /* USER INFO */
 /* ------------------------------ */
 window.openChangelog = () => {
@@ -2325,6 +2769,7 @@ window.openUserInfo = (contactName) => {
     document.getElementById('info-username').textContent = contactName;
     document.getElementById('info-alias').textContent = displayName;
     document.getElementById('info-online-status').textContent = '—';
+    document.getElementById('info-status-text').textContent = '';
     
     const avatar = document.getElementById('info-avatar');
     const avatarColor = settings.color || stringToColor(displayName);
@@ -2337,12 +2782,21 @@ window.openUserInfo = (contactName) => {
     colorPicker.value = contactColors[contactName] || '#ffffff';
     colorPicker.dataset.contactName = contactName;
     
-    // Check online status
+    // Update mute/archive buttons
+    updateUserInfoButtons(contactName);
+    
+    // Check online status and status text from Firebase
     get(ref(db, `online/${contactName}`)).then(snap => {
         if(snap.exists()) {
             const data = snap.val();
             const isOnline = data.status && (Date.now() - data.lastSeen < 60000);
             document.getElementById('info-online-status').textContent = isOnline ? '🟢 Online' : '⚫ Offline';
+        }
+    });
+    
+    get(ref(db, `accounts/${contactName}/status`)).then(snap => {
+        if(snap.exists() && snap.val()) {
+            document.getElementById('info-status-text').textContent = `💬 "${snap.val()}"`;
         }
     });
     
@@ -2458,6 +2912,12 @@ window.onload = () => {
     
     // Initialize sound
     initSound();
+    
+    // Initialize bubble style
+    initBubbleStyle();
+    
+    // Initialize status text
+    initStatusText();
     
     const s = localStorage.getItem('villo_session');
     if(s){ 
