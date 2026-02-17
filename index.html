@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.8.2</title>
+    <title>VilloChat - Version 3.10</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -19,6 +19,7 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23075e54%22 rx=%2220%22/><text x=%2250%22 y=%2270%22 font-size=%2270%22 text-anchor=%22middle%22>💬</text></svg>">
     
     <!-- Web App Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiVmlsbG9DaGF0Iiwic2hvcnRfbmFtZSI6IlZpbGxvQ2hhdCIsImRlc2NyaXB0aW9uIjoiUmVhbHRpbWUtQ2hhdC1BcHAgbWl0IEZpcmViYXNlIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmMGYyZjUiLCJ0aGVtZV9jb2xvciI6IiMwNzVlNTQiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTAwIDEwMCc+PHJlY3Qgd2lkdGg9JzEwMCcgaGVpZ2h0PScxMDAnIGZpbGw9JyUyMzA3NWU1NCcgcng9JzIwJy8+PHRleHQgeD0nNTAnIHk9JzcwJyBmb250LXNpemU9JzcwJyB0ZXh0LWFuY2hvcj0nbWlkZGxlJz7wn5KsPC90ZXh0Pjwvc3ZnPiIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9zdmcreG1sIn1dfQ==">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="VilloChat">
@@ -384,6 +385,31 @@
             gap: 4px;
         }
         
+        /* Poll message */
+        .msg-poll { min-width: 220px; max-width: 300px; }
+        .poll-question { font-weight: 600; margin-bottom: 10px; font-size: 14px; }
+        .poll-option {
+            margin: 6px 0; cursor: pointer; border-radius: 8px; overflow: hidden;
+            border: 1.5px solid var(--border-color); position: relative; transition: border-color 0.15s;
+        }
+        .poll-option:hover { border-color: var(--primary); }
+        .poll-option.voted { border-color: var(--primary); }
+        .poll-option-bar {
+            position: absolute; left: 0; top: 0; bottom: 0;
+            background: rgba(7,94,84,0.13); transition: width 0.4s ease; border-radius: 6px;
+        }
+        .poll-option-label {
+            position: relative; z-index: 1; padding: 7px 10px;
+            display: flex; justify-content: space-between; align-items: center; font-size: 13px;
+        }
+        .poll-option-pct { font-size: 11px; font-weight: 600; opacity: 0.7; margin-left: 8px; }
+        .poll-meta { font-size: 11px; opacity: 0.5; margin-top: 8px; text-align: right; }
+        .contact-note-dot {
+            width: 7px; height: 7px; background: var(--primary);
+            border-radius: 50%; flex-shrink: 0;
+        }
+        @media (max-width: 600px) { #main-chat { touch-action: pan-y; } }
+
         /* Pinned message bar */
         #pinned-msg-bar {
             padding: 8px 15px;
@@ -1005,7 +1031,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.8.2 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 3.10 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1214,6 +1240,12 @@
                 <label style="display:block; font-weight:500; margin-bottom:5px;">Chat-Bubble-Farbe:</label>
                 <input type="color" id="contact-color-picker" style="width:100%; height:38px; margin:0 0 8px; cursor:pointer;">
                 <button onclick="saveContactColor()" style="width:100%;">Farbe speichern</button>
+
+                <div style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:12px;">
+                    <label style="display:block; font-weight:500; margin-bottom:5px;">📋 Notiz <span style="font-size:11px; opacity:0.5; font-weight:400;">(nur für dich sichtbar)</span></label>
+                    <textarea id="contact-note-input" placeholder="Notizen zu diesem Kontakt..." rows="3" style="width:100%; resize:vertical; min-height:70px; max-height:200px; font-size:13px;"></textarea>
+                    <button onclick="saveContactNote()" style="width:100%; margin-top:6px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">Notiz speichern</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1225,7 +1257,21 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.8.2 🐛</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.10 📲</h3>
+                <ul style="line-height:1.8;">
+                    <li>📲 <strong>PWA / Installierbar</strong> — Service Worker, Manifest, Install-Button erscheint in Einstellungen</li>
+                    <li>⌨️ <strong>Neue Shortcuts</strong> — Ctrl+D (Nachricht löschen), Ctrl+R (Antworten), Ctrl+P (Anpinnen), Ctrl+B (User-Info)</li>
+                    <li>⚡ <strong>Escape verbessert</strong> — Schließt jetzt auch Bearbeiten-Modus, Antworten-Bar, Kontextmenü</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.9 📊</h3>
+                <ul style="line-height:1.8;">
+                    <li>📊 <strong>Abstimmungen / Polls</strong> — 📊-Button in Eingabezeile, bis zu 4 Optionen, Live-Ergebnisse mit Balken & Prozentzahlen, Stimme änderbar</li>
+                    <li>📋 <strong>Kontakt-Notizen</strong> — Privat & lokal in User-Info, nur für dich sichtbar</li>
+                    <li>📱 <strong>Swipe zurück</strong> — Auf Mobile: Chat nach rechts wischen schließt ihn</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.8.2 🐛</h3>
                 <ul style="line-height:1.8;">
                     <li>📍 <strong>Kontextmenü-Position</strong> — bleibt jetzt immer im sichtbaren Bereich, auch an Bildschirmrändern</li>
                     <li>✏️ <strong>Bearbeiten-Fix</strong> — Nachrichtentext wurde korrekt gespeichert</li>
@@ -1397,6 +1443,26 @@
         <img id="lightbox-img" src="" alt="">
     </div>
 
+    <div id="poll-overlay" class="overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>📊 Abstimmung erstellen</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('poll-overlay')">✕</span>
+            </div>
+            <div class="modal-body">
+                <label style="display:block; font-weight:500; margin-bottom:6px;">Frage:</label>
+                <input type="text" id="poll-question" placeholder="Was möchtest du fragen?" maxlength="120" style="width:100%; margin-bottom:14px;">
+                <label style="display:block; font-weight:500; margin-bottom:6px;">Optionen:</label>
+                <div id="poll-options-list">
+                    <input type="text" class="poll-option-input" placeholder="Option 1" maxlength="60" style="width:100%; margin-bottom:8px;">
+                    <input type="text" class="poll-option-input" placeholder="Option 2" maxlength="60" style="width:100%; margin-bottom:8px;">
+                </div>
+                <button onclick="addPollOption()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:14px;">+ Option hinzufügen</button>
+                <button onclick="sendPoll()" style="width:100%; background:var(--primary);">📊 Abstimmung senden</button>
+            </div>
+        </div>
+    </div>
+
     <div id="change-pin-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
@@ -1443,7 +1509,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.8.2</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.10</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -1521,6 +1587,7 @@
             </div>
             <div id="input-area">
                 <button id="btn-emoji" onclick="openEmojiPicker()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;">😊</button>
+                <button onclick="openPollCreator()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Abstimmung erstellen">📊</button>
                 <textarea id="msg-input" placeholder="Nachricht..." rows="1" style="resize:none; overflow:hidden; min-height:44px; max-height:120px; line-height:1.4; padding:12px 20px;"></textarea>
                 <button id="btn-send" style="width:60px;">➤</button>
             </div>
@@ -2182,6 +2249,13 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
     const delIcon       = m.sender===myUsername ? `<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${msgKey}')">🗑</span>` : '';
     const safeText      = (m.text||'').replace(/`/g,'\\`');
     const replyIcon     = `<span class="msg-menu" onclick="replyToMsg('${msgKey}','${m.sender}',\`${safeText}\`)">↩️</span>`;
+
+    // Poll rendering
+    if(m.poll) {
+        d.innerHTML = `${replyHTML}${renderPoll(msgKey, m.poll)}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        return;
+    }
+
     d.innerHTML = `${forwardedMark}${replyHTML}${renderMessageContent(m.text||'')}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
 }
 
@@ -3327,8 +3401,12 @@ const helpArticles = [
                 <li><strong>Ctrl+K</strong> — Kontaktsuche fokussieren</li>
                 <li><strong>Ctrl+F</strong> — In Chat suchen</li>
                 <li><strong>Ctrl+E</strong> — Chat exportieren</li>
+                <li><strong>Ctrl+B</strong> — User-Info öffnen</li>
+                <li><strong>Ctrl+D</strong> — Letzte eigene Nachricht löschen</li>
+                <li><strong>Ctrl+R</strong> — Auf letzte Nachricht antworten</li>
+                <li><strong>Ctrl+P</strong> — Letzte Nachricht anpinnen / loslösen</li>
                 <li><strong>Ctrl+,</strong> — Einstellungen öffnen</li>
-                <li><strong>Escape</strong> — Alles schließen</li>
+                <li><strong>Escape</strong> — Bearbeiten/Antworten abbrechen, Overlays/Chat schließen</li>
             </ul>
         `
     },
@@ -3410,6 +3488,132 @@ function showHelpArticle(article) {
     document.getElementById('help-article-view').style.display = 'block';
     document.getElementById('help-article-title').innerHTML = `${article.icon} ${article.title}`;
     document.getElementById('help-article-body').innerHTML = article.body;
+}
+
+/* ------------------------------ */
+/* POLLS */
+/* ------------------------------ */
+window.openPollCreator = () => {
+    if(!activeChatId) { showNotification('⚠️ Bitte zuerst einen Chat öffnen', 'warning'); return; }
+    document.getElementById('poll-question').value = '';
+    const list = document.getElementById('poll-options-list');
+    list.innerHTML = `
+        <input type="text" class="poll-option-input" placeholder="Option 1" maxlength="60" style="width:100%; margin-bottom:8px;">
+        <input type="text" class="poll-option-input" placeholder="Option 2" maxlength="60" style="width:100%; margin-bottom:8px;">
+    `;
+    document.getElementById('poll-overlay').style.display = 'flex';
+    document.getElementById('poll-question').focus();
+};
+
+window.addPollOption = () => {
+    const list = document.getElementById('poll-options-list');
+    const count = list.querySelectorAll('.poll-option-input').length;
+    if(count >= 4) { showNotification('⚠️ Maximal 4 Optionen', 'warning'); return; }
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.className = 'poll-option-input';
+    inp.placeholder = `Option ${count + 1}`; inp.maxLength = 60;
+    inp.style.cssText = 'width:100%; margin-bottom:8px;';
+    list.appendChild(inp); inp.focus();
+};
+
+window.sendPoll = () => {
+    const question = document.getElementById('poll-question').value.trim();
+    if(!question) { showNotification('⚠️ Bitte eine Frage eingeben', 'warning'); return; }
+    const options = [...document.querySelectorAll('.poll-option-input')].map(el => el.value.trim()).filter(Boolean);
+    if(options.length < 2) { showNotification('⚠️ Mindestens 2 Optionen nötig', 'warning'); return; }
+    const pollData = { question, options: {}, createdBy: myUsername };
+    options.forEach((opt, i) => { pollData.options[`opt${i}`] = { text: opt, votes: {} }; });
+    push(ref(db, `chats/${activeChatId}`), {
+        sender: myUsername, text: '', timestamp: Date.now(), read: false, poll: pollData
+    });
+    closeOverlay('poll-overlay');
+    showNotification('📊 Abstimmung gesendet', 'success');
+};
+
+function renderPoll(msgKey, poll) {
+    const totalVotes = Object.values(poll.options).reduce((sum, opt) => sum + Object.keys(opt.votes || {}).length, 0);
+    const myVote = Object.keys(poll.options).find(k => (poll.options[k].votes || {})[myUsername]);
+    let html = `<div class="msg-poll"><div class="poll-question">📊 ${poll.question}</div>`;
+    Object.entries(poll.options).forEach(([key, opt]) => {
+        const voteCount = Object.keys(opt.votes || {}).length;
+        const pct = totalVotes > 0 ? Math.round(voteCount / totalVotes * 100) : 0;
+        const isMyVote = myVote === key;
+        html += `
+            <div class="poll-option ${isMyVote ? 'voted' : ''}" onclick="votePoll('${msgKey}','${key}')">
+                <div class="poll-option-bar" style="width:${pct}%"></div>
+                <div class="poll-option-label">
+                    <span>${isMyVote ? '✓ ' : ''}${opt.text}</span>
+                    <span class="poll-option-pct">${pct}%</span>
+                </div>
+            </div>`;
+    });
+    html += `<div class="poll-meta">${totalVotes} Stimme${totalVotes !== 1 ? 'n' : ''}</div></div>`;
+    return html;
+}
+
+window.votePoll = async (msgKey, optionKey) => {
+    if(!activeChatId) return;
+    const pollRef = ref(db, `chats/${activeChatId}/${msgKey}/poll`);
+    const snap = await get(pollRef);
+    if(!snap.exists()) return;
+    const poll = snap.val();
+    const updates = {};
+    Object.keys(poll.options).forEach(k => {
+        if((poll.options[k].votes || {})[myUsername]) updates[`options/${k}/votes/${myUsername}`] = null;
+    });
+    if(!(poll.options[optionKey].votes || {})[myUsername]) updates[`options/${optionKey}/votes/${myUsername}`] = true;
+    await update(pollRef, updates);
+};
+
+/* ------------------------------ */
+/* CONTACT NOTES */
+/* ------------------------------ */
+function getContactNotes() { return JSON.parse(localStorage.getItem('contact_notes') || '{}'); }
+
+window.saveContactNote = () => {
+    const contactName = document.getElementById('info-username').textContent;
+    const note = document.getElementById('contact-note-input').value.trim();
+    const notes = getContactNotes();
+    if(note) { notes[contactName] = note; } else { delete notes[contactName]; }
+    localStorage.setItem('contact_notes', JSON.stringify(notes));
+    showNotification('✅ Notiz gespeichert', 'success');
+};
+
+function loadContactNote(contactName) {
+    const notes = getContactNotes();
+    const input = document.getElementById('contact-note-input');
+    if(input) input.value = notes[contactName] || '';
+}
+
+/* ------------------------------ */
+/* SWIPE BACK (MOBILE) */
+/* ------------------------------ */
+function initSwipeBack() {
+    const mainChat = document.getElementById('main-chat');
+    let startX = 0, startY = 0, dragging = false;
+    mainChat.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        dragging = true;
+    }, { passive: true });
+    mainChat.addEventListener('touchmove', (e) => {
+        if(!dragging || !activeChatId) return;
+        const dx = e.touches[0].clientX - startX;
+        const dy = Math.abs(e.touches[0].clientY - startY);
+        if(dx > 0 && dy < 60 && dx > dy) {
+            mainChat.style.transform = `translateX(${Math.min(dx * 0.5, 80)}px)`;
+            mainChat.style.opacity = String(1 - Math.min(dx / 200, 1) * 0.2);
+        }
+    }, { passive: true });
+    mainChat.addEventListener('touchend', (e) => {
+        if(!dragging) return;
+        dragging = false;
+        const dx = e.changedTouches[0].clientX - startX;
+        const dy = Math.abs(e.changedTouches[0].clientY - startY);
+        mainChat.style.transform = '';
+        mainChat.style.opacity = '';
+        if(dx > 80 && dy < 60) closeChat();
+    }, { passive: true });
 }
 
 /* ------------------------------ */
@@ -3849,6 +4053,7 @@ window.openUserInfo = async (contactName) => {
     colorPicker.dataset.contactName = contactName;
     
     updateUserInfoButtons(contactName);
+    loadContactNote(contactName);
     document.getElementById('user-info-overlay').style.display = 'flex';
 
     // Load online status + status text in parallel
@@ -4033,6 +4238,9 @@ window.onload = () => {
     // Initialize status text
     initStatusText();
     
+    // Initialize swipe back gesture
+    initSwipeBack();
+    
     const s = localStorage.getItem('villo_session');
     if(s){ 
         myUsername = s; 
@@ -4051,6 +4259,9 @@ window.onload = () => {
     
     // Global keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+        // Don't trigger shortcuts when typing in input fields (except ESC)
+        const inInput = ['INPUT','TEXTAREA'].includes(e.target.tagName);
+        
         // Ctrl/Cmd + K: Focus search
         if((e.ctrlKey || e.metaKey) && e.key === 'k') {
             e.preventDefault();
@@ -4069,25 +4280,93 @@ window.onload = () => {
             exportChat();
         }
         
-        // Escape: Close overlays or chat
+        // Ctrl/Cmd + B: Open user info
+        if((e.ctrlKey || e.metaKey) && e.key === 'b' && activeChatId && activeContactName) {
+            e.preventDefault();
+            openUserInfo(activeContactName);
+        }
+        
+        // Ctrl/Cmd + D: Delete last own message in active chat
+        if((e.ctrlKey || e.metaKey) && e.key === 'd' && activeChatId && !inInput) {
+            e.preventDefault();
+            const msgs = document.querySelectorAll('.msg.sent');
+            if(msgs.length > 0) {
+                const lastMsg = msgs[msgs.length - 1];
+                const msgKey = lastMsg.dataset.msgKey;
+                if(msgKey) deleteMsg(msgKey);
+            }
+        }
+        
+        // Ctrl/Cmd + R: Reply to last message in active chat
+        if((e.ctrlKey || e.metaKey) && e.key === 'r' && activeChatId && !inInput) {
+            e.preventDefault();
+            const msgs = document.querySelectorAll('.msg');
+            if(msgs.length > 0) {
+                const lastMsg = msgs[msgs.length - 1];
+                const msgKey = lastMsg.dataset.msgKey;
+                const msgText = lastMsg.dataset.msgText;
+                const msgSender = lastMsg.dataset.msgSender;
+                if(msgKey && msgText) replyToMsg(msgKey, msgSender, msgText);
+            }
+        }
+        
+        // Ctrl/Cmd + P: Toggle pin on last message
+        if((e.ctrlKey || e.metaKey) && e.key === 'p' && activeChatId && !inInput) {
+            e.preventDefault();
+            const msgs = document.querySelectorAll('.msg');
+            if(msgs.length > 0) {
+                const lastMsg = msgs[msgs.length - 1];
+                const msgKey = lastMsg.dataset.msgKey;
+                const msgText = lastMsg.dataset.msgText;
+                if(!msgKey || !msgText) return;
+                const pinnedKey = `pinned_${activeChatId}`;
+                const currentPinned = localStorage.getItem(pinnedKey);
+                if(currentPinned === msgKey) unpinMessage();
+                else pinMessage(msgKey, msgText);
+            }
+        }
+        
+        // Escape: Close overlays, edit mode, reply bar, or chat
         if(e.key === 'Escape') {
-            const overlays = ['settings-overlay', 'confirm-overlay', 'search-overlay', 'chat-search-overlay', 'alias-overlay'];
+            // Cancel edit mode first
+            if(editingMessageKey) {
+                cancelEdit();
+                return;
+            }
+            // Cancel reply
+            if(replyingTo) {
+                cancelReply();
+                return;
+            }
+            // Close context menu
+            const ctxMenu = document.getElementById('msg-context-menu');
+            if(ctxMenu && ctxMenu.classList.contains('show')) {
+                ctxMenu.classList.remove('show');
+                return;
+            }
+            // Close overlays
+            const overlays = ['settings-overlay', 'confirm-overlay', 'search-overlay', 'chat-search-overlay', 
+                              'alias-overlay', 'user-info-overlay', 'emoji-picker', 'poll-overlay', 
+                              'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
+                              'forward-overlay', 'my-profile-overlay', 'changelog-overlay'];
             let anyOpen = false;
             overlays.forEach(id => {
-                if(document.getElementById(id).style.display === 'flex') {
+                const el = document.getElementById(id);
+                if(el && el.style.display === 'flex') {
                     closeOverlay(id);
                     anyOpen = true;
                 }
             });
-            
-            if(!anyOpen && document.getElementById('chat-area').classList.contains('chat-open')) {
-                closeChat();
-            }
+            if(anyOpen) return;
             
             // Close chat menu
             if(document.getElementById('chat-menu').classList.contains('show')) {
                 toggleChatMenu();
+                return;
             }
+            
+            // Finally close chat if in chat
+            if(activeChatId) closeChat();
         }
         
         // Ctrl/Cmd + ,: Open settings
@@ -4095,6 +4374,52 @@ window.onload = () => {
             e.preventDefault();
             openSettings();
         }
+    });
+    
+    // PWA Service Worker Registration & Install Prompt
+    if('serviceWorker' in navigator) {
+        const swCode = `
+            self.addEventListener('install', e => { self.skipWaiting(); });
+            self.addEventListener('activate', e => { self.clients.claim(); });
+            self.addEventListener('fetch', e => { 
+                if(e.request.method === 'GET') {
+                    e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
+                }
+            });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        navigator.serviceWorker.register(swUrl).then(() => {
+            console.log('✅ Service Worker registered');
+        }).catch(e => console.log('SW failed:', e));
+    }
+    
+    // Install prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        setTimeout(() => {
+            const settingsBody = document.querySelector('#settings-overlay .modal-body');
+            if(settingsBody && !document.getElementById('pwa-install-btn')) {
+                const btn = document.createElement('button');
+                btn.id = 'pwa-install-btn';
+                btn.textContent = '📲 Als App installieren';
+                btn.style.cssText = 'width:100%; margin-top:10px; background:var(--primary);';
+                btn.onclick = async () => {
+                    if(!deferredPrompt) return;
+                    deferredPrompt.prompt();
+                    const result = await deferredPrompt.userChoice;
+                    if(result.outcome === 'accepted') {
+                        showNotification('✅ App installiert!', 'success');
+                        btn.remove();
+                    }
+                    deferredPrompt = null;
+                };
+                const logoutBtn = settingsBody.querySelector('button[onclick="logout()"]');
+                settingsBody.insertBefore(btn, logoutBtn);
+            }
+        }, 3000);
     });
 };
 </script>
