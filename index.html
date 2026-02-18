@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.10.1</title>
+    <title>VilloChat - Version 3.10.2</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -41,15 +41,15 @@
             --bubble-radius: 12px;
         }
         
-        /* Dark Mode Variables */
+        /* Dark Mode Variables — Improved contrast & readability */
         body.dark-mode {
-            --primary: #00a884;
-            --bg: #111b21;
-            --white: #222e35;
+            --primary: #25d366;
+            --bg: #0b141a;
+            --white: #1f2c33;
             --text-color: #e9edef;
             --msg-sent: #005c4b;
-            --msg-received: #202c33;
-            --border-color: #2a3942;
+            --msg-received: #1f2c33;
+            --border-color: #2d3a41;
             --input-bg: #2a3942;
         }
         
@@ -57,7 +57,7 @@
             --text-color: #000;
             --msg-sent: #dcf8c6;
             --msg-received: #ffffff;
-            --border-color: #ddd;
+            --border-color: #e0e0e0;
             --input-bg: #ffffff;
         }
         
@@ -96,8 +96,40 @@
             display: none; 
             align-items: center; 
             justify-content: center; 
-            padding: 20px; 
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
         }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal {
+            animation: slideUp 0.25s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(0,0,0,0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        body.dark-mode .loading-spinner {
+            border-color: rgba(255,255,255,0.15);
+            border-top-color: var(--primary);
+        }
+        
         .modal { 
             background: var(--white); 
             width: 100%; 
@@ -279,7 +311,14 @@
             max-width: 85%; 
             font-size: var(--msg-font-size);
             box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
-            word-wrap: break-word; 
+            word-wrap: break-word;
+            transition: background-color 0.15s ease, transform 0.1s ease;
+        }
+        .msg:hover {
+            background-color: rgba(0,0,0,0.02) !important;
+        }
+        body.dark-mode .msg:hover {
+            background-color: rgba(255,255,255,0.03) !important;
         }
         .sent { 
             align-self: flex-end; 
@@ -729,7 +768,21 @@
             border: none; 
             border-radius: 12px; 
             cursor: pointer; 
-            font-weight: 600; 
+            font-weight: 600;
+            transition: all 0.2s ease;
+            transform: scale(1);
+        }
+        button:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1) !important;
         }
         
         /* Encryption Notice */
@@ -1031,7 +1084,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.10.1 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 3.10.2 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1257,7 +1310,15 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.10.1 📚</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.10.2 ✨</h3>
+                <ul style="line-height:1.8;">
+                    <li>🌙 <strong>Dark Mode verbessert</strong> — Bessere Kontraste (#25d366 Primary, dunklere Hintergründe), schärfere Borders</li>
+                    <li>🎯 <strong>Hover-Highlight</strong> — Nachrichten werden bei Mouse-Over subtil hervorgehoben</li>
+                    <li>⏳ <strong>Loading States</strong> — Animierte Spinner in globaler Suche & Forward-Dialog</li>
+                    <li>🎬 <strong>Smooth Animations</strong> — Overlays fade in (0.2s), Modals slide up (0.25s), Buttons skalieren bei Hover/Click</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.10.1 📚</h3>
                 <ul style="line-height:1.8;">
                     <li>📚 <strong>Hilfe-System erweitert</strong> — Alle 7 Artikel komplett überarbeitet: PWA-Installation, Polls, Notizen, Swipe, Kontakt-Stats, alle Features dokumentiert</li>
                     <li>✨ <strong>Neuer Artikel</strong> — "Alle Features im Überblick" als schnelle Referenz</li>
@@ -1515,7 +1576,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.10.1</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.10.2</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -3715,7 +3776,7 @@ window.openForwardDialog = async (text) => {
     document.getElementById('forward-send-btn').disabled = true;
     
     const list = document.getElementById('forward-contacts-list');
-    list.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Lade Kontakte...</p>';
+    list.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Lade Kontakte<span class="loading-spinner"></span></p>';
     document.getElementById('forward-overlay').style.display = 'flex';
     
     // Load contacts from Firebase directly to ensure complete list
@@ -4031,7 +4092,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function globalSearch(query) {
     const results = document.getElementById('global-search-results');
-    results.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Suche läuft...</p>';
+    results.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Suche läuft<span class="loading-spinner"></span></p>';
     
     // Load contacts from Firebase
     let contacts = [];
