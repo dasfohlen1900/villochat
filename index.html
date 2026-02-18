@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.10.3</title>
+    <title>VilloChat - Version 3.11</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -433,6 +433,10 @@
         }
         .poll-option:hover { border-color: var(--primary); }
         .poll-option.voted { border-color: var(--primary); }
+        .poll-option.closed {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
         .poll-option-bar {
             position: absolute; left: 0; top: 0; bottom: 0;
             background: rgba(7,94,84,0.13); transition: width 0.4s ease; border-radius: 6px;
@@ -1085,7 +1089,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.10.3 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 3.11 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1154,6 +1158,17 @@
                     <input type="checkbox" id="sound-toggle" style="width:auto; margin-right:10px;">
                     <span>🔊 Benachrichtigungston bei neuen Nachrichten</span>
                 </label>
+                
+                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Schnellreaktionen (6 Emojis):</label>
+                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:8px;">
+                    <input type="text" id="quick-reaction-1" maxlength="2" placeholder="❤️" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                    <input type="text" id="quick-reaction-2" maxlength="2" placeholder="👍" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                    <input type="text" id="quick-reaction-3" maxlength="2" placeholder="😂" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                    <input type="text" id="quick-reaction-4" maxlength="2" placeholder="😮" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                    <input type="text" id="quick-reaction-5" maxlength="2" placeholder="😢" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                    <input type="text" id="quick-reaction-6" maxlength="2" placeholder="🙏" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                </div>
+                <button onclick="saveQuickReactions()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">Reaktionen speichern</button>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Status:</label>
                 <input type="text" id="status-text-input" placeholder="z.B. Verfügbar, Beschäftigt..." maxlength="60" style="width:100%; margin:5px 0;">
@@ -1231,13 +1246,17 @@
     <div id="emoji-overlay" class="overlay">
         <div class="modal" style="max-width:400px; max-height:500px;">
             <div class="modal-header">
-                <h2>Emoji wählen</h2>
+                <h2>Zeichen wählen</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('emoji-overlay')">✕</span>
             </div>
             <div class="modal-body" style="padding:10px;">
-                <input type="text" id="emoji-search" placeholder="Emoji suchen..." style="width:100%; margin-bottom:10px; padding:8px;">
+                <div style="display:flex; gap:8px; margin-bottom:10px; border-bottom:1px solid var(--border-color);">
+                    <div id="tab-emoji" onclick="switchEmojiTab('emoji')" style="flex:1; padding:10px; text-align:center; cursor:pointer; border-bottom:2px solid var(--primary); font-weight:600;">😊 Emojis</div>
+                    <div id="tab-symbols" onclick="switchEmojiTab('symbols')" style="flex:1; padding:10px; text-align:center; cursor:pointer; border-bottom:2px solid transparent; opacity:0.5;">§ Sonderzeichen</div>
+                </div>
+                <input type="text" id="emoji-search" placeholder="Suchen..." style="width:100%; margin-bottom:10px; padding:8px;">
                 <div id="emoji-grid" style="display:grid; grid-template-columns:repeat(8, 1fr); gap:5px; max-height:350px; overflow-y:auto;">
-                    <!-- Emojis will be populated here -->
+                    <!-- Content will be populated here -->
                 </div>
             </div>
         </div>
@@ -1311,7 +1330,14 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.10.3 🔤</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 3.11 ⚡</h3>
+                <ul style="line-height:1.8;">
+                    <li>📊 <strong>Bessere Polls</strong> — Bis zu 6 Optionen (statt 4), "Schließen"-Button für Creator, geschlossene Umfragen zeigen 🔒 Badge</li>
+                    <li>⚡ <strong>Schnellreaktionen anpassen</strong> — Einstellungen → 6 eigene Emojis wählen, werden gespeichert & im Kontextmenü angezeigt</li>
+                    <li>🎭 <strong>Emoji-Picker mit Tabs</strong> — Tab 1: Emojis (900+), Tab 2: Sonderzeichen (←→★©®™…§¶•αβπΩ etc.)</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.10.3 🔤</h3>
                 <ul style="line-height:1.8;">
                     <li>🔤 <strong>Font-Consistency</strong> — Buttons verwenden jetzt auch Inter-Schrift wie Inputs & Textareas</li>
                 </ul>
@@ -1582,7 +1608,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.10.3</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.11</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -2998,7 +3024,9 @@ function showReactionPicker(e, msgKey) {
     picker.style.top = (e.clientY - 50) + 'px';
     picker.style.zIndex = '10000';
     
-    const quickReactions = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
+    const defaultReactions = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
+    const savedReactions = JSON.parse(localStorage.getItem('villo_quick_reactions') || 'null');
+    const quickReactions = savedReactions || defaultReactions;
     quickReactions.forEach(emoji => {
         const span = document.createElement('span');
         span.textContent = emoji;
@@ -3659,7 +3687,7 @@ window.openPollCreator = () => {
 window.addPollOption = () => {
     const list = document.getElementById('poll-options-list');
     const count = list.querySelectorAll('.poll-option-input').length;
-    if(count >= 4) { showNotification('⚠️ Maximal 4 Optionen', 'warning'); return; }
+    if(count >= 6) { showNotification('⚠️ Maximal 6 Optionen', 'warning'); return; }
     const inp = document.createElement('input');
     inp.type = 'text'; inp.className = 'poll-option-input';
     inp.placeholder = `Option ${count + 1}`; inp.maxLength = 60;
@@ -3672,7 +3700,7 @@ window.sendPoll = () => {
     if(!question) { showNotification('⚠️ Bitte eine Frage eingeben', 'warning'); return; }
     const options = [...document.querySelectorAll('.poll-option-input')].map(el => el.value.trim()).filter(Boolean);
     if(options.length < 2) { showNotification('⚠️ Mindestens 2 Optionen nötig', 'warning'); return; }
-    const pollData = { question, options: {}, createdBy: myUsername };
+    const pollData = { question, options: {}, createdBy: myUsername, closed: false };
     options.forEach((opt, i) => { pollData.options[`opt${i}`] = { text: opt, votes: {} }; });
     push(ref(db, `chats/${activeChatId}`), {
         sender: myUsername, text: '', timestamp: Date.now(), read: false, poll: pollData
@@ -3684,13 +3712,21 @@ window.sendPoll = () => {
 function renderPoll(msgKey, poll) {
     const totalVotes = Object.values(poll.options).reduce((sum, opt) => sum + Object.keys(opt.votes || {}).length, 0);
     const myVote = Object.keys(poll.options).find(k => (poll.options[k].votes || {})[myUsername]);
-    let html = `<div class="msg-poll"><div class="poll-question">📊 ${poll.question}</div>`;
+    const isClosed = poll.closed === true;
+    const isCreator = poll.createdBy === myUsername;
+    
+    let html = `<div class="msg-poll">`;
+    html += `<div class="poll-question">📊 ${poll.question}`;
+    if(isClosed) html += ` <span style="font-size:11px; opacity:0.6; font-weight:400; margin-left:6px;">🔒 Geschlossen</span>`;
+    html += `</div>`;
+    
     Object.entries(poll.options).forEach(([key, opt]) => {
         const voteCount = Object.keys(opt.votes || {}).length;
         const pct = totalVotes > 0 ? Math.round(voteCount / totalVotes * 100) : 0;
         const isMyVote = myVote === key;
+        const clickable = !isClosed ? `onclick="votePoll('${msgKey}','${key}')"` : '';
         html += `
-            <div class="poll-option ${isMyVote ? 'voted' : ''}" onclick="votePoll('${msgKey}','${key}')">
+            <div class="poll-option ${isMyVote ? 'voted' : ''} ${isClosed ? 'closed' : ''}" ${clickable}>
                 <div class="poll-option-bar" style="width:${pct}%"></div>
                 <div class="poll-option-label">
                     <span>${isMyVote ? '✓ ' : ''}${opt.text}</span>
@@ -3698,7 +3734,12 @@ function renderPoll(msgKey, poll) {
                 </div>
             </div>`;
     });
-    html += `<div class="poll-meta">${totalVotes} Stimme${totalVotes !== 1 ? 'n' : ''}</div></div>`;
+    html += `<div class="poll-meta">`;
+    html += `${totalVotes} Stimme${totalVotes !== 1 ? 'n' : ''}`;
+    if(isCreator && !isClosed) {
+        html += ` · <span style="color:var(--primary); cursor:pointer; font-weight:600;" onclick="closePoll('${msgKey}')">Schließen</span>`;
+    }
+    html += `</div></div>`;
     return html;
 }
 
@@ -3708,12 +3749,87 @@ window.votePoll = async (msgKey, optionKey) => {
     const snap = await get(pollRef);
     if(!snap.exists()) return;
     const poll = snap.val();
+    if(poll.closed) { showNotification('🔒 Diese Umfrage ist geschlossen', 'warning'); return; }
     const updates = {};
     Object.keys(poll.options).forEach(k => {
         if((poll.options[k].votes || {})[myUsername]) updates[`options/${k}/votes/${myUsername}`] = null;
     });
     if(!(poll.options[optionKey].votes || {})[myUsername]) updates[`options/${optionKey}/votes/${myUsername}`] = true;
     await update(pollRef, updates);
+};
+
+window.closePoll = async (msgKey) => {
+    if(!activeChatId) return;
+    await update(ref(db, `chats/${activeChatId}/${msgKey}/poll`), { closed: true });
+    showNotification('🔒 Umfrage geschlossen', 'success');
+};
+
+/* ------------------------------ */
+/* QUICK REACTIONS CUSTOMIZATION */
+/* ------------------------------ */
+function initQuickReactions() {
+    const saved = JSON.parse(localStorage.getItem('villo_quick_reactions') || 'null');
+    const defaults = ['❤️', '👍', '😂', '😮', '😢', '🙏'];
+    const reactions = saved || defaults;
+    reactions.forEach((emoji, i) => {
+        const input = document.getElementById(`quick-reaction-${i + 1}`);
+        if(input) input.value = emoji;
+    });
+}
+
+window.saveQuickReactions = () => {
+    const reactions = [];
+    for(let i = 1; i <= 6; i++) {
+        const val = document.getElementById(`quick-reaction-${i}`).value.trim();
+        reactions.push(val || ['❤️', '👍', '😂', '😮', '😢', '🙏'][i-1]);
+    }
+    localStorage.setItem('villo_quick_reactions', JSON.stringify(reactions));
+    showNotification('✅ Schnellreaktionen gespeichert', 'success');
+};
+
+/* ------------------------------ */
+/* EMOJI PICKER TABS */
+/* ------------------------------ */
+let currentEmojiTab = 'emoji';
+const symbols = [
+    '←','→','↑','↓','↔','↕','⇐','⇒','⇑','⇓','⇔','⇕',
+    '✓','✔','✗','✘','☐','☑','☒','⊙','⊕','⊗','⊘',
+    '★','☆','♥','♦','♣','♠','♡','♢','♤','♧','●','○','◆','◇','■','□','▲','△','▼','▽','◀','◁','▶','▷',
+    '©','®','™','§','¶','†','‡','•','‣','⁂','※','℃','℉','℠','№',
+    '…','·','‧','∙','⋅','❖','✦','✧','✪','✫','✬','✭','✮','✯','✰','✱',
+    '½','⅓','¼','⅕','⅙','⅐','⅛','⅑','⅒','¾','⅖','⅗','⅘','⅚','⅜','⅝','⅞',
+    '←','→','↑','↓','↖','↗','↘','↙','⟵','⟶','⟷','⟸','⟹','⟺',
+    '∞','≈','≠','≡','≤','≥','±','×','÷','∓','√','∛','∜','∝','∟','∠','∡','∢',
+    'α','β','γ','δ','ε','ζ','η','θ','λ','μ','π','σ','φ','ψ','ω','Ω'
+];
+
+window.switchEmojiTab = (tab) => {
+    currentEmojiTab = tab;
+    document.getElementById('tab-emoji').style.borderBottom = tab === 'emoji' ? '2px solid var(--primary)' : '2px solid transparent';
+    document.getElementById('tab-emoji').style.fontWeight = tab === 'emoji' ? '600' : '400';
+    document.getElementById('tab-emoji').style.opacity = tab === 'emoji' ? '1' : '0.5';
+    document.getElementById('tab-symbols').style.borderBottom = tab === 'symbols' ? '2px solid var(--primary)' : '2px solid transparent';
+    document.getElementById('tab-symbols').style.fontWeight = tab === 'symbols' ? '600' : '400';
+    document.getElementById('tab-symbols').style.opacity = tab === 'symbols' ? '1' : '0.5';
+    
+    const grid = document.getElementById('emoji-grid');
+    const searchVal = document.getElementById('emoji-search').value.toLowerCase();
+    
+    if(tab === 'symbols') {
+        const filtered = searchVal ? symbols.filter(s => s.includes(searchVal)) : symbols;
+        grid.innerHTML = filtered.map(s => 
+            `<span style="font-size:24px; cursor:pointer; text-align:center; padding:8px;" onclick="insertSymbol('${s}')">${s}</span>`
+        ).join('');
+    } else {
+        populateEmojiGrid(searchVal);
+    }
+};
+
+window.insertSymbol = (symbol) => {
+    const input = document.getElementById('msg-input');
+    input.value += symbol;
+    input.focus();
+    closeOverlay('emoji-overlay');
 };
 
 /* ------------------------------ */
@@ -4347,18 +4463,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if(searchInput) {
         searchInput.addEventListener('input', (e) => {
             const search = e.target.value.toLowerCase();
-            const grid = document.getElementById('emoji-grid');
-            grid.innerHTML = '';
-            
-            const filtered = search ? allEmojis.filter((_, i) => i % 3 === 0) : allEmojis; // Simple filter for demo
-            
-            filtered.forEach(emoji => {
-                const span = document.createElement('span');
-                span.className = 'emoji-item';
-                span.textContent = emoji;
-                span.onclick = () => insertEmoji(emoji);
-                grid.appendChild(span);
-            });
+            if(currentEmojiTab === 'symbols') {
+                const grid = document.getElementById('emoji-grid');
+                const filtered = search ? symbols.filter(s => s.includes(search)) : symbols;
+                grid.innerHTML = filtered.map(s => 
+                    `<span style="font-size:24px; cursor:pointer; text-align:center; padding:8px;" onclick="insertSymbol('${s}')">${s}</span>`
+                ).join('');
+            } else {
+                populateEmojiGrid(search);
+            }
         });
     }
 });
@@ -4388,6 +4501,9 @@ window.onload = () => {
     
     // Initialize status text
     initStatusText();
+    
+    // Initialize quick reactions
+    initQuickReactions();
     
     // Initialize swipe back gesture
     initSwipeBack();
