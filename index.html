@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.11</title>
+    <title>VilloChat - Version 4.0</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -39,6 +39,7 @@
             --msg-font-size: 15px;
             --my-bubble-color: #dcf8c6;
             --bubble-radius: 12px;
+            --sidebar-width: 350px;
         }
         
         /* Dark Mode Variables — Improved contrast & readability */
@@ -184,10 +185,85 @@
 
         /* Desktop View */
         @media (min-width: 768px) {
-            #chat-area { display: flex !important; }
-            #sidebar { position: relative; width: 350px; transform: none !important; border-right: 1px solid var(--border-color); }
-            #main-chat { position: relative; width: calc(100% - 350px); left: 0; transform: none !important; }
+            #chat-area { display: flex !important; position: relative; }
+            #sidebar { position: relative; width: var(--sidebar-width); min-width: 250px; max-width: 600px; transform: none !important; border-right: 1px solid var(--border-color); }
+            #main-chat { position: relative; width: calc(100% - var(--sidebar-width)); left: 0; transform: none !important; }
             .back-btn { display: none; }
+            
+            /* Focus mode */
+            body.focus-mode #sidebar { display: none; }
+            body.focus-mode #main-chat { width: 100%; }
+        }
+        
+        /* Resize handle */
+        #resize-handle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            cursor: col-resize;
+            z-index: 100;
+            background: transparent;
+        }
+        #resize-handle:hover {
+            background: var(--primary);
+            opacity: 0.3;
+        }
+        @media (max-width: 767px) {
+            #resize-handle { display: none; }
+        }
+        
+        /* Chat Tabs */
+        #chat-tabs {
+            display: none;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0 10px;
+            min-height: 45px;
+            align-items: center;
+        }
+        body.has-tabs #chat-tabs { display: flex; }
+        .chat-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            margin: 4px 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            background: var(--bg);
+            border: 1px solid transparent;
+            transition: all 0.15s;
+            max-width: 180px;
+        }
+        .chat-tab:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        .chat-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .chat-tab-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .chat-tab-close {
+            opacity: 0.6;
+            font-size: 16px;
+            line-height: 1;
+            padding: 0 2px;
+        }
+        .chat-tab-close:hover {
+            opacity: 1;
+        }
+        @media (max-width: 767px) {
+            #chat-tabs { display: none !important; }
         }
 
         .header { 
@@ -1089,7 +1165,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.11 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 4.0 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1330,7 +1406,15 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.11 ⚡</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 4.0 🖥️</h3>
+                <ul style="line-height:1.8;">
+                    <li>📐 <strong>Resizable Sidebar</strong> — Desktop: Drag-Handle am rechten Rand, Breite 250–600px, speichert in localStorage</li>
+                    <li>⌨️ <strong>Focus-Modus</strong> — Ctrl+Shift+F versteckt Sidebar, Vollbild-Chat (nur Desktop)</li>
+                    <li>🗂️ <strong>Chat-Tabs</strong> — Mehrere Chats parallel offen, Tab-Bar über Nachrichten, Ctrl+W schließen, Ctrl+1-9 wechseln, Ctrl+Tab next/prev</li>
+                    <li>🎯 <strong>Erweiterte Shortcuts</strong> — Ctrl+W (Tab schließen), Ctrl+1-9 (Tab wechseln), Ctrl+Tab/Shift+Tab (vorheriger/nächster Tab)</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.11 ⚡</h3>
                 <ul style="line-height:1.8;">
                     <li>📊 <strong>Bessere Polls</strong> — Bis zu 6 Optionen (statt 4), "Schließen"-Button für Creator, geschlossene Umfragen zeigen 🔒 Badge</li>
                     <li>⚡ <strong>Schnellreaktionen anpassen</strong> — Einstellungen → 6 eigene Emojis wählen, werden gespeichert & im Kontextmenü angezeigt</li>
@@ -1608,7 +1692,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.11</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 4.0</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -1635,9 +1719,11 @@
                 <button id="btn-search" style="width:50px; margin:0;">+</button>
             </div>
             <div id="contacts-list"></div>
+            <div id="resize-handle"></div>
         </div>
 
         <div id="main-chat">
+            <div id="chat-tabs"></div>
             <div class="encryption-notice" id="encryption-notice">
                 🔓 Nachrichten sind nicht Ende-zu-Ende verschlüsselt
             </div>
@@ -2370,6 +2456,11 @@ function startChat(n){
 
     activeChatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
     activeContactName = n;
+    
+    // Add to tabs on desktop if not mobile
+    if(window.innerWidth >= 768) {
+        addChatTab(n, activeChatId);
+    }
     
     // Pre-fetch contact's avatar from Firebase
     fetchAvatarFromFirebase(n);
@@ -3791,7 +3882,7 @@ window.saveQuickReactions = () => {
 /* EMOJI PICKER TABS */
 /* ------------------------------ */
 let currentEmojiTab = 'emoji';
-const symbols = [
+/*const symbols = [
     '←','→','↑','↓','↔','↕','⇐','⇒','⇑','⇓','⇔','⇕',
     '✓','✔','✗','✘','☐','☑','☒','⊙','⊕','⊗','⊘',
     '★','☆','♥','♦','♣','♠','♡','♢','♤','♧','●','○','◆','◇','■','□','▲','△','▼','▽','◀','◁','▶','▷',
@@ -3799,9 +3890,9 @@ const symbols = [
     '…','·','‧','∙','⋅','❖','✦','✧','✪','✫','✬','✭','✮','✯','✰','✱',
     '½','⅓','¼','⅕','⅙','⅐','⅛','⅑','⅒','¾','⅖','⅗','⅘','⅚','⅜','⅝','⅞',
     '←','→','↑','↓','↖','↗','↘','↙','⟵','⟶','⟷','⟸','⟹','⟺',
-    '∞','≈','≠','≡','≤','≥','±','×','÷','∓','√','∛','∜','∝','∟','∠','∡','∢',
-    'α','β','γ','δ','ε','ζ','η','θ','λ','μ','π','σ','φ','ψ','ω','Ω'
-];
+   // '∞','≈','≠','≡','≤','≥','±','×','÷','∓','√','∛','∜','∝','∟','∠','∡','∢',
+    //'α','β','γ','δ','ε','ζ','η','θ','λ','μ','π','σ','φ','ψ','ω','Ω'*/
+/*];*/
 
 window.switchEmojiTab = (tab) => {
     currentEmojiTab = tab;
@@ -4479,6 +4570,150 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ------------------------------ */
 /* AUTO-LOGIN */
 /* ------------------------------ */
+/* ========================================= */
+/* V4 DESKTOP FEATURES */
+/* ========================================= */
+
+/* RESIZABLE SIDEBAR */
+let isResizing = false;
+function initResizableSidebar() {
+    const handle = document.getElementById('resize-handle');
+    const sidebar = document.getElementById('sidebar');
+    if(!handle || window.innerWidth < 768) return;
+    
+    // Load saved width
+    const saved = localStorage.getItem('villo_sidebar_width');
+    if(saved) {
+        document.documentElement.style.setProperty('--sidebar-width', saved + 'px');
+    }
+    
+    handle.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if(!isResizing) return;
+        const newWidth = Math.max(250, Math.min(600, e.clientX));
+        document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if(isResizing) {
+            const width = getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width');
+            localStorage.setItem('villo_sidebar_width', parseInt(width));
+            isResizing = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+    });
+}
+
+/* FOCUS MODE */
+window.toggleFocusMode = () => {
+    document.body.classList.toggle('focus-mode');
+    const isFocus = document.body.classList.contains('focus-mode');
+    showNotification(isFocus ? '🎯 Focus-Modus aktiv' : '↩️ Focus-Modus deaktiviert', 'success');
+};
+
+/* CHAT TABS */
+const openTabs = []; // Array of {name, chatId}
+let activeTabIndex = 0;
+
+function addChatTab(contactName, chatId) {
+    // Check if already open
+    const existing = openTabs.findIndex(t => t.chatId === chatId);
+    if(existing !== -1) {
+        switchToTab(existing);
+        return;
+    }
+    
+    openTabs.push({name: contactName, chatId});
+    activeTabIndex = openTabs.length - 1;
+    renderTabs();
+    document.body.classList.add('has-tabs');
+}
+
+function closeTab(index, event) {
+    if(event) event.stopPropagation();
+    openTabs.splice(index, 1);
+    
+    if(openTabs.length === 0) {
+        document.body.classList.remove('has-tabs');
+        closeChat();
+        return;
+    }
+    
+    if(activeTabIndex >= openTabs.length) activeTabIndex = openTabs.length - 1;
+    renderTabs();
+    
+    const tab = openTabs[activeTabIndex];
+    if(tab) startChat(tab.name);
+}
+
+function switchToTab(index) {
+    activeTabIndex = index;
+    renderTabs();
+    const tab = openTabs[index];
+    if(tab) startChat(tab.name);
+}
+
+function renderTabs() {
+    const container = document.getElementById('chat-tabs');
+    if(!container || openTabs.length === 0) return;
+    
+    container.innerHTML = '';
+    openTabs.forEach((tab, i) => {
+        const div = document.createElement('div');
+        div.className = `chat-tab ${i === activeTabIndex ? 'active' : ''}`;
+        div.onclick = () => switchToTab(i);
+        div.innerHTML = `
+            <span class="chat-tab-name">${tab.name}</span>
+            <span class="chat-tab-close" onclick="closeTab(${i}, event)">×</span>
+        `;
+        container.appendChild(div);
+    });
+}
+
+/* ENHANCED KEYBOARD SHORTCUTS FOR V4 */
+function initV4Shortcuts() {
+    document.addEventListener('keydown', (e) => {
+        // Ctrl+Shift+F: Toggle focus mode
+        if(e.ctrlKey && e.shiftKey && e.key === 'F') {
+            e.preventDefault();
+            if(window.innerWidth >= 768) toggleFocusMode();
+        }
+        
+        // Ctrl+W: Close active tab
+        if((e.ctrlKey || e.metaKey) && e.key === 'w' && openTabs.length > 0) {
+            e.preventDefault();
+            closeTab(activeTabIndex);
+        }
+        
+        // Ctrl+1-9: Switch tabs
+        if((e.ctrlKey || e.metaKey) && e.key >= '1' && e.key <= '9') {
+            const index = parseInt(e.key) - 1;
+            if(index < openTabs.length) {
+                e.preventDefault();
+                switchToTab(index);
+            }
+        }
+        
+        // Ctrl+Tab / Ctrl+Shift+Tab: Next/Previous tab
+        if((e.ctrlKey || e.metaKey) && e.key === 'Tab') {
+            e.preventDefault();
+            if(openTabs.length === 0) return;
+            if(e.shiftKey) {
+                activeTabIndex = (activeTabIndex - 1 + openTabs.length) % openTabs.length;
+            } else {
+                activeTabIndex = (activeTabIndex + 1) % openTabs.length;
+            }
+            switchToTab(activeTabIndex);
+        }
+    });
+}
+
 window.onload = () => {
     // Initialize theme
     const theme = localStorage.getItem('villo_theme') || 'system';
@@ -4504,6 +4739,10 @@ window.onload = () => {
     
     // Initialize quick reactions
     initQuickReactions();
+    
+    // Initialize V4 desktop features
+    initResizableSidebar();
+    initV4Shortcuts();
     
     // Initialize swipe back gesture
     initSwipeBack();
