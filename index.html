@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 3.11</title>
+    <title>VilloChat - Version 4.0.2</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -39,6 +39,7 @@
             --msg-font-size: 15px;
             --my-bubble-color: #dcf8c6;
             --bubble-radius: 12px;
+            --sidebar-width: 350px;
         }
         
         /* Dark Mode Variables — Improved contrast & readability */
@@ -184,10 +185,33 @@
 
         /* Desktop View */
         @media (min-width: 768px) {
-            #chat-area { display: flex !important; }
-            #sidebar { position: relative; width: 350px; transform: none !important; border-right: 1px solid var(--border-color); }
-            #main-chat { position: relative; width: calc(100% - 350px); left: 0; transform: none !important; }
+            #chat-area { display: flex !important; position: relative; }
+            #sidebar { position: relative; width: var(--sidebar-width); min-width: 250px; max-width: 600px; transform: none !important; border-right: 1px solid var(--border-color); }
+            #main-chat { position: relative; width: calc(100% - var(--sidebar-width)); left: 0; transform: none !important; }
             .back-btn { display: none; }
+            
+            /* Focus mode */
+            body.focus-mode #sidebar { display: none; }
+            body.focus-mode #main-chat { width: 100%; }
+        }
+        
+        /* Resize handle */
+        #resize-handle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 5px;
+            height: 100%;
+            cursor: col-resize;
+            z-index: 100;
+            background: transparent;
+        }
+        #resize-handle:hover {
+            background: var(--primary);
+            opacity: 0.3;
+        }
+        @media (max-width: 767px) {
+            #resize-handle { display: none; }
         }
 
         .header { 
@@ -1089,7 +1113,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 3.11 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 4.0.2 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1330,7 +1354,25 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 3.11 ⚡</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 4.0.2 🐛</h3>
+                <ul style="line-height:1.8;">
+                    <li>🎭 <strong>Emoji-Tabs Fix</strong> — Tab-Switch funktioniert jetzt, populateEmojiGrid() Funktion hinzugefügt, Emoji-Tab wird beim Öffnen zurückgesetzt</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 4.0.1 🔧</h3>
+                <ul style="line-height:1.8;">
+                    <li>🐛 <strong>Reaktionen-Fix</strong> — Event Delegation statt inline onclick, escaped Emojis in data-attributes, funktioniert jetzt zuverlässig mit allen Emojis</li>
+                    <li>🗑️ <strong>Tabs entfernt</strong> — Performance-Probleme, zurück zu klassischer Single-Chat-Ansicht (Resizable Sidebar & Focus-Modus bleiben!)</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 4.0 🖥️</h3>
+                <ul style="line-height:1.8;">
+                    <li>📐 <strong>Resizable Sidebar</strong> — Desktop: Drag-Handle am rechten Rand, Breite 250–600px, speichert in localStorage</li>
+                    <li>⌨️ <strong>Focus-Modus</strong> — Ctrl+Shift+F versteckt Sidebar, Vollbild-Chat (nur Desktop)</li>
+                    <li>~~🗂️ Chat-Tabs~~ — Entfernt in 4.0.1</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 3.11 ⚡</h3>
                 <ul style="line-height:1.8;">
                     <li>📊 <strong>Bessere Polls</strong> — Bis zu 6 Optionen (statt 4), "Schließen"-Button für Creator, geschlossene Umfragen zeigen 🔒 Badge</li>
                     <li>⚡ <strong>Schnellreaktionen anpassen</strong> — Einstellungen → 6 eigene Emojis wählen, werden gespeichert & im Kontextmenü angezeigt</li>
@@ -1608,7 +1650,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 3.11</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 4.0.2</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -1635,6 +1677,7 @@
                 <button id="btn-search" style="width:50px; margin:0;">+</button>
             </div>
             <div id="contacts-list"></div>
+            <div id="resize-handle"></div>
         </div>
 
         <div id="main-chat">
@@ -2338,7 +2381,8 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
         reactionsHTML = '<div class="msg-reactions">';
         Object.entries(m.reactions).forEach(([emoji, users]) => {
             const hasMyReaction = users.includes(myUsername);
-            reactionsHTML += `<span class="msg-reaction ${hasMyReaction?'my-reaction':''}" onclick="toggleReaction('${msgKey}','${emoji}')">${emoji} ${users.length}</span>`;
+            const escapedEmoji = emoji.replace(/'/g, '&apos;');
+            reactionsHTML += `<span class="msg-reaction ${hasMyReaction?'my-reaction':''}" data-msgkey="${msgKey}" data-emoji="${escapedEmoji}">${emoji} ${users.length}</span>`;
         });
         reactionsHTML += '</div>';
     }
@@ -3016,6 +3060,10 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
 }
 
 function showReactionPicker(e, msgKey) {
+    // Remove any existing picker first
+    const existingPicker = document.getElementById('reaction-picker-temp');
+    if(existingPicker) existingPicker.remove();
+    
     const picker = document.createElement('div');
     picker.className = 'reaction-picker';
     picker.id = 'reaction-picker-temp';
@@ -3030,19 +3078,28 @@ function showReactionPicker(e, msgKey) {
     quickReactions.forEach(emoji => {
         const span = document.createElement('span');
         span.textContent = emoji;
-        span.onclick = () => {
+        span.onclick = (ev) => {
+            ev.stopPropagation();
             toggleReaction(msgKey, emoji);
-            document.body.removeChild(picker);
+            picker.remove();
         };
         picker.appendChild(span);
     });
     
     document.body.appendChild(picker);
     
-    setTimeout(() => {
-        if(document.body.contains(picker)) {
-            document.body.removeChild(picker);
+    // Auto-close on click outside
+    const closeHandler = (ev) => {
+        if(!picker.contains(ev.target)) {
+            picker.remove();
+            document.removeEventListener('click', closeHandler);
         }
+    };
+    setTimeout(() => document.addEventListener('click', closeHandler), 10);
+    
+    // Fallback timeout
+    setTimeout(() => {
+        if(document.body.contains(picker)) picker.remove();
     }, 5000);
 }
 
@@ -3069,6 +3126,14 @@ window.toggleReaction = async (msgKey, emoji) => {
 
 // Close context menu when clicking outside
 document.addEventListener('click', (e) => {
+    // Handle reaction clicks via delegation
+    if(e.target.classList.contains('msg-reaction')) {
+        const msgKey = e.target.dataset.msgkey;
+        const emoji = e.target.dataset.emoji.replace(/&apos;/g, "'");
+        if(msgKey && emoji) toggleReaction(msgKey, emoji);
+        return;
+    }
+    
     if(!e.target.closest('.msg-context-menu') && !e.target.closest('.msg')) {
         document.getElementById('msg-context-menu').classList.remove('show');
     }
@@ -4430,20 +4495,35 @@ const emojiCategories = {
 let allEmojis = [];
 Object.values(emojiCategories).forEach(cat => allEmojis.push(...cat));
 
-window.openEmojiPicker = () => {
-    document.getElementById('emoji-overlay').style.display = 'flex';
+function populateEmojiGrid(search = '') {
     const grid = document.getElementById('emoji-grid');
     grid.innerHTML = '';
     
-    allEmojis.forEach(emoji => {
+    const filtered = search ? allEmojis.filter(e => e.includes(search)) : allEmojis;
+    
+    filtered.forEach(emoji => {
         const span = document.createElement('span');
         span.className = 'emoji-item';
         span.textContent = emoji;
         span.onclick = () => insertEmoji(emoji);
         grid.appendChild(span);
     });
-    
+}
+
+window.openEmojiPicker = () => {
+    document.getElementById('emoji-overlay').style.display = 'flex';
     document.getElementById('emoji-search').value = '';
+    
+    // Reset to emoji tab
+    currentEmojiTab = 'emoji';
+    document.getElementById('tab-emoji').style.borderBottom = '2px solid var(--primary)';
+    document.getElementById('tab-emoji').style.fontWeight = '600';
+    document.getElementById('tab-emoji').style.opacity = '1';
+    document.getElementById('tab-symbols').style.borderBottom = '2px solid transparent';
+    document.getElementById('tab-symbols').style.fontWeight = '400';
+    document.getElementById('tab-symbols').style.opacity = '0.5';
+    
+    populateEmojiGrid();
 };
 
 function insertEmoji(emoji) {
@@ -4479,6 +4559,64 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ------------------------------ */
 /* AUTO-LOGIN */
 /* ------------------------------ */
+/* ========================================= */
+/* V4 DESKTOP FEATURES */
+/* ========================================= */
+
+/* RESIZABLE SIDEBAR */
+let isResizing = false;
+function initResizableSidebar() {
+    const handle = document.getElementById('resize-handle');
+    const sidebar = document.getElementById('sidebar');
+    if(!handle || window.innerWidth < 768) return;
+    
+    // Load saved width
+    const saved = localStorage.getItem('villo_sidebar_width');
+    if(saved) {
+        document.documentElement.style.setProperty('--sidebar-width', saved + 'px');
+    }
+    
+    handle.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+        if(!isResizing) return;
+        const newWidth = Math.max(250, Math.min(600, e.clientX));
+        document.documentElement.style.setProperty('--sidebar-width', newWidth + 'px');
+    });
+    
+    document.addEventListener('mouseup', () => {
+        if(isResizing) {
+            const width = getComputedStyle(document.documentElement).getPropertyValue('--sidebar-width');
+            localStorage.setItem('villo_sidebar_width', parseInt(width));
+            isResizing = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        }
+    });
+}
+
+/* FOCUS MODE */
+window.toggleFocusMode = () => {
+    document.body.classList.toggle('focus-mode');
+    const isFocus = document.body.classList.contains('focus-mode');
+    showNotification(isFocus ? '🎯 Focus-Modus aktiv' : '↩️ Focus-Modus deaktiviert', 'success');
+};
+
+/* ENHANCED KEYBOARD SHORTCUTS FOR V4 */
+function initV4Shortcuts() {
+    document.addEventListener('keydown', (e) => {
+        // Ctrl+Shift+F: Toggle focus mode
+        if(e.ctrlKey && e.shiftKey && e.key === 'F') {
+            e.preventDefault();
+            if(window.innerWidth >= 768) toggleFocusMode();
+        }
+    });
+}
+
 window.onload = () => {
     // Initialize theme
     const theme = localStorage.getItem('villo_theme') || 'system';
@@ -4504,6 +4642,10 @@ window.onload = () => {
     
     // Initialize quick reactions
     initQuickReactions();
+    
+    // Initialize V4 desktop features
+    initResizableSidebar();
+    initV4Shortcuts();
     
     // Initialize swipe back gesture
     initSwipeBack();
