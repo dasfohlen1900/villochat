@@ -2508,7 +2508,7 @@ function loadGroups() {
                 </div>
                 <span id="group-badge-${gid}" class="unread-badge" style="display:none;"></span>
             `;
-            d.onclick = () => startGroupChat(gid, g.name);
+            d.onclick = () => window.startGroupChat(gid, g.name);
             list.prepend(d);
 
             if(!groupMessageListeners[gid]) {
@@ -4980,7 +4980,7 @@ window.onload = () => {
     
 
     // ── Gruppen-Chat öffnen ───────────────────────────────────────
-    async function startGroupChat(gid, gname) {
+    window.startGroupChat = async function(gid, gname) {
         if(chatRef) off(chatRef);
         if(typingRef) off(typingRef);
         if(onlineStatusListener) off(onlineStatusListener);
@@ -5120,7 +5120,7 @@ window.onload = () => {
     }
 
     // ── Render group message (with sender label for received) ─────
-    function renderGroupMessageEl(d, m, msgKey, time, fullDate, contactColors) {
+    window.renderGroupMessageEl = function(d, m, msgKey, time, fullDate, contactColors) {
         if(m.deletedForAll) {
             d.innerHTML = `<em style="opacity:0.4; font-size:12px;">🗑️ Nachricht gelöscht</em>`;
             d.style.background = 'transparent';
@@ -5189,7 +5189,7 @@ window.onload = () => {
             item.className = 'contact-item';
             item.style.padding = '8px 12px';
             item.innerHTML = `${getAvatarHTML(name)} <span style="flex:1;">${name}</span> <span style="color:var(--primary);">+</span>`;
-            item.onclick = () => addGroupMember(name);
+            item.onclick = () => window.addGroupMember(name);
             results.appendChild(item);
         });
     };
@@ -5199,15 +5199,15 @@ window.onload = () => {
         if(e.key === 'Enter') document.getElementById('btn-group-member-search').click();
     });
 
-    function addGroupMember(name) {
+    window.addGroupMember = function(name) {
         if(selectedGroupMembers.includes(name)) return;
         selectedGroupMembers.push(name);
-        renderSelectedMembers();
+        window.renderSelectedMembers();
         document.getElementById('group-member-results').innerHTML = '';
         document.getElementById('group-member-search').value = '';
     }
 
-    function renderSelectedMembers() {
+    window.renderSelectedMembers = function() {
         const container = document.getElementById('group-selected-members');
         container.innerHTML = '';
         selectedGroupMembers.forEach(name => {
@@ -5220,7 +5220,7 @@ window.onload = () => {
 
     window.removeGroupMember = (name) => {
         selectedGroupMembers = selectedGroupMembers.filter(m => m !== name);
-        renderSelectedMembers();
+        window.renderSelectedMembers();
     };
 
     document.getElementById('btn-group-create-confirm').onclick = async () => {
@@ -5253,7 +5253,7 @@ window.onload = () => {
             showNotification(`✅ Gruppe "${name}" erstellt!`, 'success');
 
             // Open the new group chat
-            setTimeout(() => startGroupChat(gid, name), 300);
+            setTimeout(() => window.startGroupChat(gid, name), 300);
         } catch(e) {
             showNotification('❌ Fehler beim Erstellen', 'error');
         }
@@ -5267,20 +5267,26 @@ window.onload = () => {
         const gSnap = await get(ref(db, `groups/${activeGroupId}`));
         if(!gSnap.exists()) return;
         const g = gSnap.val();
-        const members = Object.keys(g.members || {});
-        const isAdmin = g.createdBy === myUsername;
+        const members = Object.keys(g.members || {}).filter(m => g.members[m] === true);
+        const admins = g.admins ? Object.keys(g.admins).filter(a => g.admins[a] === true) : [g.createdBy];
+        const isAdmin = admins.includes(myUsername);
 
-        let membersHTML = members.map(m => `
-            <div class="contact-item" style="padding:10px 0;">
+        let membersHTML = members.map(m => {
+            const isMemberAdmin = admins.includes(m);
+            return `
+            <div class="contact-item" style="padding:10px 0; border-bottom:1px solid var(--border-color);">
                 ${getAvatarHTML(m)}
-                <span style="flex:1;">${m}${m === g.createdBy ? ' <span style="font-size:11px;background:var(--primary);color:white;border-radius:10px;padding:1px 7px;">Admin</span>' : ''}</span>
-                ${isAdmin && m !== myUsername ? `<span style="cursor:pointer; color:#dc3545; font-size:13px;" onclick="removeMemberFromGroup('${m}')">Entfernen</span>` : ''}
+                <span style="flex:1;">${m}${isMemberAdmin ? ' <span style="font-size:11px;background:var(--primary);color:white;border-radius:10px;padding:1px 7px;">Admin</span>' : ''}</span>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    ${isAdmin && m !== myUsername && !isMemberAdmin ? `<span style="cursor:pointer; color:var(--primary); font-size:12px;" onclick="makeAdmin('${m}')">👑 Admin</span>` : ''}
+                    ${isAdmin && m !== myUsername ? `<span style="cursor:pointer; color:#dc3545; font-size:12px;" onclick="removeMemberFromGroup('${m}')">Entfernen</span>` : ''}
+                </div>
             </div>
-        `).join('');
+        `}).join('');
 
         document.getElementById('group-info-content').innerHTML = `
             <div style="text-align:center; margin-bottom:16px;">
-                <div class="avatar" style="background:${stringToColor(g.name)}; font-size:40px; width:70px; height:70px; margin:0 auto 10px; font-size:36px;">👥</div>
+                <div class="avatar" style="background:${stringToColor(g.name)}; width:70px; height:70px; margin:0 auto 10px; font-size:36px;">👥</div>
                 <div style="font-size:20px; font-weight:700;">${g.name}</div>
                 <div style="font-size:12px; opacity:0.5;">Erstellt von ${g.createdBy} · ${new Date(g.createdAt).toLocaleDateString('de-DE')}</div>
             </div>
@@ -5295,10 +5301,24 @@ window.onload = () => {
                 </div>
             </div>
             ` : ''}
-            <button onclick="leaveGroup('${activeGroupId}')" style="width:100%; margin-top:10px; background:#dc3545;">🚪 Gruppe verlassen</button>
+            <button onclick="leaveGroup('${activeGroupId}')" style="width:100%; margin-top:14px; background:#dc3545;">🚪 Gruppe verlassen</button>
         `;
 
         document.getElementById('group-info-overlay').style.display = 'flex';
+    };
+
+    window.makeAdmin = async (memberName) => {
+        if(!activeGroupId) return;
+        await update(ref(db, `groups/${activeGroupId}/admins`), { [memberName]: true });
+        push(ref(db, `chats/${activeGroupId}`), {
+            sender: '🤖 System',
+            text: `${memberName} wurde von ${myUsername} zum Admin ernannt.`,
+            timestamp: Date.now(),
+            read: false,
+            isSystem: true
+        });
+        showNotification(`✅ ${memberName} ist jetzt Admin`, 'success');
+        window.openGroupInfo();
     };
 
     window.addMemberToGroup = async () => {
