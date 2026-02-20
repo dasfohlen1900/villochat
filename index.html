@@ -2,8 +2,8 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VilloChat - Version 4.0.3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+    <title>VilloChat - Version 4.1</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -667,7 +667,9 @@
             background: var(--bg); 
             display: flex; 
             gap: 10px; 
-            align-items: center; 
+            align-items: center;
+            /* iOS Safe Area: Abstand zur Home-Indicator-Leiste */
+            padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
         }
         #msg-input { 
             border-radius: 25px; 
@@ -1113,7 +1115,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 4.0.3 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 4.1 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1359,7 +1361,14 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 4.0.3 🌐</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 4.1 📱</h3>
+                <ul style="line-height:1.8;">
+                    <li>📱 <strong>iOS Tastatur-Fix</strong> — Input-Bereich bleibt sichtbar wenn Bildschirmtastatur aufgeht (visualViewport API)</li>
+                    <li>🔒 <strong>Safe Area Support</strong> — Padding für iPhone Home-Indicator (Notch / Dynamic Island) via env(safe-area-inset-bottom)</li>
+                    <li>📐 <strong>viewport-fit=cover</strong> — Korrektes Vollbild-Layout auf iOS ohne weißen Rand</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 4.0.3 🌐</h3>
                 <ul style="line-height:1.8;">
                     <li>🌐 <strong>Download-Link</strong> — Einstellungen → "VilloChat - Download" Button öffnet villochat.de in neuem Tab</li>
                 </ul>
@@ -1660,7 +1669,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 4.0.3</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 4.1</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -4812,6 +4821,76 @@ window.onload = () => {
             console.log('✅ Service Worker registered');
         }).catch(e => console.log('SW failed:', e));
     }
+    
+    // ─────────────────────────────────────────────────────────────
+    // iOS BILDSCHIRMTASTATUR FIX (VilloChat 4.1)
+    // Problem: Safari auf iOS verschiebt das Layout nicht korrekt,
+    //          wenn die Tastatur aufgeht → Input-Bereich verschwindet.
+    // Lösung:  visualViewport API messen und #main-chat exakt
+    //          auf die sichtbare Fläche beschränken.
+    // ─────────────────────────────────────────────────────────────
+    (function iosKeyboardFix() {
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        
+        if (!isIOS && !isSafari) return; // Nur auf iOS/Safari aktiv
+        
+        const mainChat = document.getElementById('main-chat');
+        const chatArea = document.getElementById('chat-area');
+        
+        function applyViewport() {
+            if (!window.visualViewport) return;
+            
+            const vv = window.visualViewport;
+            const offsetTop = vv.offsetTop || 0;
+            const visibleHeight = vv.height;
+            
+            // Setze die Höhe von #chat-area auf die sichtbare Höhe
+            // (d.h. Bildschirm minus Tastatur minus Statusbar)
+            if (chatArea) {
+                chatArea.style.height = visibleHeight + 'px';
+                chatArea.style.top = offsetTop + 'px';
+            }
+            
+            // Nachrichten ans Ende scrollen, damit der Fokus stimmt
+            const msgContainer = document.getElementById('messages-container');
+            if (msgContainer) {
+                requestAnimationFrame(() => {
+                    msgContainer.scrollTop = msgContainer.scrollHeight;
+                });
+            }
+        }
+        
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', applyViewport);
+            window.visualViewport.addEventListener('scroll', applyViewport);
+        }
+        
+        // Zusätzlich: Wenn Input fokussiert wird, kurz warten bis
+        // Tastatur offen ist, dann ans Ende scrollen
+        document.addEventListener('focusin', (e) => {
+            if (e.target.id === 'msg-input' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                setTimeout(() => {
+                    applyViewport();
+                    // Sicherstellen dass Input sichtbar ist
+                    e.target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }, 350); // ~Zeit bis Tastatur offen
+            }
+        });
+        
+        document.addEventListener('focusout', (e) => {
+            if (e.target.id === 'msg-input' || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+                setTimeout(applyViewport, 100);
+            }
+        });
+        
+        // CSS-Fix: verhindert Bounce/Overscroll auf iOS
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
+        document.body.style.overflowY = 'hidden';
+        
+        console.log('📱 iOS Keyboard Fix aktiv');
+    })();
     
     // Install prompt
     let deferredPrompt;
