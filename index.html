@@ -1831,6 +1831,12 @@ let myUsername = "", activeChatId = null, activeContactName = null, currentMode 
 let replyingTo = null;
 let unreadCounts = {};
 
+// Gruppen-Variablen
+let activeGroupId = null;
+let groupsListener = null;
+let groupMessageListeners = {};
+let selectedGroupMembers = [];
+
 marked.setOptions({ breaks: true });
 
 /* ------------------------------ */
@@ -2368,7 +2374,7 @@ function showApp() {
     }, { onlyOnce: false });
 
     // Load groups alongside contacts
-    if(typeof loadGroups === 'function') loadGroups();
+    loadGroups();
 }
 
 
@@ -2469,6 +2475,56 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
     }
 
     d.innerHTML = `${forwardedMark}${replyHTML}${renderMessageContent(m.text||'')}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+}
+
+/* ------------------------------ */
+/* LOAD GROUPS */
+/* ------------------------------ */
+function loadGroups() {
+    if(groupsListener) off(groupsListener);
+    groupsListener = ref(db, `accounts/${myUsername}/groups`);
+    onValue(groupsListener, async (snap) => {
+        const list = document.getElementById('contacts-list');
+        list.querySelectorAll('.group-item').forEach(el => el.remove());
+
+        if(!snap.exists()) return;
+        const groupIds = Object.values(snap.val());
+
+        for(const gid of groupIds) {
+            const gSnap = await get(ref(db, `groups/${gid}`));
+            if(!gSnap.exists()) continue;
+            const g = gSnap.val();
+
+            const d = document.createElement('div');
+            d.className = 'contact-item group-item';
+            d.dataset.groupId = gid;
+            d.innerHTML = `
+                <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px; width:40px; height:40px; margin-right:12px; flex-shrink:0;">👥</div>
+                <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <span>${g.name}</span>
+                        <span style="font-size:10px; opacity:0.5; margin-left:4px;">Gruppe</span>
+                    </div>
+                </div>
+                <span id="group-badge-${gid}" class="unread-badge" style="display:none;"></span>
+            `;
+            d.onclick = () => startGroupChat(gid, g.name);
+            list.prepend(d);
+
+            if(!groupMessageListeners[gid]) {
+                groupMessageListeners[gid] = ref(db, `chats/${gid}`);
+                onChildAdded(groupMessageListeners[gid], (msgSnap) => {
+                    const msg = msgSnap.val();
+                    if(msg.sender !== myUsername && activeChatId !== gid) {
+                        const badge = document.getElementById(`group-badge-${gid}`);
+                        if(badge) badge.style.display = '';
+                        playNotificationSound();
+                        showNotification(`💬 ${msg.sender} in ${g.name}`, 'success');
+                    }
+                });
+            }
+        }
+    });
 }
 
 /* START CHAT & MESSAGES */
@@ -3566,10 +3622,57 @@ const helpArticles = [
             <p>Wähle beim ersten Start <strong>„Neu"</strong> und gib einen Benutzernamen sowie einen <strong>PIN im Format xxxx-xxxx</strong> (8 Ziffern) ein. Beim nächsten Besuch loggst du dich mit „Login" ein.</p>
             <h4>Kontakte hinzufügen</h4>
             <p>Tippe den genauen Benutzernamen in das Suchfeld (linke Sidebar) und drücke <strong>+</strong>. Der Kontakt erscheint sofort in deiner Liste.</p>
+            <h4>Gruppe erstellen</h4>
+            <p>Klicke auf das <strong>👥-Icon</strong> oben in der Sidebar, gib einen Gruppennamen ein, suche Mitglieder per Username und bestätige. Die Gruppe erscheint sofort oben in der Kontaktliste aller Mitglieder.</p>
             <h4>Chatten</h4>
-            <p>Klicke auf einen Kontakt, schreibe deine Nachricht und sende mit <strong>Enter</strong>. Für eine neue Zeile nutze <strong>Shift+Enter</strong>.</p>
+            <p>Klicke auf einen Kontakt oder eine Gruppe, schreibe deine Nachricht und sende mit <strong>Enter</strong>. Für eine neue Zeile nutze <strong>Shift+Enter</strong>.</p>
             <h4>Als App installieren (PWA)</h4>
             <p>VilloChat kann als eigenständige App installiert werden. Nach ein paar Sekunden erscheint der <strong>📲 Als App installieren</strong> Button in den Einstellungen. Klicke darauf und folge den Anweisungen deines Browsers. Die App funktioniert dann auch offline!</p>
+        `
+    },
+    {
+        id: 'groups',
+        icon: '👥',
+        title: 'Gruppen-Chats',
+        body: `
+            <h4>Gruppe erstellen</h4>
+            <p>Klicke auf das <strong>👥-Icon</strong> oben in der Sidebar. Es öffnet sich der Gruppen-Dialog:</p>
+            <ol style="line-height:2;">
+                <li>Einen <strong>Gruppennamen</strong> eingeben (max. 40 Zeichen)</li>
+                <li>Im Suchfeld Mitglieder per Username suchen und mit Klick hinzufügen</li>
+                <li>Hinzugefügte Mitglieder erscheinen als grüne Tags — mit ✕ wieder entfernen</li>
+                <li><strong>✅ Gruppe erstellen</strong> drücken</li>
+            </ol>
+            <p>Die Gruppe wird sofort bei allen Mitgliedern in der Kontaktliste angezeigt (oben, mit 👥-Symbol).</p>
+
+            <h4>In Gruppen schreiben</h4>
+            <p>Nachrichten in Gruppen funktionieren genau wie in 1:1-Chats. Über jeder empfangenen Nachricht wird der <strong>Absender-Name in seiner individuellen Farbe</strong> angezeigt, damit du immer weißt, wer was geschrieben hat.</p>
+
+            <h4>Gruppeninfo öffnen</h4>
+            <p>Klicke auf den <strong>Gruppen-Header</strong> (oben im Chat) oder öffne das ⋮-Menü → <strong>👥 Gruppeninfo</strong>. Dort siehst du:</p>
+            <ul style="font-size:13px; line-height:1.8;">
+                <li>Gruppenname, Erstellungsdatum und Ersteller</li>
+                <li>Alle Mitglieder mit Admin-Kennzeichnung</li>
+                <li>Optionen zum Verwalten (als Admin)</li>
+            </ul>
+
+            <h4>Mitglieder hinzufügen (nur Admin)</h4>
+            <p>In der Gruppeninfo erscheint ein Eingabefeld <strong>„Mitglied hinzufügen"</strong>. Gib den genauen Username ein und drücke <strong>+</strong>. Das neue Mitglied sieht die Gruppe sofort in seiner Kontaktliste. Im Gruppen-Chat erscheint eine automatische <strong>System-Nachricht</strong>.</p>
+
+            <h4>Mitglied entfernen (nur Admin)</h4>
+            <p>In der Gruppeninfo erscheint neben jedem Mitglied (außer dir selbst) ein <strong>„Entfernen"</strong>-Button. Das entfernte Mitglied verliert sofort den Zugriff auf die Gruppe. Eine System-Nachricht informiert alle anderen.</p>
+
+            <h4>Gruppe verlassen</h4>
+            <p>Gruppeninfo öffnen → <strong>🚪 Gruppe verlassen</strong>. Du verlässt die Gruppe sofort und sie verschwindet aus deiner Kontaktliste. Die anderen Mitglieder sehen eine System-Nachricht. Deine bisherigen Nachrichten bleiben im Chatverlauf sichtbar.</p>
+
+            <h4>Tipp-Indikator in Gruppen</h4>
+            <p>Wenn mehrere Mitglieder gleichzeitig schreiben, zeigt der Tipp-Indikator alle Namen an — z.B. <em>„Alice, Bob schreiben..."</em></p>
+
+            <h4>Benachrichtigungen</h4>
+            <p>Neue Gruppen-Nachrichten zeigen einen <strong>roten Badge</strong> neben der Gruppe und eine Popup-Benachrichtigung mit Absender-Name und Gruppenname.</p>
+
+            <h4>Wer ist Admin?</h4>
+            <p>Der Ersteller der Gruppe ist automatisch Admin. Admins sind in der Gruppeninfo mit einem grünen <strong>Admin-Badge</strong> gekennzeichnet. Aktuell kann die Admin-Rolle nicht übertragen werden.</p>
         `
     },
     {
@@ -3589,11 +3692,11 @@ const helpArticles = [
             <h4>Bilder & Embeds</h4>
             <p>Sende einfach eine URL, die auf <code>.jpg .png .gif .webp</code> endet — das Bild wird direkt angezeigt. YouTube- und Vimeo-Links werden als einbettbare Vorschau dargestellt. Klick auf Bilder öffnet eine Vollbild-Ansicht.</p>
             <h4>Abstimmungen erstellen</h4>
-            <p>Klicke auf das <strong>📊-Icon</strong> links neben dem Eingabefeld. Gib eine Frage und 2–4 Optionen ein. Jeder kann abstimmen und die Ergebnisse werden live mit Balken und Prozentzahlen angezeigt. Stimmen können geändert werden!</p>
+            <p>Klicke auf das <strong>📊-Icon</strong> links neben dem Eingabefeld. Gib eine Frage und 2–6 Optionen ein. Auch in Gruppen nutzbar — jedes Mitglied kann abstimmen und die Ergebnisse werden live angezeigt.</p>
             <h4>Nachrichten bearbeiten</h4>
             <p>Rechtsklick auf deine eigene Nachricht → <strong>Bearbeiten</strong>. Der Text wird ins Eingabefeld geladen, bearbeite ihn und drücke Enter. Die Nachricht zeigt dann "(bearbeitet)" an.</p>
             <h4>Für alle löschen</h4>
-            <p>Rechtsklick auf eigene Nachricht → <strong>Für alle löschen</strong>. Die Nachricht wird bei beiden Nutzern durch "🗑️ Nachricht gelöscht" ersetzt.</p>
+            <p>Rechtsklick auf eigene Nachricht → <strong>Für alle löschen</strong>. Die Nachricht wird bei allen Nutzern (auch in Gruppen) durch "🗑️ Nachricht gelöscht" ersetzt.</p>
             <h4>Nachrichten weiterleiten</h4>
             <p>Rechtsklick → <strong>Weiterleiten</strong> → Kontakte auswählen → senden. Die Nachricht wird mit "↪️ Weitergeleitet" markiert.</p>
             <h4>Gepinnte Nachricht</h4>
@@ -3602,7 +3705,7 @@ const helpArticles = [
     },
     {
         id: 'contacts',
-        icon: '👥',
+        icon: '🧑‍🤝‍🧑',
         title: 'Kontakte verwalten',
         body: `
             <h4>Kontakt anpassen</h4>
@@ -3688,9 +3791,9 @@ const helpArticles = [
                 <li>Session-Token für Auto-Login</li>
             </ul>
             <h4>Firebase-Daten</h4>
-            <p>In Firebase werden gespeichert: Nachrichten, Abstimmungen, Avatar-Einstellungen, Status-Text, Online-Status, Kontaktliste.</p>
+            <p>In Firebase werden gespeichert: Nachrichten, Gruppeninformationen & Mitgliederlisten, Abstimmungen, Avatar-Einstellungen, Status-Text, Online-Status, Kontaktliste.</p>
             <h4>Abmelden</h4>
-            <p>Einstellungen → <strong>Abmelden</strong>. Dein Account und deine Nachrichten bleiben in Firebase erhalten. Du kannst dich jederzeit wieder einloggen.</p>
+            <p>Einstellungen → <strong>Abmelden</strong>. Dein Account, deine Nachrichten und deine Gruppen bleiben in Firebase erhalten. Du kannst dich jederzeit wieder einloggen.</p>
         `
     },
     {
@@ -3729,9 +3832,11 @@ const helpArticles = [
         body: `
             <h4>💬 Nachrichten</h4>
             <p>Senden, Bearbeiten, Löschen, Für alle löschen, Kopieren, Weiterleiten, Antworten, Reaktionen (6 Quick-Emojis), Markdown-Formatierung, Bilder via URL, YouTube/Vimeo-Embeds, Anpinnen</p>
+            <h4>👥 Gruppen</h4>
+            <p>Gruppen erstellen, Mitglieder hinzufügen/entfernen (Admin), Gruppe verlassen, Absender-Labels, System-Nachrichten, Gruppen-Tippindikator, Unread-Badges</p>
             <h4>📊 Abstimmungen</h4>
-            <p>Polls mit 2–4 Optionen erstellen, abstimmen, Stimme ändern, Live-Ergebnisse mit Balken</p>
-            <h4>👥 Kontakte</h4>
+            <p>Polls mit 2–6 Optionen erstellen (auch in Gruppen), abstimmen, Stimme ändern, Live-Ergebnisse mit Balken</p>
+            <h4>🧑‍🤝‍🧑 Kontakte</h4>
             <p>Suchen, Hinzufügen, Aliase vergeben, Anpinnen, Stummschalten, Archivieren, Farbe anpassen, private Notizen</p>
             <h4>🎨 Design</h4>
             <p>3 Themes, 13 Akzentfarben, 3 Bubble-Stile, 4 Schriftgrößen, eigene Bubble-Farbe, Chat-Hintergrund, Avatar anpassen, Status-Text</p>
@@ -3744,7 +3849,7 @@ const helpArticles = [
             <h4>📲 PWA</h4>
             <p>Installierbar als App, Offline-fähig, Service Worker</p>
             <h4>📱 Mobile</h4>
-            <p>Swipe-zurück-Geste, Touch-optimiert, Responsive Design</p>
+            <p>Swipe-zurück-Geste, Touch-optimiert, Responsive Design, iOS Tastatur-Fix</p>
             <h4>🔐 Sicherheit</h4>
             <p>PIN-Login, PIN ändern, Verschlüsselungshinweis</p>
             <h4>📥 Export</h4>
@@ -4873,64 +4978,6 @@ window.onload = () => {
         }).catch(e => console.log('SW failed:', e));
     }
     
-    // ─────────────────────────────────────────────────────────────
-    // GRUPPEN-CHATS (VilloChat 4.2)
-    // ─────────────────────────────────────────────────────────────
-
-    let activeGroupId = null; // currently open group (null = 1:1 chat)
-    let groupsListener = null;
-    let groupMessageListeners = {};
-    let selectedGroupMembers = [];
-
-    // ── Gruppen in Sidebar laden ──────────────────────────────────
-    function loadGroups() {
-        if(groupsListener) off(groupsListener);
-        groupsListener = ref(db, `accounts/${myUsername}/groups`);
-        onValue(groupsListener, async (snap) => {
-            // Remove old group items from list
-            const list = document.getElementById('contacts-list');
-            list.querySelectorAll('.group-item').forEach(el => el.remove());
-
-            if(!snap.exists()) return;
-            const groupIds = Object.values(snap.val());
-
-            for(const gid of groupIds) {
-                const gSnap = await get(ref(db, `groups/${gid}`));
-                if(!gSnap.exists()) continue;
-                const g = gSnap.val();
-
-                const d = document.createElement('div');
-                d.className = 'contact-item group-item';
-                d.dataset.groupId = gid;
-                d.innerHTML = `
-                    <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px;">👥</div>
-                    <div style="flex:1; min-width:0;">
-                        <div style="display:flex; align-items:center; gap:4px;">
-                            <span>${g.name}</span>
-                            <span style="font-size:10px; opacity:0.5; margin-left:4px;">Gruppe</span>
-                        </div>
-                    </div>
-                    <span id="group-badge-${gid}" class="unread-badge" style="display:none;"></span>
-                `;
-                d.onclick = () => startGroupChat(gid, g.name);
-                list.prepend(d); // Groups at top
-
-                // Listen for unread group messages
-                if(!groupMessageListeners[gid]) {
-                    groupMessageListeners[gid] = ref(db, `chats/${gid}`);
-                    onChildAdded(groupMessageListeners[gid], (msgSnap) => {
-                        const msg = msgSnap.val();
-                        if(msg.sender !== myUsername && activeChatId !== gid) {
-                            const badge = document.getElementById(`group-badge-${gid}`);
-                            if(badge) badge.style.display = '';
-                            playNotificationSound();
-                            showNotification(`💬 ${msg.sender} in ${g.name}`, 'success');
-                        }
-                    });
-                }
-            }
-        });
-    }
 
     // ── Gruppen-Chat öffnen ───────────────────────────────────────
     async function startGroupChat(gid, gname) {
