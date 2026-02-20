@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 4.1</title>
+    <title>VilloChat - Version 5.0</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1115,7 +1115,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 4.1 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 5.0 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1361,7 +1361,17 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 4.1 📱</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.0 👥</h3>
+                <ul style="line-height:1.8;">
+                    <li>👥 <strong>Gruppen-Chats</strong> — Gruppen erstellen mit beliebig vielen Mitgliedern (👥-Button in der Sidebar)</li>
+                    <li>🏷️ <strong>Absender-Labels</strong> — In Gruppen wird der Name des Senders über jeder Nachricht angezeigt</li>
+                    <li>⚙️ <strong>Gruppeninfo</strong> — Mitglieder anzeigen, hinzufügen, entfernen (nur Admin), Gruppe verlassen</li>
+                    <li>💬 <strong>System-Nachrichten</strong> — Beitreten/Verlassen wird automatisch im Chat angezeigt</li>
+                    <li>🔔 <strong>Gruppen-Benachrichtigungen</strong> — Neue Nachrichten in Gruppen zeigen Badge und Notification</li>
+                    <li>⌨️ <strong>Gruppen-Tippindikator</strong> — Zeigt an, wer gerade in der Gruppe schreibt</li>
+                </ul>
+
+                <h3 style="color:var(--primary);">Version 4.1 📱</h3>
                 <ul style="line-height:1.8;">
                     <li>📱 <strong>iOS Tastatur-Fix</strong> — Input-Bereich bleibt sichtbar wenn Bildschirmtastatur aufgeht (visualViewport API)</li>
                     <li>🔒 <strong>Safe Area Support</strong> — Padding für iPhone Home-Indicator (Notch / Dynamic Island) via env(safe-area-inset-bottom)</li>
@@ -1669,7 +1679,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 4.1</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.0</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -1682,11 +1692,48 @@
         </div>
     </div>
 
+    <!-- GROUP CREATE OVERLAY -->
+    <div id="group-create-overlay" class="overlay">
+        <div class="modal" style="max-width:420px;">
+            <div class="modal-header">
+                <h2>👥 Gruppe erstellen</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('group-create-overlay')">✕</span>
+            </div>
+            <div class="modal-body">
+                <label style="display:block; font-weight:500; margin-bottom:5px;">Gruppenname:</label>
+                <input type="text" id="group-name-input" placeholder="z.B. Freunde, Arbeit..." maxlength="40" style="width:100%; margin-bottom:14px;">
+                <label style="display:block; font-weight:500; margin-bottom:5px;">Mitglieder hinzufügen:</label>
+                <div style="display:flex; gap:6px; margin-bottom:10px;">
+                    <input type="text" id="group-member-search" placeholder="Username suchen..." style="flex:1; margin:0;">
+                    <button id="btn-group-member-search" style="width:50px; margin:0;">🔍</button>
+                </div>
+                <div id="group-member-results" style="max-height:140px; overflow-y:auto; margin-bottom:10px;"></div>
+                <div style="font-weight:500; margin-bottom:5px; font-size:13px;">Ausgewählte Mitglieder:</div>
+                <div id="group-selected-members" style="display:flex; flex-wrap:wrap; gap:6px; min-height:32px; margin-bottom:16px;"></div>
+                <button id="btn-group-create-confirm" style="width:100%;">✅ Gruppe erstellen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- GROUP INFO OVERLAY -->
+    <div id="group-info-overlay" class="overlay">
+        <div class="modal" style="max-width:420px; max-height:80vh;">
+            <div class="modal-header">
+                <h2>👥 Gruppeninfo</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('group-info-overlay')">✕</span>
+            </div>
+            <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
+                <div id="group-info-content"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="chat-area">
         <div id="sidebar">
             <div class="header">
                 <h2 id="my-name-display" style="cursor:pointer;" onclick="openMyProfile()" title="Mein Profil">Profil</h2>
                 <div style="display:flex; gap:8px; align-items:center;">
+                    <span style="cursor:pointer; font-size:18px;" title="Gruppe erstellen" onclick="openGroupCreate()">👥</span>
                     <span style="cursor:pointer; font-size:18px;" onclick="openGlobalSearch()" title="Globale Suche">🔍</span>
                     <span class="settings-btn" onclick="openSettings()">⚙️</span>
                 </div>
@@ -1709,6 +1756,7 @@
                 <div class="menu-container">
                     <span class="menu-dots" onclick="toggleChatMenu()">⋮</span>
                     <div id="chat-menu" class="dropdown-menu">
+                        <div class="menu-item" id="menu-group-info" onclick="openGroupInfo()" style="display:none;">👥 Gruppeninfo</div>
                         <div class="menu-item" onclick="exportChat()">📥 Chat exportieren</div>
                         <div class="menu-item" onclick="searchInChat()">🔍 Nachricht suchen</div>
                         <div class="menu-item" onclick="clearChat()">🗑️ Chat leeren</div>
@@ -2318,10 +2366,12 @@ function showApp() {
             }
         }
     }, { onlyOnce: false });
+
+    // Load groups alongside contacts
+    if(typeof loadGroups === 'function') loadGroups();
 }
 
-/* ------------------------------ */
-/* SEARCH & ADD CONTACTS */
+
 /* ------------------------------ */
 document.getElementById('btn-search').onclick = async () => {
     const s = document.getElementById('search-input').value.trim().toLowerCase();
@@ -4776,7 +4826,8 @@ window.onload = () => {
             const overlays = ['settings-overlay', 'confirm-overlay', 'search-overlay', 'chat-search-overlay', 
                               'alias-overlay', 'user-info-overlay', 'emoji-picker', 'poll-overlay', 
                               'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
-                              'forward-overlay', 'my-profile-overlay', 'changelog-overlay'];
+                              'forward-overlay', 'my-profile-overlay', 'changelog-overlay',
+                              'group-create-overlay', 'group-info-overlay'];
             let anyOpen = false;
             overlays.forEach(id => {
                 const el = document.getElementById(id);
@@ -4823,7 +4874,478 @@ window.onload = () => {
     }
     
     // ─────────────────────────────────────────────────────────────
-    // iOS BILDSCHIRMTASTATUR FIX (VilloChat 4.1)
+    // GRUPPEN-CHATS (VilloChat 4.2)
+    // ─────────────────────────────────────────────────────────────
+
+    let activeGroupId = null; // currently open group (null = 1:1 chat)
+    let groupsListener = null;
+    let groupMessageListeners = {};
+    let selectedGroupMembers = [];
+
+    // ── Gruppen in Sidebar laden ──────────────────────────────────
+    function loadGroups() {
+        if(groupsListener) off(groupsListener);
+        groupsListener = ref(db, `accounts/${myUsername}/groups`);
+        onValue(groupsListener, async (snap) => {
+            // Remove old group items from list
+            const list = document.getElementById('contacts-list');
+            list.querySelectorAll('.group-item').forEach(el => el.remove());
+
+            if(!snap.exists()) return;
+            const groupIds = Object.values(snap.val());
+
+            for(const gid of groupIds) {
+                const gSnap = await get(ref(db, `groups/${gid}`));
+                if(!gSnap.exists()) continue;
+                const g = gSnap.val();
+
+                const d = document.createElement('div');
+                d.className = 'contact-item group-item';
+                d.dataset.groupId = gid;
+                d.innerHTML = `
+                    <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px;">👥</div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            <span>${g.name}</span>
+                            <span style="font-size:10px; opacity:0.5; margin-left:4px;">Gruppe</span>
+                        </div>
+                    </div>
+                    <span id="group-badge-${gid}" class="unread-badge" style="display:none;"></span>
+                `;
+                d.onclick = () => startGroupChat(gid, g.name);
+                list.prepend(d); // Groups at top
+
+                // Listen for unread group messages
+                if(!groupMessageListeners[gid]) {
+                    groupMessageListeners[gid] = ref(db, `chats/${gid}`);
+                    onChildAdded(groupMessageListeners[gid], (msgSnap) => {
+                        const msg = msgSnap.val();
+                        if(msg.sender !== myUsername && activeChatId !== gid) {
+                            const badge = document.getElementById(`group-badge-${gid}`);
+                            if(badge) badge.style.display = '';
+                            playNotificationSound();
+                            showNotification(`💬 ${msg.sender} in ${g.name}`, 'success');
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    // ── Gruppen-Chat öffnen ───────────────────────────────────────
+    async function startGroupChat(gid, gname) {
+        if(chatRef) off(chatRef);
+        if(typingRef) off(typingRef);
+        if(onlineStatusListener) off(onlineStatusListener);
+
+        activeChatId = gid;
+        activeGroupId = gid;
+        activeContactName = gname;
+
+        // Hide badge
+        const badge = document.getElementById(`group-badge-${gid}`);
+        if(badge) badge.style.display = 'none';
+
+        // Show group info menu item
+        const groupMenuItem = document.getElementById('menu-group-info');
+        if(groupMenuItem) groupMenuItem.style.display = '';
+
+        // Header
+        document.getElementById('chat-header').innerHTML = `
+            <div style="display:flex;align-items:center; flex:1; cursor:pointer;" onclick="openGroupInfo()">
+                <div class="avatar" style="background:${stringToColor(gname)}; font-size:20px; width:36px; height:36px; margin-right:10px;">👥</div>
+                <div>
+                    <div>${gname}</div>
+                    <div id="group-member-count" style="font-size:11px; opacity:0.6;"></div>
+                </div>
+            </div>
+        `;
+
+        // Load members for header count
+        const gSnap = await get(ref(db, `groups/${gid}`));
+        if(gSnap.exists()) {
+            const members = Object.keys(gSnap.val().members || {});
+            const countEl = document.getElementById('group-member-count');
+            if(countEl) countEl.textContent = `${members.length} Mitglieder`;
+        }
+
+        // Reset encryption notice
+        const encNotice = document.getElementById('encryption-notice');
+        if(encNotice) { encNotice.classList.remove('hidden'); setTimeout(() => encNotice.classList.add('hidden'), 4000); }
+
+        const messagesContainer = document.getElementById('messages-container');
+        messagesContainer.innerHTML = '';
+        const emptyState = document.getElementById('empty-chat-state');
+        if(emptyState) emptyState.style.display = 'none';
+
+        document.getElementById('chat-area').classList.add('chat-open');
+        document.title = `VilloChat - ${gname}`;
+
+        const contactColors = JSON.parse(localStorage.getItem('contact_colors') || '{}');
+        let lastDate = '';
+        let isInitialLoad = true;
+        const shouldAutoScroll = () => {
+            const c = messagesContainer;
+            return isInitialLoad || (c.scrollHeight - c.scrollTop - c.clientHeight < 120);
+        };
+
+        chatRef = ref(db, `chats/${gid}`);
+
+        onChildAdded(chatRef, (s) => {
+            const m = s.val();
+            const msgDate = getDateLabel(m.timestamp);
+
+            if(msgDate !== lastDate) {
+                const sep = document.createElement('div');
+                sep.className = 'date-separator';
+                sep.innerHTML = `<span>${msgDate}</span>`;
+                messagesContainer.appendChild(sep);
+                lastDate = msgDate;
+            }
+
+            const d = document.createElement('div');
+            d.className = 'msg ' + (m.sender === myUsername ? 'sent' : 'received');
+            d.id = 'm-' + s.key;
+            d.dataset.msgKey = s.key;
+            d.dataset.msgText = m.text || '';
+            d.dataset.msgSender = m.sender;
+
+            const time = new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            const fullDate = new Date(m.timestamp).toLocaleString('de-DE', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+            // Group: show sender name above received messages
+            if(m.sender !== myUsername) {
+                const senderLabel = document.createElement('div');
+                senderLabel.style.cssText = `font-size:11px; font-weight:600; color:${stringToColor(m.sender)}; margin-bottom:2px; margin-left:4px;`;
+                senderLabel.textContent = m.sender;
+                d.prepend(senderLabel); // temporary, renderMessageEl will overwrite
+            }
+
+            renderGroupMessageEl(d, m, s.key, time, fullDate, contactColors);
+
+            d.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                showMessageContextMenu(e, s.key, m.text, m.sender);
+            });
+            let pressTimer;
+            d.addEventListener('touchstart', (e) => {
+                pressTimer = setTimeout(() => showMessageContextMenu(e.touches[0], s.key, m.text, m.sender), 500);
+            });
+            d.addEventListener('touchend', () => clearTimeout(pressTimer));
+            d.addEventListener('touchmove', () => clearTimeout(pressTimer));
+
+            messagesContainer.appendChild(d);
+            if(shouldAutoScroll()) messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+            // Mark as read (group: just track locally)
+        });
+
+        onChildChanged(chatRef, (s) => {
+            const m = s.val();
+            const el = document.getElementById(`m-${s.key}`);
+            if(!el) return;
+            const time = new Date(m.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+            const fullDate = new Date(m.timestamp).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+            el.dataset.msgText = m.text || '';
+            renderGroupMessageEl(el, m, s.key, time, fullDate, contactColors);
+        });
+
+        onChildRemoved(chatRef, s => {
+            const el = document.getElementById('m-' + s.key);
+            if(el) el.remove();
+        });
+
+        // Group typing indicator — show all who are typing
+        typingRef = ref(db, `typing/${gid}`);
+        onValue(typingRef, s => {
+            if(!s.exists()) { document.getElementById('typing-status').innerText = ''; return; }
+            const typing = Object.entries(s.val())
+                .filter(([user, v]) => v && user !== myUsername)
+                .map(([user]) => user);
+            document.getElementById('typing-status').innerText = typing.length
+                ? typing.join(', ') + (typing.length === 1 ? ' schreibt...' : ' schreiben...')
+                : '';
+        });
+
+        requestAnimationFrame(() => { isInitialLoad = false; });
+        setTimeout(initScrollButton, 100);
+        setTimeout(loadPinnedMessage, 300);
+    }
+
+    // ── Render group message (with sender label for received) ─────
+    function renderGroupMessageEl(d, m, msgKey, time, fullDate, contactColors) {
+        if(m.deletedForAll) {
+            d.innerHTML = `<em style="opacity:0.4; font-size:12px;">🗑️ Nachricht gelöscht</em>`;
+            d.style.background = 'transparent';
+            d.style.boxShadow = 'none';
+            return;
+        }
+        d.style.background = '';
+        d.style.boxShadow = '';
+
+        let senderLabel = '';
+        if(m.sender !== myUsername) {
+            senderLabel = `<div style="font-size:11px; font-weight:600; color:${stringToColor(m.sender)}; margin-bottom:2px;">${m.sender}</div>`;
+        }
+
+        let replyHTML = '';
+        if(m.replyTo) {
+            replyHTML = `<div class="reply-quote"><div class="reply-sender">${m.replyTo.sender}</div><div>${m.replyTo.text.substring(0,50)}${m.replyTo.text.length>50?'...':''}</div></div>`;
+        }
+
+        let reactionsHTML = '';
+        if(m.reactions) {
+            reactionsHTML = '<div class="msg-reactions">';
+            Object.entries(m.reactions).forEach(([emoji, users]) => {
+                const hasMyReaction = users.includes(myUsername);
+                const escapedEmoji = emoji.replace(/'/g, '&apos;');
+                reactionsHTML += `<span class="msg-reaction ${hasMyReaction?'my-reaction':''}" data-msgkey="${msgKey}" data-emoji="${escapedEmoji}">${emoji} ${users.length}</span>`;
+            });
+            reactionsHTML += '</div>';
+        }
+
+        const checkmark = m.sender === myUsername ? `<span class="msg-status check-sent">✓</span>` : '';
+        const editedMark = m.edited ? '<span class="msg-edited">(bearbeitet)</span>' : '';
+        const safeText = (m.text||'').replace(/`/g,'\\`');
+        const replyIcon = `<span class="msg-menu" onclick="replyToMsg('${msgKey}','${m.sender}',\`${safeText}\`)">↩️</span>`;
+        const delIcon = m.sender === myUsername ? `<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${msgKey}')">🗑</span>` : '';
+
+        if(m.poll) {
+            d.innerHTML = `${senderLabel}${replyHTML}${renderPoll(msgKey, m.poll)}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+            return;
+        }
+
+        d.innerHTML = `${senderLabel}${replyHTML}${renderMessageContent(m.text||'')}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+    }
+
+    // ── Gruppe erstellen Dialog ───────────────────────────────────
+    window.openGroupCreate = () => {
+        selectedGroupMembers = [];
+        document.getElementById('group-name-input').value = '';
+        document.getElementById('group-member-results').innerHTML = '';
+        document.getElementById('group-selected-members').innerHTML = '';
+        document.getElementById('group-create-overlay').style.display = 'flex';
+    };
+
+    document.getElementById('btn-group-member-search').onclick = async () => {
+        const s = document.getElementById('group-member-search').value.trim().toLowerCase();
+        if(!s) return;
+        const q = query(ref(db, 'accounts'), orderByChild('id'), startAt(s), endAt(s+"\uf8ff"));
+        const snap = await get(q);
+        const results = document.getElementById('group-member-results');
+        results.innerHTML = '';
+        if(!snap.exists()) { results.innerHTML = '<div style="opacity:0.5;font-size:13px;padding:6px;">Keine Ergebnisse</div>'; return; }
+        Object.values(snap.val()).forEach(acc => {
+            const name = acc.username;
+            if(name === myUsername || selectedGroupMembers.includes(name)) return;
+            const item = document.createElement('div');
+            item.className = 'contact-item';
+            item.style.padding = '8px 12px';
+            item.innerHTML = `${getAvatarHTML(name)} <span style="flex:1;">${name}</span> <span style="color:var(--primary);">+</span>`;
+            item.onclick = () => addGroupMember(name);
+            results.appendChild(item);
+        });
+    };
+
+    // Allow enter in member search
+    document.getElementById('group-member-search').addEventListener('keydown', (e) => {
+        if(e.key === 'Enter') document.getElementById('btn-group-member-search').click();
+    });
+
+    function addGroupMember(name) {
+        if(selectedGroupMembers.includes(name)) return;
+        selectedGroupMembers.push(name);
+        renderSelectedMembers();
+        document.getElementById('group-member-results').innerHTML = '';
+        document.getElementById('group-member-search').value = '';
+    }
+
+    function renderSelectedMembers() {
+        const container = document.getElementById('group-selected-members');
+        container.innerHTML = '';
+        selectedGroupMembers.forEach(name => {
+            const tag = document.createElement('div');
+            tag.style.cssText = `display:flex; align-items:center; gap:5px; background:var(--primary); color:white; border-radius:20px; padding:4px 10px; font-size:13px;`;
+            tag.innerHTML = `${name} <span style="cursor:pointer; opacity:0.8;" onclick="removeGroupMember('${name}')">✕</span>`;
+            container.appendChild(tag);
+        });
+    }
+
+    window.removeGroupMember = (name) => {
+        selectedGroupMembers = selectedGroupMembers.filter(m => m !== name);
+        renderSelectedMembers();
+    };
+
+    document.getElementById('btn-group-create-confirm').onclick = async () => {
+        const name = document.getElementById('group-name-input').value.trim();
+        if(!name) { showNotification('❌ Bitte Gruppenname eingeben', 'error'); return; }
+        if(selectedGroupMembers.length === 0) { showNotification('❌ Mindestens 1 Mitglied hinzufügen', 'error'); return; }
+
+        const btn = document.getElementById('btn-group-create-confirm');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loading-spinner"></span>';
+
+        try {
+            const allMembers = [myUsername, ...selectedGroupMembers];
+            const groupRef_new = push(ref(db, 'groups'));
+            const gid = groupRef_new.key;
+
+            await set(groupRef_new, {
+                name,
+                createdBy: myUsername,
+                createdAt: Date.now(),
+                members: Object.fromEntries(allMembers.map(m => [m, true]))
+            });
+
+            // Add group to all members' accounts
+            for(const member of allMembers) {
+                await push(ref(db, `accounts/${member}/groups`), gid);
+            }
+
+            closeOverlay('group-create-overlay');
+            showNotification(`✅ Gruppe "${name}" erstellt!`, 'success');
+
+            // Open the new group chat
+            setTimeout(() => startGroupChat(gid, name), 300);
+        } catch(e) {
+            showNotification('❌ Fehler beim Erstellen', 'error');
+        }
+        btn.disabled = false;
+        btn.innerHTML = '✅ Gruppe erstellen';
+    };
+
+    // ── Gruppeninfo anzeigen ──────────────────────────────────────
+    window.openGroupInfo = async () => {
+        if(!activeGroupId) return;
+        const gSnap = await get(ref(db, `groups/${activeGroupId}`));
+        if(!gSnap.exists()) return;
+        const g = gSnap.val();
+        const members = Object.keys(g.members || {});
+        const isAdmin = g.createdBy === myUsername;
+
+        let membersHTML = members.map(m => `
+            <div class="contact-item" style="padding:10px 0;">
+                ${getAvatarHTML(m)}
+                <span style="flex:1;">${m}${m === g.createdBy ? ' <span style="font-size:11px;background:var(--primary);color:white;border-radius:10px;padding:1px 7px;">Admin</span>' : ''}</span>
+                ${isAdmin && m !== myUsername ? `<span style="cursor:pointer; color:#dc3545; font-size:13px;" onclick="removeMemberFromGroup('${m}')">Entfernen</span>` : ''}
+            </div>
+        `).join('');
+
+        document.getElementById('group-info-content').innerHTML = `
+            <div style="text-align:center; margin-bottom:16px;">
+                <div class="avatar" style="background:${stringToColor(g.name)}; font-size:40px; width:70px; height:70px; margin:0 auto 10px; font-size:36px;">👥</div>
+                <div style="font-size:20px; font-weight:700;">${g.name}</div>
+                <div style="font-size:12px; opacity:0.5;">Erstellt von ${g.createdBy} · ${new Date(g.createdAt).toLocaleDateString('de-DE')}</div>
+            </div>
+            <div style="font-weight:600; margin-bottom:8px;">${members.length} Mitglieder</div>
+            ${membersHTML}
+            ${isAdmin ? `
+            <div style="margin-top:16px; border-top:1px solid var(--border-color); padding-top:14px;">
+                <div style="font-weight:600; margin-bottom:8px;">Mitglied hinzufügen:</div>
+                <div style="display:flex; gap:6px; margin-bottom:8px;">
+                    <input type="text" id="group-add-member-input" placeholder="Username..." style="flex:1; margin:0;">
+                    <button onclick="addMemberToGroup()" style="width:50px; margin:0;">+</button>
+                </div>
+            </div>
+            ` : ''}
+            <button onclick="leaveGroup('${activeGroupId}')" style="width:100%; margin-top:10px; background:#dc3545;">🚪 Gruppe verlassen</button>
+        `;
+
+        document.getElementById('group-info-overlay').style.display = 'flex';
+    };
+
+    window.addMemberToGroup = async () => {
+        const input = document.getElementById('group-add-member-input');
+        const newMember = input.value.trim();
+        if(!newMember || !activeGroupId) return;
+        const accSnap = await get(ref(db, `accounts/${newMember}`));
+        if(!accSnap.exists()) { showNotification('❌ User nicht gefunden', 'error'); return; }
+
+        await update(ref(db, `groups/${activeGroupId}/members`), { [newMember]: true });
+        await push(ref(db, `accounts/${newMember}/groups`), activeGroupId);
+
+        // System message
+        push(ref(db, `chats/${activeGroupId}`), {
+            sender: '🤖 System',
+            text: `${newMember} wurde von ${myUsername} hinzugefügt.`,
+            timestamp: Date.now(),
+            read: false,
+            isSystem: true
+        });
+
+        input.value = '';
+        showNotification(`✅ ${newMember} hinzugefügt`, 'success');
+        openGroupInfo(); // Refresh
+    };
+
+    window.removeMemberFromGroup = async (memberName) => {
+        if(!activeGroupId) return;
+        await update(ref(db, `groups/${activeGroupId}/members`), { [memberName]: null });
+
+        // Remove group from member's account list
+        const gSnap = await get(ref(db, `accounts/${memberName}/groups`));
+        if(gSnap.exists()) {
+            Object.entries(gSnap.val()).forEach(([key, val]) => {
+                if(val === activeGroupId) remove(ref(db, `accounts/${memberName}/groups/${key}`));
+            });
+        }
+
+        push(ref(db, `chats/${activeGroupId}`), {
+            sender: '🤖 System',
+            text: `${memberName} wurde von ${myUsername} entfernt.`,
+            timestamp: Date.now(),
+            read: false,
+            isSystem: true
+        });
+
+        showNotification(`✅ ${memberName} entfernt`, 'success');
+        openGroupInfo(); // Refresh
+    };
+
+    window.leaveGroup = async (gid) => {
+        if(!gid) return;
+        closeOverlay('group-info-overlay');
+
+        await update(ref(db, `groups/${gid}/members`), { [myUsername]: null });
+        const myGroupsSnap = await get(ref(db, `accounts/${myUsername}/groups`));
+        if(myGroupsSnap.exists()) {
+            Object.entries(myGroupsSnap.val()).forEach(([key, val]) => {
+                if(val === gid) remove(ref(db, `accounts/${myUsername}/groups/${key}`));
+            });
+        }
+
+        push(ref(db, `chats/${gid}`), {
+            sender: '🤖 System',
+            text: `${myUsername} hat die Gruppe verlassen.`,
+            timestamp: Date.now(),
+            read: false,
+            isSystem: true
+        });
+
+        showNotification('👋 Gruppe verlassen', 'success');
+        closeChat();
+    };
+
+    // ── Patch closeChat to reset group state ──────────────────────
+    const _origCloseChat = window.closeChat;
+    window.closeChat = () => {
+        activeGroupId = null;
+        const groupMenuItem = document.getElementById('menu-group-info');
+        if(groupMenuItem) groupMenuItem.style.display = 'none';
+        _origCloseChat();
+    };
+
+    // ── Patch showApp to also load groups ─────────────────────────
+    const _origShowApp = showApp;
+    // We hook into the contacts listener callback — groups load separately
+    // Call loadGroups after showApp runs
+    const origShowAppFn = window.showApp;
+
+    // Override the exported showApp reference used inside closeChat
+    // Since showApp is a local function, we call loadGroups after auth
+    // This is done by hooking into the auth success path below
+
+
     // Problem: Safari auf iOS verschiebt das Layout nicht korrekt,
     //          wenn die Tastatur aufgeht → Input-Bereich verschwindet.
     // Lösung:  visualViewport API messen und #main-chat exakt
