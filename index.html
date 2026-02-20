@@ -3672,7 +3672,7 @@ const helpArticles = [
             <p>Neue Gruppen-Nachrichten zeigen einen <strong>roten Badge</strong> neben der Gruppe und eine Popup-Benachrichtigung mit Absender-Name und Gruppenname.</p>
 
             <h4>Wer ist Admin?</h4>
-            <p>Der Ersteller der Gruppe ist automatisch Admin. Admins sind in der Gruppeninfo mit einem grünen <strong>Admin-Badge</strong> gekennzeichnet. Aktuell kann die Admin-Rolle nicht übertragen werden.</p>
+            <p>Der Ersteller der Gruppe ist automatisch Admin. Jeder Admin kann weitere Mitglieder zum Admin ernennen (👑 Admin-Button in der Gruppeninfo) oder ihnen den Status wieder entziehen (👑 Entziehen). Es muss immer mindestens ein Admin in der Gruppe bleiben.</p>
         `
     },
     {
@@ -5241,7 +5241,8 @@ window.onload = () => {
                 name,
                 createdBy: myUsername,
                 createdAt: Date.now(),
-                members: Object.fromEntries(allMembers.map(m => [m, true]))
+                members: Object.fromEntries(allMembers.map(m => [m, true])),
+                admins: { [myUsername]: true }
             });
 
             // Add group to all members' accounts
@@ -5273,12 +5274,14 @@ window.onload = () => {
 
         let membersHTML = members.map(m => {
             const isMemberAdmin = admins.includes(m);
+            const canRemoveAdmin = isAdmin && isMemberAdmin && m !== myUsername && admins.length > 1;
             return `
             <div class="contact-item" style="padding:10px 0; border-bottom:1px solid var(--border-color);">
                 ${getAvatarHTML(m)}
                 <span style="flex:1;">${m}${isMemberAdmin ? ' <span style="font-size:11px;background:var(--primary);color:white;border-radius:10px;padding:1px 7px;">Admin</span>' : ''}</span>
                 <div style="display:flex; gap:8px; align-items:center;">
                     ${isAdmin && m !== myUsername && !isMemberAdmin ? `<span style="cursor:pointer; color:var(--primary); font-size:12px;" onclick="makeAdmin('${m}')">👑 Admin</span>` : ''}
+                    ${canRemoveAdmin ? `<span style="cursor:pointer; color:#f39c12; font-size:12px;" onclick="removeAdmin('${m}')">👑 Entziehen</span>` : ''}
                     ${isAdmin && m !== myUsername ? `<span style="cursor:pointer; color:#dc3545; font-size:12px;" onclick="removeMemberFromGroup('${m}')">Entfernen</span>` : ''}
                 </div>
             </div>
@@ -5318,6 +5321,27 @@ window.onload = () => {
             isSystem: true
         });
         showNotification(`✅ ${memberName} ist jetzt Admin`, 'success');
+        window.openGroupInfo();
+    };
+
+    window.removeAdmin = async (memberName) => {
+        if(!activeGroupId) return;
+        // Safety check: at least one admin must remain
+        const gSnap = await get(ref(db, `groups/${activeGroupId}/admins`));
+        const currentAdmins = gSnap.exists() ? Object.keys(gSnap.val()).filter(a => gSnap.val()[a] === true) : [];
+        if(currentAdmins.length <= 1) {
+            showNotification('⚠️ Mindestens ein Admin muss übrig bleiben', 'error');
+            return;
+        }
+        await update(ref(db, `groups/${activeGroupId}/admins`), { [memberName]: null });
+        push(ref(db, `chats/${activeGroupId}`), {
+            sender: '🤖 System',
+            text: `${memberName} wurden die Admin-Rechte von ${myUsername} entzogen.`,
+            timestamp: Date.now(),
+            read: false,
+            isSystem: true
+        });
+        showNotification(`✅ Admin-Rechte von ${memberName} entzogen`, 'success');
         window.openGroupInfo();
     };
 
