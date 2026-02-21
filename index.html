@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.1</title>
+    <title>VilloChat - Version 5.2</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1176,7 +1176,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 5.1 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 5.2 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1422,7 +1422,13 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.1 🔍</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.2 🔗</h3>
+                <ul>
+                    <li>🔗 <strong>Gruppen-Einladungslink</strong> — Link kopieren & teilen; Empfänger treten nach Login automatisch bei</li>
+                    <li>📝 <strong>Gruppen-Beschreibung</strong> — Admins können eine Kurzbeschreibung setzen, sichtbar für alle Mitglieder</li>
+                    <li>📌 <strong>Nachrichten in Gruppen anheften</strong> — Gleiches System wie in 1:1-Chats, via Firebase für alle sichtbar</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.1 🔍</h3>
                 <ul>
                     <li>🔍 <strong>Nachrichtensuche in Gruppen</strong> — Absender farbig hervorgehoben, Suchbegriff markiert</li>
                     <li>✏️ <strong>Gruppe umbenennen</strong> — Admins können Gruppenname direkt in der Gruppeninfo ändern</li>
@@ -1749,7 +1755,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.1</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.2</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -2502,6 +2508,33 @@ function showApp() {
 
     // Load groups alongside contacts
     loadGroups();
+
+    // Handle invite link (?join=groupId)
+    const joinParam = new URLSearchParams(location.search).get('join');
+    if(joinParam) {
+        history.replaceState({}, '', location.pathname); // Clean URL
+        setTimeout(async () => {
+            const gSnap = await get(ref(db, `groups/${joinParam}`));
+            if(!gSnap.exists()) { showNotification('❌ Gruppe nicht gefunden', 'error'); return; }
+            const g = gSnap.val();
+            if(g.members && g.members[myUsername]) {
+                // Already member — just open
+                window.startGroupChat(joinParam, g.name);
+                return;
+            }
+            // Add user to group
+            await update(ref(db, `groups/${joinParam}/members`), { [myUsername]: true });
+            await push(ref(db, `accounts/${myUsername}/groups`), joinParam);
+            push(ref(db, `chats/${joinParam}`), {
+                sender: '🤖 System',
+                text: `${myUsername} ist über einen Einladungslink beigetreten.`,
+                timestamp: Date.now(), read: false, isSystem: true
+            });
+            showNotification(`✅ Gruppe „${g.name}" beigetreten!`, 'success');
+            loadGroups();
+            setTimeout(() => window.startGroupChat(joinParam, g.name), 500);
+        }, 800);
+    }
 }
 
 
@@ -2644,6 +2677,9 @@ function loadGroups() {
             d.dataset.groupId = gid;
             d.innerHTML = `
                 <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px; width:40px; height:40px; margin-right:12px; flex-shrink:0;">${g.avatar || '👥'}</div>
+                <div style="flex:1; min-width:0;">
+                    <div style="display:flex; align-items:center; gap:4px;">
+                        <span>${g.name}</span>
                         <span style="font-size:10px; opacity:0.5; margin-left:4px;">Gruppe</span>
                         ${isMuted ? '<span class="muted-icon">🔇</span>' : ''}
                     </div>
@@ -5593,20 +5629,32 @@ window.onload = () => {
                 ` : ''}
                 <div style="font-size:20px; font-weight:700;">${g.name}</div>
                 <div style="font-size:12px; opacity:0.5;">Erstellt von ${g.createdBy} · ${new Date(g.createdAt).toLocaleDateString('de-DE')}</div>
+                ${g.description ? `<div style="font-size:13px; opacity:0.7; margin-top:6px; font-style:italic;">${g.description}</div>` : ''}
             </div>
             ${isAdmin ? `
-            <div style="display:flex; gap:6px; margin-bottom:14px;">
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
                 <input type="text" id="group-rename-input" placeholder="Gruppe umbenennen..." value="${g.name}" style="flex:1; margin:0;">
                 <button onclick="renameGroup()" style="width:50px; margin:0;">✏️</button>
             </div>
+            <div style="display:flex; gap:6px; margin-bottom:14px;">
+                <input type="text" id="group-desc-input" placeholder="Beschreibung..." value="${g.description || ''}" style="flex:1; margin:0;">
+                <button onclick="saveGroupDescription()" style="width:50px; margin:0;">💾</button>
+            </div>
             ` : ''}
-            <div style="display:flex; gap:8px; margin-bottom:14px;">
+            <div style="display:flex; gap:8px; margin-bottom:10px;">
                 <button id="btn-group-mute" onclick="toggleMuteGroup('${activeGroupId}')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">
                     ${getMutedChats().includes(activeGroupId) ? '🔊 Laut' : '🔇 Stumm'}
                 </button>
                 <button id="btn-group-archive" onclick="toggleArchiveGroup('${activeGroupId}')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">
                     ${getArchivedChats().includes(activeGroupId) ? '📤 Aus Archiv' : '🗂️ Archivieren'}
                 </button>
+            </div>
+            <div style="margin-bottom:14px; padding:10px 12px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color);">
+                <div style="font-size:11px; opacity:0.5; margin-bottom:4px;">EINLADUNGSLINK</div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <code style="flex:1; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.7;">${location.origin}${location.pathname}?join=${activeGroupId}</code>
+                    <button onclick="copyInviteLink('${activeGroupId}')" style="padding:4px 10px; margin:0; font-size:12px; white-space:nowrap;">📋 Kopieren</button>
+                </div>
             </div>
             <div style="font-weight:600; margin-bottom:8px;">${members.length} Mitglieder</div>
             ${membersHTML}
@@ -5623,6 +5671,22 @@ window.onload = () => {
         `;
 
         document.getElementById('group-info-overlay').style.display = 'flex';
+    };
+
+    window.saveGroupDescription = async () => {
+        if(!activeGroupId) return;
+        const input = document.getElementById('group-desc-input');
+        const desc = input ? input.value.trim() : '';
+        await update(ref(db, `groups/${activeGroupId}`), { description: desc });
+        showNotification('✅ Beschreibung gespeichert', 'success');
+        window.openGroupInfo();
+    };
+
+    window.copyInviteLink = (gid) => {
+        const link = `${location.origin}${location.pathname}?join=${gid}`;
+        navigator.clipboard.writeText(link).then(() => {
+            showNotification('📋 Einladungslink kopiert!', 'success');
+        });
     };
 
     window.makeAdmin = async (memberName) => {
