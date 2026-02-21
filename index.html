@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.0</title>
+    <title>VilloChat - Version 5.1</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -52,6 +53,67 @@
             --msg-received: #1f2c33;
             --border-color: #2d3a41;
             --input-bg: #2a3942;
+        }
+
+        /* Dark Mode — extended rules */
+        body.dark-mode .modal {
+            background: #1f2c33;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        body.dark-mode .overlay {
+            background: rgba(0,0,0,0.75);
+        }
+        body.dark-mode input,
+        body.dark-mode textarea,
+        body.dark-mode select {
+            background: var(--input-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        body.dark-mode input::placeholder,
+        body.dark-mode textarea::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+        body.dark-mode button {
+            border-color: var(--border-color);
+        }
+        body.dark-mode .dropdown-menu {
+            background: #233038;
+            border-color: var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        body.dark-mode .menu-item:hover {
+            background: rgba(255,255,255,0.06);
+        }
+        body.dark-mode .msg-context-menu {
+            background: #233038;
+            border-color: var(--border-color);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+        }
+        body.dark-mode .msg-context-item:hover {
+            background: rgba(255,255,255,0.07);
+        }
+        body.dark-mode .contact-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        body.dark-mode .contact-item.active {
+            background: rgba(37,211,102,0.12);
+        }
+        body.dark-mode .reply-quote {
+            background: rgba(255,255,255,0.06);
+            border-color: var(--primary);
+        }
+        body.dark-mode mark {
+            background: rgba(255,230,0,0.35);
+            color: var(--text-color);
+        }
+        body.dark-mode .pinned-msg-bar {
+            background: #1a2b34;
+            border-color: var(--border-color);
+        }
+        body.dark-mode #emoji-picker-container {
+            background: #1a2b34;
+            border-color: var(--border-color);
         }
         
         body {
@@ -1115,7 +1177,7 @@
                 
                 <p>Nutzer: <b id="set-username"></b></p>
                 <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 5.0 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
+                    Version 5.1 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
                 </p>
                 
                 <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
@@ -1361,7 +1423,16 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.0 👥</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.1 🔍</h3>
+                <ul>
+                    <li>🔍 <strong>Nachrichtensuche in Gruppen</strong> — Absender farbig hervorgehoben, Suchbegriff markiert</li>
+                    <li>✏️ <strong>Gruppe umbenennen</strong> — Admins können Gruppenname direkt in der Gruppeninfo ändern</li>
+                    <li>🎨 <strong>Gruppen-Avatar</strong> — Emoji aus 20 Optionen wählbar, wird für alle sichtbar gespeichert</li>
+                    <li>ℹ️ <strong>Nachrichteninfo</strong> — Gesendet-Zeit, Absender, Bearbeitungszeitpunkt; in Gruppen: wer hat wann gelesen</li>
+                    <li>🌙 <strong>Dark Mode Verbesserungen</strong> — Modals, Inputs, Dropdown-Menüs, Kontextmenü, Reactions, Emoji-Picker, Mark-Highlight</li>
+                    <li>👑 <strong>Ersteller immer Admin</strong> — Wird auch bei bestehenden Gruppen automatisch gesetzt</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.0 👥</h3>
                 <ul style="line-height:1.8;">
                     <li>👥 <strong>Gruppen-Chats</strong> — Gruppen erstellen mit beliebig vielen Mitgliedern (👥-Button in der Sidebar)</li>
                     <li>🏷️ <strong>Absender-Labels</strong> — In Gruppen wird der Name des Senders über jeder Nachricht angezeigt</li>
@@ -1679,7 +1750,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.0</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.1</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -1689,6 +1760,20 @@
                 <input type="password" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9" autocomplete="current-password" name="password">
                 <button id="btn-auth" type="submit" style="width:100%;">Starten</button>
             </form>
+            <button onclick="if(window.openHelp) window.openHelp(); else document.getElementById('help-overlay').style.display='flex';" style="width:100%; margin-top:10px; background:transparent; color:#999; border:1px solid #ddd; font-size:13px;">❓ Brauchst du Hilfe?</button>
+        </div>
+    </div>
+
+    <!-- MESSAGE INFO OVERLAY -->
+    <div id="msg-info-overlay" class="overlay">
+        <div class="modal" style="max-width:420px; max-height:80vh;">
+            <div class="modal-header">
+                <h2>ℹ️ Nachrichteninfo</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('msg-info-overlay')">✕</span>
+            </div>
+            <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
+                <div id="msg-info-content"></div>
+            </div>
         </div>
     </div>
 
@@ -2160,11 +2245,54 @@ function initAccentColorPicker() {
 /* ------------------------------ */
 /* NOTIFICATION SYSTEM */
 /* ------------------------------ */
+function playErrorSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        // Zwei kurze absteigende Töne — klassischer Fehlersound
+        [0, 0.18].forEach((delay, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'square';
+            osc.frequency.value = i === 0 ? 440 : 330;
+            gain.gain.setValueAtTime(0.18, ctx.currentTime + delay);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.15);
+            osc.start(ctx.currentTime + delay);
+            osc.stop(ctx.currentTime + delay + 0.15);
+        });
+    } catch(e) {}
+}
+
+function playWarningSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(600, ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(500, ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.18, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.2);
+    } catch(e) {}
+}
+
 function showNotification(message, type = 'success') {
     const toast = document.getElementById('notification-toast');
     toast.textContent = message;
     toast.className = `notification-toast ${type}`;
     toast.style.display = 'flex';
+
+    // Fehlersound / Warnsound
+    const soundEnabled = localStorage.getItem('villo_sound') === 'true';
+    if(soundEnabled) {
+        if(type === 'error') playErrorSound();
+        else if(type === 'warning') playWarningSound();
+    }
     
     setTimeout(() => {
         toast.style.display = 'none';
@@ -2489,12 +2617,29 @@ function loadGroups() {
 
         if(!snap.exists()) return;
         const groupIds = Object.values(snap.val());
+        const archived = getArchivedChats();
+        const muted = getMutedChats();
+
+        const activeGroups = [];
+        const archivedGroups = [];
 
         for(const gid of groupIds) {
             const gSnap = await get(ref(db, `groups/${gid}`));
             if(!gSnap.exists()) continue;
             const g = gSnap.val();
 
+            // Ensure creator is always admin (fix for existing groups)
+            if(g.createdBy && (!g.admins || !g.admins[g.createdBy])) {
+                update(ref(db, `groups/${gid}/admins`), { [g.createdBy]: true });
+            }
+
+            if(archived.includes(gid)) archivedGroups.push({ gid, g });
+            else activeGroups.push({ gid, g });
+        }
+
+        // Render active groups at top of list
+        for(const { gid, g } of activeGroups) {
+            const isMuted = muted.includes(gid);
             const d = document.createElement('div');
             d.className = 'contact-item group-item';
             d.dataset.groupId = gid;
@@ -2504,6 +2649,7 @@ function loadGroups() {
                     <div style="display:flex; align-items:center; gap:4px;">
                         <span>${g.name}</span>
                         <span style="font-size:10px; opacity:0.5; margin-left:4px;">Gruppe</span>
+                        ${isMuted ? '<span class="muted-icon">🔇</span>' : ''}
                     </div>
                 </div>
                 <span id="group-badge-${gid}" class="unread-badge" style="display:none;"></span>
@@ -2518,10 +2664,30 @@ function loadGroups() {
                     if(msg.sender !== myUsername && activeChatId !== gid) {
                         const badge = document.getElementById(`group-badge-${gid}`);
                         if(badge) badge.style.display = '';
-                        playNotificationSound();
-                        showNotification(`💬 ${msg.sender} in ${g.name}`, 'success');
+                        if(!isMuted) {
+                            playNotificationSound();
+                            showNotification(`💬 ${msg.sender} in ${g.name}`, 'success');
+                        }
                     }
                 });
+            }
+        }
+
+        // Render archived groups in archive section (append after contacts archive section)
+        if(archivedGroups.length > 0) {
+            let archiveSection = list.querySelector('.archive-header');
+            for(const { gid, g } of archivedGroups) {
+                const d = document.createElement('div');
+                d.className = 'contact-item group-item';
+                d.style.opacity = '0.7';
+                d.dataset.groupId = gid;
+                d.innerHTML = `
+                    <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px; width:40px; height:40px; margin-right:12px; flex-shrink:0;">👥</div>
+                    <span>${g.name} <span style="font-size:10px; opacity:0.5;">Gruppe</span> <span class="archived-icon">🗂️</span></span>
+                `;
+                d.onclick = () => window.startGroupChat(gid, g.name);
+                if(archiveSection) list.insertBefore(d, archiveSection.nextSibling);
+                else list.appendChild(d);
             }
         }
     });
@@ -2970,28 +3136,27 @@ document.getElementById('chat-search-input').addEventListener('input', async (e)
     
     snap.forEach(child => {
         const msg = child.val();
-        if(msg.text.toLowerCase().includes(searchTerm)) {
-            found++;
-            const time = new Date(msg.timestamp).toLocaleString('de-DE');
-            const preview = msg.text.substring(0, 100) + (msg.text.length > 100 ? '...' : '');
-            
-            const resultItem = document.createElement('div');
-            resultItem.style.cssText = 'padding:10px; border-bottom:1px solid var(--border-color); cursor:pointer;';
-            resultItem.innerHTML = `
-                <div style="font-weight:bold; font-size:12px; opacity:0.7;">${msg.sender} - ${time}</div>
-                <div style="margin-top:5px;">${preview}</div>
-            `;
-            resultItem.onclick = () => {
-                closeOverlay('chat-search-overlay');
-                const msgEl = document.getElementById('m-' + child.key);
-                if(msgEl) {
-                    msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    msgEl.style.backgroundColor = 'yellow';
-                    setTimeout(() => msgEl.style.backgroundColor = '', 2000);
-                }
-            };
-            resultsDiv.appendChild(resultItem);
-        }
+        if(!msg.text || !msg.text.toLowerCase().includes(searchTerm)) return;
+        found++;
+        const time = new Date(msg.timestamp).toLocaleString('de-DE');
+        const preview = msg.text.substring(0, 100) + (msg.text.length > 100 ? '...' : '');
+        
+        const resultItem = document.createElement('div');
+        resultItem.style.cssText = 'padding:10px; border-bottom:1px solid var(--border-color); cursor:pointer;';
+        resultItem.innerHTML = `
+            <div style="font-weight:bold; font-size:12px; opacity:0.7;">${activeGroupId ? `<span style="color:${stringToColor(msg.sender)}">${msg.sender}</span> · ` : ''}${time}</div>
+            <div style="margin-top:5px;">${preview.replace(new RegExp(searchTerm, 'gi'), m => `<mark style="background:yellow;border-radius:2px;">${m}</mark>`)}</div>
+        `;
+        resultItem.onclick = () => {
+            closeOverlay('chat-search-overlay');
+            const msgEl = document.getElementById('m-' + child.key);
+            if(msgEl) {
+                msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                msgEl.style.backgroundColor = 'yellow';
+                setTimeout(() => msgEl.style.backgroundColor = '', 2000);
+            }
+        };
+        resultsDiv.appendChild(resultItem);
     });
     
     if(found === 0) {
@@ -3071,6 +3236,16 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     currentMessageKey = msgKey;
     const menu = document.getElementById('msg-context-menu');
     menu.innerHTML = '';
+    
+    // Info option
+    const infoItem = document.createElement('div');
+    infoItem.className = 'msg-context-item';
+    infoItem.innerHTML = '<span class="icon">ℹ️</span><span>Info</span>';
+    infoItem.onclick = () => {
+        menu.classList.remove('show');
+        openMsgInfo(msgKey);
+    };
+    menu.appendChild(infoItem);
     
     // Copy option
     const copyItem = document.createElement('div');
@@ -3183,6 +3358,108 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     menu.style.left = x + 'px';
     menu.style.top  = y + 'px';
 }
+
+/* ------------------------------ */
+/* MESSAGE INFO */
+/* ------------------------------ */
+window.openMsgInfo = async (msgKey) => {
+    if(!activeChatId) return;
+    const snap = await get(ref(db, `chats/${activeChatId}/${msgKey}`));
+    if(!snap.exists()) return;
+    const m = snap.val();
+
+    const sent = new Date(m.timestamp).toLocaleString('de-DE', {
+        weekday: 'short', day:'2-digit', month:'2-digit', year:'numeric',
+        hour:'2-digit', minute:'2-digit', second:'2-digit'
+    });
+
+    let readHTML = '';
+    if(activeGroupId) {
+        // Group: show per-member read status
+        const gSnap = await get(ref(db, `groups/${activeGroupId}`));
+        const members = gSnap.exists() ? Object.keys(gSnap.val().members || {}).filter(u => gSnap.val().members[u] && u !== m.sender) : [];
+        const reads = m.readBy || {};
+        readHTML = `
+            <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+                <div style="font-weight:600; font-size:13px; margin-bottom:8px; opacity:0.7;">GELESEN VON</div>
+                ${members.map(u => {
+                    const ts = reads[u];
+                    return `<div style="display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid var(--border-color);">
+                        ${getAvatarHTML(u)}
+                        <span style="flex:1;">${u}</span>
+                        <span style="font-size:12px; opacity:0.5;">${ts ? new Date(ts).toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'}) : '—'}</span>
+                        <span style="font-size:16px;">${ts ? '✓✓' : '✓'}</span>
+                    </div>`;
+                }).join('')}
+            </div>`;
+    } else {
+        // 1:1: show read receipt
+        readHTML = `
+            <div style="margin-top:14px; border-top:1px solid var(--border-color); padding-top:12px;">
+                <div style="font-weight:600; font-size:13px; margin-bottom:8px; opacity:0.7;">STATUS</div>
+                <div style="display:flex; align-items:center; gap:10px; padding:6px 0;">
+                    <span style="font-size:20px;">${m.read ? '✓✓' : '✓'}</span>
+                    <span>${m.read ? 'Gelesen' : 'Zugestellt'}</span>
+                </div>
+            </div>`;
+    }
+
+    const content = document.getElementById('msg-info-content');
+    content.innerHTML = `
+        <div style="background:var(--bg); border-radius:10px; padding:12px; margin-bottom:12px; font-size:14px; word-break:break-word; max-height:100px; overflow:hidden;">
+            ${m.deletedForAll ? '<em style="opacity:0.5;">🗑️ Gelöscht</em>' : (m.text || '').substring(0, 200)}
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13px;">
+            <div style="background:var(--bg); border-radius:8px; padding:10px;">
+                <div style="opacity:0.5; margin-bottom:3px; font-size:11px;">GESENDET</div>
+                <div style="font-weight:500;">${sent}</div>
+            </div>
+            <div style="background:var(--bg); border-radius:8px; padding:10px;">
+                <div style="opacity:0.5; margin-bottom:3px; font-size:11px;">VON</div>
+                <div style="font-weight:500;">${m.sender}</div>
+            </div>
+            ${m.edited ? `<div style="background:var(--bg); border-radius:8px; padding:10px; grid-column:1/-1;">
+                <div style="opacity:0.5; margin-bottom:3px; font-size:11px;">BEARBEITET</div>
+                <div style="font-weight:500;">${new Date(m.editedAt).toLocaleString('de-DE')}</div>
+            </div>` : ''}
+        </div>
+        ${readHTML}
+    `;
+    document.getElementById('msg-info-overlay').style.display = 'flex';
+};
+
+/* ------------------------------ */
+/* GRUPPE UMBENENNEN & AVATAR     */
+/* ------------------------------ */
+window.renameGroup = async () => {
+    if(!activeGroupId) return;
+    const input = document.getElementById('group-rename-input');
+    const newName = input ? input.value.trim() : '';
+    if(!newName) { showNotification('❌ Bitte Namen eingeben', 'error'); return; }
+
+    await update(ref(db, `groups/${activeGroupId}`), { name: newName });
+    push(ref(db, `chats/${activeGroupId}`), {
+        sender: '🤖 System',
+        text: `${myUsername} hat die Gruppe in „${newName}" umbenannt.`,
+        timestamp: Date.now(), read: false, isSystem: true
+    });
+
+    activeContactName = newName;
+    // Update header
+    const headerName = document.querySelector('#chat-header div div:first-child');
+    if(headerName) headerName.textContent = newName;
+    showNotification(`✅ Gruppe umbenannt`, 'success');
+    window.openGroupInfo();
+};
+
+window.setGroupAvatar = async (emoji) => {
+    if(!activeGroupId) return;
+    await update(ref(db, `groups/${activeGroupId}`), { avatar: emoji });
+    showNotification(`✅ Gruppen-Avatar gesetzt`, 'success');
+    window.openGroupInfo();
+    loadGroups();
+};
+
 
 function showReactionPicker(e, msgKey) {
     // Remove any existing picker first
@@ -3672,7 +3949,13 @@ const helpArticles = [
             <p>Neue Gruppen-Nachrichten zeigen einen <strong>roten Badge</strong> neben der Gruppe und eine Popup-Benachrichtigung mit Absender-Name und Gruppenname.</p>
 
             <h4>Wer ist Admin?</h4>
-            <p>Der Ersteller der Gruppe ist automatisch Admin. Jeder Admin kann weitere Mitglieder zum Admin ernennen (👑 Admin-Button in der Gruppeninfo) oder ihnen den Status wieder entziehen (👑 Entziehen). Es muss immer mindestens ein Admin in der Gruppe bleiben.</p>
+            <p>Der Ersteller der Gruppe ist immer Admin — auch bei bereits bestehenden Gruppen wird dies automatisch beim Öffnen der Gruppeninfo gesetzt. Jeder Admin kann weitere Mitglieder zum Admin ernennen (👑 Admin) oder ihnen den Status entziehen (👑 Entziehen). Mindestens ein Admin muss immer übrig bleiben.</p>
+
+            <h4>Gruppe stummschalten</h4>
+            <p>Gruppeninfo öffnen → <strong>🔇 Stumm</strong>. Stummgeschaltete Gruppen zeigen kein 🔇-Icon in der Sidebar und senden keine Töne oder Popup-Benachrichtigungen mehr. Nachrichten kommen weiterhin an.</p>
+
+            <h4>Gruppe archivieren</h4>
+            <p>Gruppeninfo öffnen → <strong>🗂️ Archivieren</strong>. Archivierte Gruppen verschwinden aus der Hauptliste und erscheinen im ausklappbaren Archiv-Bereich unten in der Sidebar.</p>
         `
     },
     {
@@ -3867,6 +4150,9 @@ window.openHelp = () => {
     showHelpNav();
     renderHelpList(helpArticles);
 };
+// Expose for early login-screen access (before module fully runs)
+window._helpArticles = helpArticles;
+window._renderHelpList = renderHelpList;
 
 window.showHelpNav = () => {
     document.getElementById('help-nav').style.display = 'block';
@@ -4932,7 +5218,7 @@ window.onload = () => {
                               'alias-overlay', 'user-info-overlay', 'emoji-picker', 'poll-overlay', 
                               'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
                               'forward-overlay', 'my-profile-overlay', 'changelog-overlay',
-                              'group-create-overlay', 'group-info-overlay'];
+                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay'];
             let anyOpen = false;
             overlays.forEach(id => {
                 const el = document.getElementById(id);
@@ -5084,7 +5370,10 @@ window.onload = () => {
             messagesContainer.appendChild(d);
             if(shouldAutoScroll()) messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-            // Mark as read (group: just track locally)
+            // Mark as read in Firebase (track per-user read timestamps)
+            if(m.sender !== myUsername) {
+                update(ref(db, `chats/${gid}/${s.key}/readBy`), { [myUsername]: Date.now() });
+            }
         });
 
         onChildChanged(chatRef, (s) => {
@@ -5269,8 +5558,13 @@ window.onload = () => {
         if(!gSnap.exists()) return;
         const g = gSnap.val();
         const members = Object.keys(g.members || {}).filter(m => g.members[m] === true);
-        const admins = g.admins ? Object.keys(g.admins).filter(a => g.admins[a] === true) : [g.createdBy];
+        const admins = g.admins ? Object.keys(g.admins).filter(a => g.admins[a] === true) : [];
+        // Ersteller ist immer Admin, auch bei alten Gruppen ohne admins-Feld
+        if(g.createdBy && !admins.includes(g.createdBy)) admins.push(g.createdBy);
         const isAdmin = admins.includes(myUsername);
+        const avatar = g.avatar || '👥';
+
+        const GROUP_EMOJIS = ['👥','🎮','🎵','🏀','🍕','✈️','💼','🎓','❤️','⚽','🌍','🔥','🎉','🏠','🤝','🎨','📚','🎯','🦁','🐶'];
 
         let membersHTML = members.map(m => {
             const isMemberAdmin = admins.includes(m);
@@ -5289,9 +5583,31 @@ window.onload = () => {
 
         document.getElementById('group-info-content').innerHTML = `
             <div style="text-align:center; margin-bottom:16px;">
-                <div class="avatar" style="background:${stringToColor(g.name)}; width:70px; height:70px; margin:0 auto 10px; font-size:36px;">👥</div>
+                <div class="avatar" style="background:${stringToColor(g.name)}; width:70px; height:70px; margin:0 auto 8px; font-size:36px; cursor:${isAdmin?'pointer':'default'};" 
+                     ${isAdmin ? `onclick="document.getElementById('group-avatar-picker').style.display=document.getElementById('group-avatar-picker').style.display==='flex'?'none':'flex'" title="Avatar ändern"` : ''}>
+                    ${avatar}
+                </div>
+                ${isAdmin ? `
+                <div id="group-avatar-picker" style="display:none; flex-wrap:wrap; justify-content:center; gap:6px; margin:8px 0; background:var(--bg); border-radius:12px; padding:10px;">
+                    ${GROUP_EMOJIS.map(e => `<span style="font-size:24px; cursor:pointer; padding:4px; border-radius:6px;" onclick="setGroupAvatar('${e}')">${e}</span>`).join('')}
+                </div>
+                ` : ''}
                 <div style="font-size:20px; font-weight:700;">${g.name}</div>
                 <div style="font-size:12px; opacity:0.5;">Erstellt von ${g.createdBy} · ${new Date(g.createdAt).toLocaleDateString('de-DE')}</div>
+            </div>
+            ${isAdmin ? `
+            <div style="display:flex; gap:6px; margin-bottom:14px;">
+                <input type="text" id="group-rename-input" placeholder="Gruppe umbenennen..." value="${g.name}" style="flex:1; margin:0;">
+                <button onclick="renameGroup()" style="width:50px; margin:0;">✏️</button>
+            </div>
+            ` : ''}
+            <div style="display:flex; gap:8px; margin-bottom:14px;">
+                <button id="btn-group-mute" onclick="toggleMuteGroup('${activeGroupId}')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">
+                    ${getMutedChats().includes(activeGroupId) ? '🔊 Laut' : '🔇 Stumm'}
+                </button>
+                <button id="btn-group-archive" onclick="toggleArchiveGroup('${activeGroupId}')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">
+                    ${getArchivedChats().includes(activeGroupId) ? '📤 Aus Archiv' : '🗂️ Archivieren'}
+                </button>
             </div>
             <div style="font-weight:600; margin-bottom:8px;">${members.length} Mitglieder</div>
             ${membersHTML}
@@ -5343,6 +5659,30 @@ window.onload = () => {
         });
         showNotification(`✅ Admin-Rechte von ${memberName} entzogen`, 'success');
         window.openGroupInfo();
+    };
+
+    window.toggleMuteGroup = (gid) => {
+        const muted = getMutedChats();
+        const idx = muted.indexOf(gid);
+        if(idx === -1) { muted.push(gid); } else { muted.splice(idx, 1); }
+        localStorage.setItem('villo_muted', JSON.stringify(muted));
+        const btn = document.getElementById('btn-group-mute');
+        if(btn) btn.textContent = idx === -1 ? '🔊 Laut' : '🔇 Stumm';
+        showNotification(idx === -1 ? '🔇 Gruppe stummgeschaltet' : '🔊 Gruppe nicht mehr stumm', 'success');
+        loadGroups();
+    };
+
+    window.toggleArchiveGroup = (gid) => {
+        const archived = getArchivedChats();
+        const idx = archived.indexOf(gid);
+        if(idx === -1) { archived.push(gid); } else { archived.splice(idx, 1); }
+        localStorage.setItem('villo_archived', JSON.stringify(archived));
+        const btn = document.getElementById('btn-group-archive');
+        if(btn) btn.textContent = idx === -1 ? '📤 Aus Archiv' : '🗂️ Archivieren';
+        showNotification(idx === -1 ? '🗂️ Gruppe archiviert' : '📤 Gruppe aus Archiv', 'success');
+        closeOverlay('group-info-overlay');
+        if(idx === -1) closeChat();
+        loadGroups();
     };
 
     window.addMemberToGroup = async () => {
@@ -5535,5 +5875,24 @@ window.onload = () => {
 };
 </script>
 
+    <!-- Hilfe-Funktion früh verfügbar machen (vor Module-Script-Load) -->
+    <script>
+        function openHelp() {
+            const overlay = document.getElementById('help-overlay');
+            if(!overlay) return;
+            overlay.style.display = 'flex';
+            const search = document.getElementById('help-search');
+            if(search) search.value = '';
+            // showHelpNav & renderHelpList werden vom Module-Script übernommen sobald geladen
+            const nav = document.getElementById('help-nav');
+            const view = document.getElementById('help-article-view');
+            if(nav) nav.style.display = 'block';
+            if(view) view.style.display = 'none';
+            // Artikel-Liste rendern falls Module schon geladen
+            if(window._renderHelpList && window._helpArticles) {
+                window._renderHelpList(window._helpArticles);
+            }
+        }
+    </script>
 </body>
 </html>
