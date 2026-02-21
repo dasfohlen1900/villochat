@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -2644,10 +2643,7 @@ function loadGroups() {
             d.className = 'contact-item group-item';
             d.dataset.groupId = gid;
             d.innerHTML = `
-                <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px; width:40px; height:40px; margin-right:12px; flex-shrink:0;">👥</div>
-                <div style="flex:1; min-width:0;">
-                    <div style="display:flex; align-items:center; gap:4px;">
-                        <span>${g.name}</span>
+                <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px; width:40px; height:40px; margin-right:12px; flex-shrink:0;">${g.avatar || '👥'}</div>
                         <span style="font-size:10px; opacity:0.5; margin-left:4px;">Gruppe</span>
                         ${isMuted ? '<span class="muted-icon">🔇</span>' : ''}
                     </div>
@@ -2682,7 +2678,7 @@ function loadGroups() {
                 d.style.opacity = '0.7';
                 d.dataset.groupId = gid;
                 d.innerHTML = `
-                    <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px; width:40px; height:40px; margin-right:12px; flex-shrink:0;">👥</div>
+                    <div class="avatar" style="background:${stringToColor(g.name)}; font-size:20px; width:40px; height:40px; margin-right:12px; flex-shrink:0;">${g.avatar || '👥'}</div>
                     <span>${g.name} <span style="font-size:10px; opacity:0.5;">Gruppe</span> <span class="archived-icon">🗂️</span></span>
                 `;
                 d.onclick = () => window.startGroupChat(gid, g.name);
@@ -5283,10 +5279,10 @@ window.onload = () => {
         const groupMenuItem = document.getElementById('menu-group-info');
         if(groupMenuItem) groupMenuItem.style.display = '';
 
-        // Header
+        // Header (initially with fallback, updated after Firebase load)
         document.getElementById('chat-header').innerHTML = `
             <div style="display:flex;align-items:center; flex:1; cursor:pointer;" onclick="openGroupInfo()">
-                <div class="avatar" style="background:${stringToColor(gname)}; font-size:20px; width:36px; height:36px; margin-right:10px;">👥</div>
+                <div class="avatar" id="group-chat-avatar" style="background:${stringToColor(gname)}; font-size:20px; width:36px; height:36px; margin-right:10px;">👥</div>
                 <div>
                     <div>${gname}</div>
                     <div id="group-member-count" style="font-size:11px; opacity:0.6;"></div>
@@ -5294,12 +5290,15 @@ window.onload = () => {
             </div>
         `;
 
-        // Load members for header count
+        // Load group data for header count + avatar
         const gSnap = await get(ref(db, `groups/${gid}`));
         if(gSnap.exists()) {
-            const members = Object.keys(gSnap.val().members || {});
+            const gData = gSnap.val();
+            const members = Object.keys(gData.members || {});
             const countEl = document.getElementById('group-member-count');
             if(countEl) countEl.textContent = `${members.length} Mitglieder`;
+            const avatarEl = document.getElementById('group-chat-avatar');
+            if(avatarEl) avatarEl.textContent = gData.avatar || '👥';
         }
 
         // Reset encryption notice
