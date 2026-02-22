@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.2</title>
+    <title>VilloChat - Version 5.4</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1158,127 +1158,201 @@
             background: var(--white);
             color: var(--text-color);
         }
+
+        /* Settings Tabs */
+        .settings-tab {
+            padding: 11px 18px;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 8px;
+            margin: 2px 8px;
+            transition: background 0.15s;
+            color: var(--text-color);
+            white-space: nowrap;
+        }
+        .settings-tab:hover { background: rgba(0,0,0,0.05); }
+        body.dark-mode .settings-tab:hover { background: rgba(255,255,255,0.07); }
+        .settings-tab.active { background: var(--primary); color: white; font-weight: 600; }
+        .settings-label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 6px;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        /* Mobile: settings sidebar becomes horizontal tab-bar */
+        @media (max-width: 600px) {
+            #settings-sidebar {
+                width: 100% !important;
+                flex-direction: row !important;
+                border-right: none !important;
+                border-bottom: 1px solid var(--border-color) !important;
+                padding: 8px 4px !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                flex-shrink: 0 !important;
+            }
+            #settings-sidebar .settings-tab { font-size: 12px; padding: 7px 10px; }
+            #settings-content { padding: 14px !important; }
+        }
     </style>
 </head>
 <body>
     <div class="notification-toast" id="notification-toast"></div>
     
     <div id="settings-overlay" class="overlay">
-        <div class="modal" style="max-height:750px;">
-            <div class="modal-header">
-                <h2>Einstellungen</h2>
-                <span style="cursor:pointer" onclick="closeOverlay('settings-overlay')">✕</span>
+        <div class="modal" style="max-width:700px; width:95vw; max-height:85vh; height:85vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+            <!-- Header -->
+            <div class="modal-header" style="flex-shrink:0; padding:15px 20px;">
+                <h2>⚙️ Einstellungen</h2>
+                <span style="cursor:pointer; font-size:20px;" onclick="closeOverlay('settings-overlay')">✕</span>
             </div>
-            <div class="modal-body" style="max-height:650px; overflow-y:auto;">
-                <div style="text-align:center; margin-bottom:15px;">
-                    <div id="settings-avatar-preview" style="width:60px; height:60px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:bold; color:white;"></div>
+            <!-- Body: sidebar + content -->
+            <div style="display:flex; flex:1; overflow:hidden;">
+                <!-- Sidebar (desktop) / Tab-bar (mobile) -->
+                <div id="settings-sidebar" style="width:180px; flex-shrink:0; border-right:1px solid var(--border-color); display:flex; flex-direction:column; padding:12px 0; background:var(--bg); overflow-y:auto;">
+                    <div class="settings-tab active" data-tab="personalization" onclick="switchSettingsTab('personalization')">🎨 Personalisierung</div>
+                    <div class="settings-tab" data-tab="profile" onclick="switchSettingsTab('profile')">👤 Profil</div>
+                    <div class="settings-tab" data-tab="security" onclick="switchSettingsTab('security')">🔒 Sicherheit</div>
+                    <div class="settings-tab" data-tab="help" onclick="switchSettingsTab('help')">❓ Hilfe & Info</div>
                 </div>
-                
-                <p>Nutzer: <b id="set-username"></b></p>
-                <p style="font-size:12px; color:#999; margin-top:-5px;">
-                    Version 5.2 · <a href="#" onclick="event.preventDefault(); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a>
-                </p>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Avatar:</label>
-                
-                <label style="margin-top:10px; display:block; font-size:13px;">Avatar-Farbe:</label>
-                <input type="color" id="my-avatar-color-picker" style="width:100%; height:40px; margin:5px 0; cursor:pointer;">
-                
-                <label style="margin-top:10px; display:block; font-size:13px;">Schriftart:</label>
-                <select id="my-avatar-font-picker" style="width:100%; padding:10px; border-radius:8px; margin:5px 0; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color);">
-                    <option value="'Playfair Display', serif">Playfair Display (Standard)</option>
-                    <option value="'Inter', sans-serif">Inter</option>
-                    <option value="'Arial', sans-serif">Arial</option>
-                    <option value="'Courier New', monospace">Courier New</option>
-                    <option value="'Georgia', serif">Georgia</option>
-                    <option value="'Times New Roman', serif">Times New Roman</option>
-                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                    <option value="'Verdana', sans-serif">Verdana</option>
-                    <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
-                    <option value="'Impact', sans-serif">Impact</option>
-                </select>
-                <button onclick="saveMyAvatar()" style="width:100%; margin-top:5px; background:var(--primary);">Avatar speichern</button>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Design:</label>
-                <div style="display:flex; gap:10px; margin-bottom:15px;">
-                    <button id="theme-system" class="theme-btn" onclick="setTheme('system')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px; cursor:pointer; font-size:14px;">
-                        🌓 System
-                    </button>
-                    <button id="theme-light" class="theme-btn" onclick="setTheme('light')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px; cursor:pointer; font-size:14px;">
-                        ☀️ Hell
-                    </button>
-                    <button id="theme-dark" class="theme-btn" onclick="setTheme('dark')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px; cursor:pointer; font-size:14px;">
-                        🌙 Dunkel
-                    </button>
-                </div>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Akzentfarbe:</label>
-                <div id="accent-color-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-bottom:15px;">
-                    <div class="accent-color-option" data-color="#dc3545" data-name="Rot" style="background:#dc3545;" title="Rot"></div>
-                    <div class="accent-color-option" data-color="#fd7e14" data-name="Orange" style="background:#fd7e14;" title="Orange"></div>
-                    <div class="accent-color-option" data-color="#ffc107" data-name="Gold" style="background:#ffc107;" title="Gold"></div>
-                    <div class="accent-color-option" data-color="#ffeb3b" data-name="Gelb" style="background:#ffeb3b;" title="Gelb"></div>
-                    <div class="accent-color-option" data-color="#cddc39" data-name="Limette" style="background:#cddc39;" title="Limette"></div>
-                    <div class="accent-color-option" data-color="#075e54" data-name="Grün" style="background:#075e54;" title="Grün (Standard)"></div>
-                    <div class="accent-color-option" data-color="#00bcd4" data-name="Himmelblau" style="background:#00bcd4;" title="Himmelblau"></div>
-                    <div class="accent-color-option" data-color="#3f51b5" data-name="Indigo" style="background:#3f51b5;" title="Indigo"></div>
-                    <div class="accent-color-option" data-color="#2196f3" data-name="Blau" style="background:#2196f3;" title="Blau"></div>
-                    <div class="accent-color-option" data-color="#9c27b0" data-name="Violett" style="background:#9c27b0;" title="Violett"></div>
-                    <div class="accent-color-option" data-color="#e91e63" data-name="Pink" style="background:#e91e63;" title="Pink"></div>
-                    <div class="accent-color-option" data-color="#ff9e80" data-name="Pfirsich" style="background:#ff9e80;" title="Pfirsich"></div>
-                    <div class="accent-color-option" data-color="#424242" data-name="Schwarz" style="background:#424242;" title="Schwarz"></div>
-                </div>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Schriftgröße:</label>
-                <div style="display:flex; gap:8px; margin-bottom:15px;">
-                    <div class="font-size-option" data-size="13px" data-name="Klein">Klein</div>
-                    <div class="font-size-option" data-size="15px" data-name="Normal">Normal</div>
-                    <div class="font-size-option" data-size="17px" data-name="Groß">Groß</div>
-                    <div class="font-size-option" data-size="20px" data-name="Sehr Groß">XL</div>
-                </div>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Meine Bubble-Farbe:</label>
-                <input type="color" id="my-bubble-color-picker" value="#dcf8c6" style="width:100%; height:40px; margin:5px 0; cursor:pointer;">
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Sound:</label>
-                <label style="display:flex; align-items:center; cursor:pointer; margin:5px 0;">
-                    <input type="checkbox" id="sound-toggle" style="width:auto; margin-right:10px;">
-                    <span>🔊 Benachrichtigungston bei neuen Nachrichten</span>
-                </label>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Schnellreaktionen (6 Emojis):</label>
-                <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:8px;">
-                    <input type="text" id="quick-reaction-1" maxlength="2" placeholder="❤️" style="width:100%; text-align:center; font-size:20px; padding:8px;">
-                    <input type="text" id="quick-reaction-2" maxlength="2" placeholder="👍" style="width:100%; text-align:center; font-size:20px; padding:8px;">
-                    <input type="text" id="quick-reaction-3" maxlength="2" placeholder="😂" style="width:100%; text-align:center; font-size:20px; padding:8px;">
-                    <input type="text" id="quick-reaction-4" maxlength="2" placeholder="😮" style="width:100%; text-align:center; font-size:20px; padding:8px;">
-                    <input type="text" id="quick-reaction-5" maxlength="2" placeholder="😢" style="width:100%; text-align:center; font-size:20px; padding:8px;">
-                    <input type="text" id="quick-reaction-6" maxlength="2" placeholder="🙏" style="width:100%; text-align:center; font-size:20px; padding:8px;">
-                </div>
-                <button onclick="saveQuickReactions()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">Reaktionen speichern</button>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Mein Status:</label>
-                <input type="text" id="status-text-input" placeholder="z.B. Verfügbar, Beschäftigt..." maxlength="60" style="width:100%; margin:5px 0;">
-                <button onclick="saveStatusText()" style="width:100%; margin-top:5px;">Status speichern</button>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Bubble-Stil:</label>
-                <div style="display:flex; gap:8px; margin-bottom:5px;">
-                    <div class="font-size-option" data-style="rounded" onclick="setBubbleStyle('rounded')" style="font-size:12px;">● Rund</div>
-                    <div class="font-size-option" data-style="square" onclick="setBubbleStyle('square')" style="font-size:12px;">■ Eckig</div>
-                    <div class="font-size-option" data-style="minimal" onclick="setBubbleStyle('minimal')" style="font-size:12px;">– Minimal</div>
-                </div>
-                
-                <label style="margin:15px 0 5px 0; display:block; font-weight:500;">Chat-Hintergrund:</label>
-                <input type="color" id="bg-color-picker" value="#e5ddd5" style="width:100%; height:40px; margin:5px 0;">
-                
-                <a href="https://sites.google.com/view/villochat/download#h.pxu4uk2i7gl8" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none; margin-top:10px;">
-                    <button type="button" style="width:100%; background:var(--primary);">🌐 VilloChat - Download</button>
-                </a>
-                
-                <button onclick="logout()" style="background:#cc0000; width:100%; margin-top:10px;">Abmelden</button>
-                <div style="display:flex; gap:8px; margin-top:8px;">
-                    <button onclick="openChangePIN()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔑 PIN ändern</button>
-                    <button onclick="openHelp()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">❓ Hilfe</button>
+                <!-- Content -->
+                <div id="settings-content" style="flex:1; overflow-y:auto; padding:20px;">
+
+                    <!-- PERSONALIZATION -->
+                    <div id="stab-personalization" class="settings-panel">
+                        <h3 style="margin-top:0; color:var(--primary);">🎨 Personalisierung</h3>
+
+                        <label class="settings-label">Design:</label>
+                        <div style="display:flex; gap:8px; margin-bottom:16px;">
+                            <button id="theme-system" class="theme-btn" onclick="setTheme('system')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px;">🌓 System</button>
+                            <button id="theme-light" class="theme-btn" onclick="setTheme('light')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px;">☀️ Hell</button>
+                            <button id="theme-dark" class="theme-btn" onclick="setTheme('dark')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px;">🌙 Dunkel</button>
+                        </div>
+
+                        <label class="settings-label">Akzentfarbe:</label>
+                        <div id="accent-color-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-bottom:16px;">
+                            <div class="accent-color-option" data-color="#dc3545" data-name="Rot" style="background:#dc3545;" title="Rot"></div>
+                            <div class="accent-color-option" data-color="#fd7e14" data-name="Orange" style="background:#fd7e14;" title="Orange"></div>
+                            <div class="accent-color-option" data-color="#ffc107" data-name="Gold" style="background:#ffc107;" title="Gold"></div>
+                            <div class="accent-color-option" data-color="#ffeb3b" data-name="Gelb" style="background:#ffeb3b;" title="Gelb"></div>
+                            <div class="accent-color-option" data-color="#cddc39" data-name="Limette" style="background:#cddc39;" title="Limette"></div>
+                            <div class="accent-color-option" data-color="#075e54" data-name="Grün" style="background:#075e54;" title="Grün (Standard)"></div>
+                            <div class="accent-color-option" data-color="#00bcd4" data-name="Himmelblau" style="background:#00bcd4;" title="Himmelblau"></div>
+                            <div class="accent-color-option" data-color="#3f51b5" data-name="Indigo" style="background:#3f51b5;" title="Indigo"></div>
+                            <div class="accent-color-option" data-color="#2196f3" data-name="Blau" style="background:#2196f3;" title="Blau"></div>
+                            <div class="accent-color-option" data-color="#9c27b0" data-name="Violett" style="background:#9c27b0;" title="Violett"></div>
+                            <div class="accent-color-option" data-color="#e91e63" data-name="Pink" style="background:#e91e63;" title="Pink"></div>
+                            <div class="accent-color-option" data-color="#ff9e80" data-name="Pfirsich" style="background:#ff9e80;" title="Pfirsich"></div>
+                            <div class="accent-color-option" data-color="#424242" data-name="Schwarz" style="background:#424242;" title="Schwarz"></div>
+                        </div>
+
+                        <label class="settings-label">Schriftgröße:</label>
+                        <div style="display:flex; gap:8px; margin-bottom:16px;">
+                            <div class="font-size-option" data-size="13px" data-name="Klein">Klein</div>
+                            <div class="font-size-option" data-size="15px" data-name="Normal">Normal</div>
+                            <div class="font-size-option" data-size="17px" data-name="Groß">Groß</div>
+                            <div class="font-size-option" data-size="20px" data-name="Sehr Groß">XL</div>
+                        </div>
+
+                        <label class="settings-label">Bubble-Stil:</label>
+                        <div style="display:flex; gap:8px; margin-bottom:16px;">
+                            <div class="font-size-option" data-style="rounded" onclick="setBubbleStyle('rounded')" style="font-size:12px;">● Rund</div>
+                            <div class="font-size-option" data-style="square" onclick="setBubbleStyle('square')" style="font-size:12px;">■ Eckig</div>
+                            <div class="font-size-option" data-style="minimal" onclick="setBubbleStyle('minimal')" style="font-size:12px;">– Minimal</div>
+                        </div>
+
+                        <label class="settings-label">Meine Bubble-Farbe:</label>
+                        <input type="color" id="my-bubble-color-picker" value="#dcf8c6" style="width:100%; height:40px; margin-bottom:16px; cursor:pointer;">
+
+                        <label class="settings-label">Chat-Hintergrund:</label>
+                        <input type="color" id="bg-color-picker" value="#e5ddd5" style="width:100%; height:40px; margin-bottom:16px;">
+
+                        <label class="settings-label">Schnellreaktionen:</label>
+                        <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:8px;">
+                            <input type="text" id="quick-reaction-1" maxlength="2" placeholder="❤️" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                            <input type="text" id="quick-reaction-2" maxlength="2" placeholder="👍" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                            <input type="text" id="quick-reaction-3" maxlength="2" placeholder="😂" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                            <input type="text" id="quick-reaction-4" maxlength="2" placeholder="😮" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                            <input type="text" id="quick-reaction-5" maxlength="2" placeholder="😢" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                            <input type="text" id="quick-reaction-6" maxlength="2" placeholder="🙏" style="width:100%; text-align:center; font-size:20px; padding:8px;">
+                        </div>
+                        <button onclick="saveQuickReactions()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">Reaktionen speichern</button>
+
+                        <label class="settings-label" style="margin-top:16px;">Sound:</label>
+                        <label style="display:flex; align-items:center; cursor:pointer; margin-bottom:16px;">
+                            <input type="checkbox" id="sound-toggle" style="width:auto; margin-right:10px;">
+                            <span>🔊 Benachrichtigungston aktivieren</span>
+                        </label>
+                    </div>
+
+                    <!-- PROFILE -->
+                    <div id="stab-profile" class="settings-panel" style="display:none;">
+                        <h3 style="margin-top:0; color:var(--primary);">👤 Profil</h3>
+                        <div style="text-align:center; margin-bottom:20px;">
+                            <div id="settings-avatar-preview" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
+                            <div style="font-size:18px; font-weight:700;" id="set-username"></div>
+                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.4 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
+                        </div>
+
+                        <label class="settings-label">Avatar-Farbe:</label>
+                        <input type="color" id="my-avatar-color-picker" style="width:100%; height:40px; margin-bottom:12px; cursor:pointer;">
+
+                        <label class="settings-label">Avatar-Schriftart:</label>
+                        <select id="my-avatar-font-picker" style="width:100%; padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color);">
+                            <option value="'Playfair Display', serif">Playfair Display (Standard)</option>
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Arial', sans-serif">Arial</option>
+                            <option value="'Courier New', monospace">Courier New</option>
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Times New Roman', serif">Times New Roman</option>
+                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                            <option value="'Verdana', sans-serif">Verdana</option>
+                            <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                            <option value="'Impact', sans-serif">Impact</option>
+                        </select>
+                        <button onclick="saveMyAvatar()" style="width:100%; background:var(--primary); margin-bottom:16px;">Avatar speichern</button>
+
+                        <label class="settings-label">Mein Status:</label>
+                        <input type="text" id="status-text-input" placeholder="z.B. Verfügbar, Beschäftigt..." maxlength="60" style="width:100%; margin-bottom:8px;">
+                        <button onclick="saveStatusText()" style="width:100%;">Status speichern</button>
+
+                        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
+                            <a href="https://sites.google.com/view/villochat/download#h.pxu4uk2i7gl8" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none;">
+                                <button type="button" style="width:100%; background:var(--primary);">🌐 VilloChat-Website</button>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- SECURITY -->
+                    <div id="stab-security" class="settings-panel" style="display:none;">
+                        <h3 style="margin-top:0; color:var(--primary);">🔒 Sicherheit</h3>
+                        <p style="font-size:13px; opacity:0.7; margin-bottom:20px;">Verwalte deinen PIN und deine Sitzung.</p>
+
+                        <button onclick="openChangePIN()" style="width:100%; margin-bottom:10px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔑 PIN ändern</button>
+                        <button onclick="logout()" style="background:#dc3545; width:100%;">🚪 Abmelden</button>
+
+                        <div style="margin-top:24px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color);">
+                            <div style="font-weight:600; margin-bottom:8px; font-size:14px;">🔐 Datenschutz</div>
+                            <p style="font-size:13px; opacity:0.7; margin:0; line-height:1.6;">Nachrichten werden in Firebase Realtime Database gespeichert. Dein PIN wird als Klartext gespeichert — wähle ihn sorgfältig. VilloChat nutzt keine Werbung und gibt keine Daten weiter.</p>
+                        </div>
+                    </div>
+
+                    <!-- HELP -->
+                    <div id="stab-help" class="settings-panel" style="display:none;">
+                        <h3 style="margin-top:0; color:var(--primary);">❓ Hilfe & Info</h3>
+                        <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);">📖 Hilfe-Center öffnen</button>
+                        <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">📋 Changelog</button>
+                        <div style="margin-top:20px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color); font-size:13px; line-height:1.7; opacity:0.8;">
+                            <strong>VilloChat 5.4</strong><br>
+                            Entwickelt als Single-File Web-App.<br>
+                            Firebase Realtime Database · Web Audio API · keine externen Tracker.
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1422,7 +1496,20 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.2 🔗</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.4 💡</h3>
+                <ul>
+                    <li>🖼️ <strong>Bildversand</strong> — Bilder via 🖼️-Button hochladen oder direkt aus Zwischenablage einfügen (Ctrl+V). Max. 500 KB, wird automatisch komprimiert. Klick auf Bild öffnet Lightbox</li>
+                    <li>💡 <strong>PIN-Hinweis</strong> — Beim Registrieren oder in Einstellungen → PIN ändern einen Hinweis hinterlegen. Erscheint automatisch beim Login sobald der Username eingegeben wird</li>
+                    <li>🔑 <strong>Hint in Einstellungen</strong> — Bestehender Hinweis wird bei „PIN ändern" vorausgefüllt und kann angepasst oder entfernt werden</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.3 🛡️</h3>
+                <ul>
+                    <li>🛡️ <strong>Moderator-Rolle</strong> — Admins können Mitglieder zum Moderator ernennen (🛡️). Mods können Mitglieder entfernen, aber keine Admins ernennen oder Gruppeneinstellungen ändern</li>
+                    <li>📤 <strong>Weiterleiten verbessert</strong> — Nachrichten können jetzt auch direkt an Gruppen weitergeleitet werden; Kontakte und Gruppen sind klar getrennt aufgelistet</li>
+                    <li>🕐 <strong>Geplante Nachrichten</strong> — Datum & Uhrzeit wählen, Nachricht wird automatisch zum gewählten Zeitpunkt gesendet. Erreichbar über Chat-Menü → Geplante Nachrichten</li>
+                    <li>🔊 <strong>Tipp-Sound beim Senden</strong> — Kurzer aufsteigender Ton beim Absenden einer Nachricht (an/aus über Sound-Einstellung)</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.2 🔗</h3>
                 <ul>
                     <li>🔗 <strong>Gruppen-Einladungslink</strong> — Link kopieren & teilen; Empfänger treten nach Login automatisch bei</li>
                     <li>📝 <strong>Gruppen-Beschreibung</strong> — Admins können eine Kurzbeschreibung setzen, sichtbar für alle Mitglieder</li>
@@ -1722,7 +1809,9 @@
                 <label style="display:block; margin-bottom:5px; font-weight:500;">Neuer PIN:</label>
                 <input type="password" id="pin-new" placeholder="xxxx-xxxx" maxlength="9" style="width:100%; margin-bottom:12px;">
                 <label style="display:block; margin-bottom:5px; font-weight:500;">Neuen PIN wiederholen:</label>
-                <input type="password" id="pin-confirm" placeholder="xxxx-xxxx" maxlength="9" style="width:100%; margin-bottom:16px;">
+                <input type="password" id="pin-confirm" placeholder="xxxx-xxxx" maxlength="9" style="width:100%; margin-bottom:12px;">
+                <label style="display:block; margin-bottom:5px; font-weight:500;">PIN-Hinweis <span style="font-weight:400; opacity:0.5;">(optional, sichtbar beim Login)</span></label>
+                <input type="text" id="pin-hint-settings" placeholder="z.B. Lieblingsfilm + Geburtsjahr" maxlength="80" style="width:100%; margin-bottom:16px;">
                 <button onclick="savePINChange()" style="width:100%; background:var(--primary);">PIN ändern</button>
             </div>
         </div>
@@ -1755,7 +1844,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.2</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.4</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -1763,9 +1852,31 @@
             <form id="auth-form" onsubmit="event.preventDefault(); document.getElementById('btn-auth').click();">
                 <input type="text" id="v-username" placeholder="Name" autocomplete="username" name="username">
                 <input type="password" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9" autocomplete="current-password" name="password">
+                <input type="text" id="v-pin-hint" placeholder="PIN-Hinweis (optional, sichtbar beim Login)" maxlength="80" autocomplete="off" style="display:none; font-size:13px;">
+                <div id="pin-hint-display" style="display:none; font-size:12px; color:#888; background:var(--bg); border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid var(--primary);">
+                    💡 <span id="pin-hint-text"></span>
+                </div>
                 <button id="btn-auth" type="submit" style="width:100%;">Starten</button>
             </form>
             <button onclick="if(window.openHelp) window.openHelp(); else document.getElementById('help-overlay').style.display='flex';" style="width:100%; margin-top:10px; background:transparent; color:#999; border:1px solid #ddd; font-size:13px;">❓ Brauchst du Hilfe?</button>
+        </div>
+    </div>
+
+    <!-- SCHEDULED MESSAGES OVERLAY -->
+    <div id="scheduled-overlay" class="overlay">
+        <div class="modal" style="max-width:420px; max-height:80vh;">
+            <div class="modal-header">
+                <h2>🕐 Geplante Nachrichten</h2>
+                <span style="cursor:pointer" onclick="closeOverlay('scheduled-overlay')">✕</span>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom:12px;">
+                    <textarea id="scheduled-text" placeholder="Nachricht eingeben..." rows="3" style="width:100%; resize:none;"></textarea>
+                    <input type="datetime-local" id="scheduled-time" style="width:100%; margin-top:8px;">
+                    <button onclick="saveScheduledMsg()" style="width:100%; margin-top:8px; background:var(--primary);">⏰ Planen</button>
+                </div>
+                <div id="scheduled-list" style="max-height:40vh; overflow-y:auto;"></div>
+            </div>
         </div>
     </div>
 
@@ -1847,6 +1958,7 @@
                     <span class="menu-dots" onclick="toggleChatMenu()">⋮</span>
                     <div id="chat-menu" class="dropdown-menu">
                         <div class="menu-item" id="menu-group-info" onclick="openGroupInfo()" style="display:none;">👥 Gruppeninfo</div>
+                        <div class="menu-item" onclick="openScheduled()">🕐 Geplante Nachrichten</div>
                         <div class="menu-item" onclick="exportChat()">📥 Chat exportieren</div>
                         <div class="menu-item" onclick="searchInChat()">🔍 Nachricht suchen</div>
                         <div class="menu-item" onclick="clearChat()">🗑️ Chat leeren</div>
@@ -1887,6 +1999,8 @@
             <div id="input-area">
                 <button id="btn-emoji" onclick="openEmojiPicker()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;">😊</button>
                 <button onclick="openPollCreator()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Abstimmung erstellen">📊</button>
+                <button onclick="document.getElementById('img-upload-input').click()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Bild senden">🖼️</button>
+                <input type="file" id="img-upload-input" accept="image/*" style="display:none;">
                 <textarea id="msg-input" placeholder="Nachricht..." rows="1" style="resize:none; overflow:hidden; min-height:44px; max-height:120px; line-height:1.4; padding:12px 20px;"></textarea>
                 <button id="btn-send" style="width:60px;">➤</button>
             </div>
@@ -1900,7 +2014,7 @@ import {
     getDatabase, ref, set, get, push, update,
     onChildAdded, onChildRemoved, onChildChanged,
     remove, onValue, off,
-    query, orderByChild, startAt, endAt
+    query, orderByChild, startAt, endAt // kept for potential future use
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
@@ -2144,6 +2258,18 @@ window.openSettings = () => {
     }
     
     document.getElementById('settings-overlay').style.display = 'flex';
+    switchSettingsTab('personalization');
+};
+
+window.switchSettingsTab = (tab) => {
+    // Update tab highlights
+    document.querySelectorAll('.settings-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === tab);
+    });
+    // Show/hide panels
+    document.querySelectorAll('.settings-panel').forEach(p => {
+        p.style.display = p.id === `stab-${tab}` ? 'block' : 'none';
+    });
 };
 
 window.saveMyAvatar = async () => {
@@ -2286,6 +2412,26 @@ function playWarningSound() {
     } catch(e) {}
 }
 
+function playSendSound() {
+    const soundEnabled = localStorage.getItem('villo_sound') === 'true';
+    if(!soundEnabled) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.12);
+    } catch(e) {}
+}
+
+
 function showNotification(message, type = 'success') {
     const toast = document.getElementById('notification-toast');
     toast.textContent = message;
@@ -2314,6 +2460,17 @@ function setAuth(m) {
     document.getElementById('t-reg').style.borderBottom = m==='register'?'2px solid var(--primary)':'none';
     document.getElementById('t-reg').style.color = m==='register'?'var(--primary)':'#999';
     
+    // PIN-Hint-Feld nur bei Registrierung
+    const hintField = document.getElementById('v-pin-hint');
+    hintField.style.display = m === 'register' ? 'block' : 'none';
+    if(m === 'login') {
+        document.getElementById('pin-hint-display').style.display = 'none';
+        document.getElementById('pin-hint-text').textContent = '';
+    }
+
+    // Btn label
+    document.getElementById('btn-auth').textContent = m === 'register' ? 'Registrieren' : 'Starten';
+
     // Update autocomplete for password managers
     const pinInput = document.getElementById('v-pin');
     if(m === 'register') {
@@ -2327,6 +2484,21 @@ document.getElementById('v-pin').addEventListener('input', e => {
     let v = e.target.value.replace(/\D/g,'');
     if(v.length>4) v=v.slice(0,4)+'-'+v.slice(4,8);
     e.target.value = v;
+});
+
+// Hint laden wenn Username verlassen wird (nur im Login-Modus)
+document.getElementById('v-username').addEventListener('blur', async () => {
+    if(currentMode !== 'login') return;
+    const u = document.getElementById('v-username').value.trim();
+    if(!u) return;
+    const snap = await get(ref(db, `accounts/${u}/pinHint`));
+    const hintDisplay = document.getElementById('pin-hint-display');
+    if(snap.exists() && snap.val()) {
+        document.getElementById('pin-hint-text').textContent = snap.val();
+        hintDisplay.style.display = 'block';
+    } else {
+        hintDisplay.style.display = 'none';
+    }
 });
 
 document.getElementById('btn-auth').onclick = async () => {
@@ -2343,7 +2515,8 @@ document.getElementById('btn-auth').onclick = async () => {
             showNotification("⛔ Name bereits vergeben!", "error");
             return;
         }
-        await set(ref(db, 'accounts/' + u), { username: u, pin: p, id: u.toLowerCase() });
+        const hint = document.getElementById('v-pin-hint').value.trim();
+        await set(ref(db, 'accounts/' + u), { username: u, pin: p, id: u.toLowerCase(), ...(hint ? { pinHint: hint } : {}) });
         showNotification("✅ Erfolgreich registriert!", "success");
         return;
     } else {
@@ -2509,6 +2682,9 @@ function showApp() {
     // Load groups alongside contacts
     loadGroups();
 
+    // Start scheduled message checker (once)
+    if(!window._schedulerStarted) { window._schedulerStarted = true; startSchedulerTick(); }
+
     // Handle invite link (?join=groupId)
     const joinParam = new URLSearchParams(location.search).get('join');
     if(joinParam) {
@@ -2540,23 +2716,24 @@ function showApp() {
 
 /* ------------------------------ */
 document.getElementById('btn-search').onclick = async () => {
-    const s = document.getElementById('search-input').value.trim().toLowerCase();
-    const q = query(ref(db, 'accounts'), orderByChild('id'), startAt(s), endAt(s+"\uf8ff"));
-    const snap = await get(q);
-    const resDiv = document.getElementById('search-results'); 
-    resDiv.innerHTML = "";
-    
-    if(snap.exists()){
+    const s = document.getElementById('search-input').value.trim();
+    if(!s) return;
+    const resDiv = document.getElementById('search-results');
+    resDiv.innerHTML = '';
+
+    // Direkter Lookup via Username (statt Range-Query)
+    const snap = await get(ref(db, `accounts/${s}`));
+    if(snap.exists() && snap.val().username !== myUsername) {
         document.getElementById('search-overlay').style.display = 'flex';
-        for(let key in snap.val()){
-            const name = snap.val()[key].username; 
-            if(name === myUsername) continue;
-            const item = document.createElement('div'); 
-            item.className = 'contact-item';
-            item.innerHTML = `${getAvatarHTML(name)} <span>${name}</span> <span style="margin-left:auto;">+</span>`;
-            item.onclick = () => { addGegenseitig(name); closeOverlay('search-overlay'); };
-            resDiv.appendChild(item);
-        }
+        const name = snap.val().username;
+        const item = document.createElement('div');
+        item.className = 'contact-item';
+        item.innerHTML = `${getAvatarHTML(name)} <span>${name}</span> <span style="margin-left:auto;">+</span>`;
+        item.onclick = () => { addGegenseitig(name); closeOverlay('search-overlay'); };
+        resDiv.appendChild(item);
+    } else {
+        document.getElementById('search-overlay').style.display = 'flex';
+        resDiv.innerHTML = '<p style="padding:10px; opacity:0.5;">Kein Nutzer gefunden</p>';
     }
 };
 
@@ -3038,14 +3215,98 @@ document.getElementById('btn-send').onclick = () => {
     
     push(ref(db, 'chats/'+activeChatId), msgData);
     set(ref(db, `typing/${activeChatId}/${myUsername}`), false);
+    playSendSound();
     msgInput.value = "";
     msgInput.style.height = 'auto';
     cancelReply();
 };
 
 /* ------------------------------ */
-/* DELETE MESSAGE MIT BESTÄTIGUNG */
+/* BILD-UPLOAD (Base64)           */
 /* ------------------------------ */
+document.getElementById('img-upload-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = ''; // Reset so same file can be selected again
+    if(!file || !activeChatId) return;
+
+    const MAX_BYTES = 500 * 1024; // 500 KB
+    if(file.size > MAX_BYTES) {
+        showNotification('⚠️ Bild zu groß (max. 500 KB)', 'warning');
+        return;
+    }
+
+    // Compress/resize via canvas to stay under limit
+    const dataUrl = await compressImage(file, MAX_BYTES);
+    if(!dataUrl) { showNotification('❌ Bild konnte nicht geladen werden', 'error'); return; }
+
+    const msgData = {
+        sender: myUsername,
+        text: dataUrl,
+        timestamp: Date.now(),
+        read: false,
+        isImage: true
+    };
+    if(replyingTo) {
+        msgData.replyTo = { msgId: replyingTo.msgId, sender: replyingTo.sender, text: replyingTo.text };
+    }
+    push(ref(db, 'chats/' + activeChatId), msgData);
+    playSendSound();
+    cancelReply();
+});
+
+function compressImage(file, maxBytes) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onload = () => {
+            URL.revokeObjectURL(url);
+            const canvas = document.createElement('canvas');
+            let { width, height } = img;
+            // Scale down if needed
+            const maxDim = 1200;
+            if(width > maxDim || height > maxDim) {
+                const scale = Math.min(maxDim / width, maxDim / height);
+                width = Math.round(width * scale);
+                height = Math.round(height * scale);
+            }
+            canvas.width = width;
+            canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+
+            // Try quality steps until under maxBytes
+            let quality = 0.85;
+            let result;
+            do {
+                result = canvas.toDataURL('image/jpeg', quality);
+                quality -= 0.1;
+            } while(result.length > maxBytes * 1.37 && quality > 0.1); // base64 ~37% overhead
+            resolve(result);
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+        img.src = url;
+    });
+}
+
+// Bild aus Zwischenablage einfügen (Ctrl+V / Cmd+V)
+document.getElementById('msg-input').addEventListener('paste', async (e) => {
+    const items = e.clipboardData?.items;
+    if(!items || !activeChatId) return;
+    for(const item of items) {
+        if(item.type.startsWith('image/')) {
+            e.preventDefault();
+            const file = item.getAsFile();
+            if(file.size > 500 * 1024) { showNotification('⚠️ Bild zu groß (max. 500 KB)', 'warning'); return; }
+            const dataUrl = await compressImage(file, 500 * 1024);
+            if(!dataUrl) return;
+            push(ref(db, 'chats/' + activeChatId), {
+                sender: myUsername, text: dataUrl, timestamp: Date.now(), read: false, isImage: true
+            });
+            playSendSound();
+            return;
+        }
+    }
+});
+
 window.deleteMsg = (mid) => {
     if(!activeChatId) return;
     document.getElementById('confirm-text').innerText = "Nachricht wirklich löschen?";
@@ -3685,8 +3946,93 @@ function playNotificationSound() {
 }
 
 /* ------------------------------ */
-/* PIN MESSAGE */
+/* GEPLANTE NACHRICHTEN           */
 /* ------------------------------ */
+function getScheduledMsgs() {
+    return JSON.parse(localStorage.getItem('villo_scheduled') || '[]');
+}
+function saveScheduledMsgs(arr) {
+    localStorage.setItem('villo_scheduled', JSON.stringify(arr));
+}
+
+window.openScheduled = () => {
+    if(!activeChatId) { showNotification('⚠️ Kein Chat geöffnet!', 'warning'); return; }
+    toggleChatMenu();
+    // Set minimum time to now+1min
+    const min = new Date(Date.now() + 60000);
+    min.setSeconds(0, 0);
+    document.getElementById('scheduled-time').min = min.toISOString().slice(0,16);
+    document.getElementById('scheduled-time').value = '';
+    document.getElementById('scheduled-text').value = '';
+    renderScheduledList();
+    document.getElementById('scheduled-overlay').style.display = 'flex';
+};
+
+window.saveScheduledMsg = () => {
+    const text = document.getElementById('scheduled-text').value.trim();
+    const timeVal = document.getElementById('scheduled-time').value;
+    if(!text) { showNotification('❌ Bitte Nachricht eingeben', 'error'); return; }
+    if(!timeVal) { showNotification('❌ Bitte Zeit auswählen', 'error'); return; }
+    const sendAt = new Date(timeVal).getTime();
+    if(sendAt <= Date.now()) { showNotification('❌ Zeit muss in der Zukunft liegen', 'error'); return; }
+
+    const msgs = getScheduledMsgs();
+    msgs.push({ id: Date.now(), chatId: activeChatId, chatName: activeContactName || activeChatId, text, sendAt });
+    saveScheduledMsgs(msgs);
+    document.getElementById('scheduled-text').value = '';
+    document.getElementById('scheduled-time').value = '';
+    showNotification('✅ Nachricht geplant', 'success');
+    renderScheduledList();
+};
+
+function renderScheduledList() {
+    const msgs = getScheduledMsgs().filter(m => m.chatId === activeChatId).sort((a,b) => a.sendAt - b.sendAt);
+    const list = document.getElementById('scheduled-list');
+    if(!list) return;
+    if(msgs.length === 0) {
+        list.innerHTML = '<p style="opacity:0.5; text-align:center; padding:10px; font-size:13px;">Keine geplanten Nachrichten</p>';
+        return;
+    }
+    list.innerHTML = '<div style="font-weight:600; font-size:13px; margin-bottom:8px; opacity:0.6;">GEPLANT</div>';
+    msgs.forEach(m => {
+        const d = document.createElement('div');
+        d.style.cssText = 'padding:10px; background:var(--bg); border-radius:10px; margin-bottom:8px; display:flex; gap:10px; align-items:flex-start;';
+        d.innerHTML = `
+            <div style="flex:1; min-width:0;">
+                <div style="font-size:13px; word-break:break-word;">${m.text.substring(0,120)}${m.text.length>120?'...':''}</div>
+                <div style="font-size:11px; opacity:0.5; margin-top:4px;">🕐 ${new Date(m.sendAt).toLocaleString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+            </div>
+            <span style="cursor:pointer; color:#dc3545; font-size:18px; flex-shrink:0;" onclick="deleteScheduledMsg(${m.id})">✕</span>
+        `;
+        list.appendChild(d);
+    });
+}
+
+window.deleteScheduledMsg = (id) => {
+    const msgs = getScheduledMsgs().filter(m => m.id !== id);
+    saveScheduledMsgs(msgs);
+    renderScheduledList();
+    showNotification('🗑️ Geplante Nachricht gelöscht', 'success');
+};
+
+// Scheduler tick — checks every 30s for messages to send
+function startSchedulerTick() {
+    setInterval(() => {
+        const now = Date.now();
+        let msgs = getScheduledMsgs();
+        const due = msgs.filter(m => m.sendAt <= now);
+        if(due.length === 0) return;
+        due.forEach(m => {
+            push(ref(db, `chats/${m.chatId}`), {
+                sender: myUsername, text: m.text, timestamp: now, read: false
+            });
+            showNotification(`📨 Geplante Nachricht gesendet`, 'success');
+        });
+        saveScheduledMsgs(msgs.filter(m => m.sendAt > now));
+    }, 30000);
+}
+
+
 function pinMessage(msgKey, msgText) {
     if(!activeChatId) return;
     const pinnedKey = `pinned_${activeChatId}`;
@@ -3875,10 +4221,13 @@ window.openMyProfile = async () => {
 /* ------------------------------ */
 /* CHANGE PIN */
 /* ------------------------------ */
-window.openChangePIN = () => {
+window.openChangePIN = async () => {
     document.getElementById('pin-current').value = '';
     document.getElementById('pin-new').value = '';
     document.getElementById('pin-confirm').value = '';
+    // Pre-fill existing hint
+    const hintSnap = await get(ref(db, `accounts/${myUsername}/pinHint`));
+    document.getElementById('pin-hint-settings').value = hintSnap.exists() ? hintSnap.val() : '';
     closeOverlay('settings-overlay');
     document.getElementById('change-pin-overlay').style.display = 'flex';
     document.getElementById('pin-current').focus();
@@ -3914,6 +4263,9 @@ window.savePINChange = async () => {
     }
 
     await set(ref(db, `accounts/${myUsername}/pin`), newPin);
+    // Save updated hint (can be empty to remove it)
+    const hint = document.getElementById('pin-hint-settings').value.trim();
+    await set(ref(db, `accounts/${myUsername}/pinHint`), hint || null);
     closeOverlay('change-pin-overlay');
     showNotification('✅ PIN erfolgreich geändert', 'success');
 };
@@ -4455,64 +4807,99 @@ window.openForwardDialog = async (text) => {
     document.getElementById('forward-send-btn').disabled = true;
     
     const list = document.getElementById('forward-contacts-list');
-    list.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Lade Kontakte<span class="loading-spinner"></span></p>';
+    list.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Lade...</p>';
     document.getElementById('forward-overlay').style.display = 'flex';
-    
-    // Load contacts from Firebase directly to ensure complete list
-    let contacts = [];
-    try {
-        const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
-        if(snap.exists()) {
-            contacts = Object.values(snap.val()).filter(Boolean);
-        }
-    } catch(e) {
-        contacts = window._contactsCache || [];
-    }
     
     const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
     list.innerHTML = '';
-    
-    if(contacts.length === 0) {
-        list.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Keine Kontakte vorhanden</p>';
+
+    // Load contacts
+    let contacts = [];
+    try {
+        const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+        if(snap.exists()) contacts = Object.values(snap.val()).filter(Boolean);
+    } catch(e) { contacts = window._contactsCache || []; }
+
+    // Load groups
+    let groups = [];
+    try {
+        const gSnap = await get(ref(db, `accounts/${myUsername}/groups`));
+        if(gSnap.exists()) {
+            const gids = Object.values(gSnap.val());
+            for(const gid of gids) {
+                const gs = await get(ref(db, `groups/${gid}`));
+                if(gs.exists()) groups.push({ gid, name: gs.val().name, avatar: gs.val().avatar || '👥' });
+            }
+        }
+    } catch(e) {}
+
+    if(contacts.length === 0 && groups.length === 0) {
+        list.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Keine Kontakte oder Gruppen</p>';
         return;
     }
-    
-    contacts.sort((a,b) => (aliases[a]||a).localeCompare(aliases[b]||b));
-    
-    contacts.forEach(name => {
-        const displayName = aliases[name] || name;
-        const item = document.createElement('div');
-        item.className = 'forward-contact-item';
-        item.dataset.contact = name;
-        item.innerHTML = `
-            ${getAvatarHTML(displayName, false)}
-            <span style="flex:1;">${displayName}</span>
-            <div class="fwd-check"></div>
-        `;
-        item.onclick = () => {
-            if(forwardSelectedContacts.has(name)) {
-                forwardSelectedContacts.delete(name);
-                item.classList.remove('selected');
-                item.querySelector('.fwd-check').textContent = '';
-            } else {
-                forwardSelectedContacts.add(name);
-                item.classList.add('selected');
-                item.querySelector('.fwd-check').textContent = '✓';
-            }
-            const count = forwardSelectedContacts.size;
-            const btn = document.getElementById('forward-send-btn');
-            btn.textContent = count > 0 ? `Weiterleiten (${count})` : 'Weiterleiten (0 ausgewählt)';
-            btn.disabled = count === 0;
-        };
-        list.appendChild(item);
-    });
+
+    const updateBtn = () => {
+        const count = forwardSelectedContacts.size;
+        const btn = document.getElementById('forward-send-btn');
+        btn.textContent = count > 0 ? `Weiterleiten (${count})` : 'Weiterleiten (0 ausgewählt)';
+        btn.disabled = count === 0;
+    };
+
+    // Section header helper
+    const addSection = (label) => {
+        const h = document.createElement('div');
+        h.style.cssText = 'padding:8px 12px 4px; font-size:11px; font-weight:600; opacity:0.4; text-transform:uppercase; letter-spacing:0.5px;';
+        h.textContent = label;
+        list.appendChild(h);
+    };
+
+    // Groups
+    if(groups.length > 0) {
+        addSection('Gruppen');
+        groups.sort((a,b) => a.name.localeCompare(b.name));
+        groups.forEach(({ gid, name, avatar }) => {
+            const key = `group:${gid}`;
+            const item = document.createElement('div');
+            item.className = 'forward-contact-item';
+            item.innerHTML = `
+                <div class="avatar" style="background:${stringToColor(name)};font-size:18px;width:36px;height:36px;">${avatar}</div>
+                <span style="flex:1;">${name}</span>
+                <div class="fwd-check"></div>`;
+            item.onclick = () => {
+                if(forwardSelectedContacts.has(key)) { forwardSelectedContacts.delete(key); item.classList.remove('selected'); item.querySelector('.fwd-check').textContent=''; }
+                else { forwardSelectedContacts.add(key); item.classList.add('selected'); item.querySelector('.fwd-check').textContent='✓'; }
+                updateBtn();
+            };
+            list.appendChild(item);
+        });
+    }
+
+    // Contacts
+    if(contacts.length > 0) {
+        addSection('Kontakte');
+        contacts.sort((a,b) => (aliases[a]||a).localeCompare(aliases[b]||b));
+        contacts.forEach(name => {
+            const displayName = aliases[name] || name;
+            const item = document.createElement('div');
+            item.className = 'forward-contact-item';
+            item.dataset.contact = name;
+            item.innerHTML = `${getAvatarHTML(displayName, false)}<span style="flex:1;">${displayName}</span><div class="fwd-check"></div>`;
+            item.onclick = () => {
+                if(forwardSelectedContacts.has(name)) { forwardSelectedContacts.delete(name); item.classList.remove('selected'); item.querySelector('.fwd-check').textContent=''; }
+                else { forwardSelectedContacts.add(name); item.classList.add('selected'); item.querySelector('.fwd-check').textContent='✓'; }
+                updateBtn();
+            };
+            list.appendChild(item);
+        });
+    }
 };
 
 window.sendForward = async () => {
     if(forwardSelectedContacts.size === 0) return;
     
-    const promises = [...forwardSelectedContacts].map(async (contact) => {
-        const chatId = myUsername < contact ? `${myUsername}_${contact}` : `${contact}_${myUsername}`;
+    const promises = [...forwardSelectedContacts].map(async (key) => {
+        const isGroup = key.startsWith('group:');
+        const chatId = isGroup ? key.slice(6) : (myUsername < key ? `${myUsername}_${key}` : `${key}_${myUsername}`);
         await push(ref(db, `chats/${chatId}`), {
             sender: myUsername,
             text: forwardText,
@@ -4524,7 +4911,7 @@ window.sendForward = async () => {
     
     await Promise.all(promises);
     closeOverlay('forward-overlay');
-    showNotification(`✅ An ${forwardSelectedContacts.size} Kontakt(e) weitergeleitet`, 'success');
+    showNotification(`✅ An ${forwardSelectedContacts.size} Empfänger weitergeleitet`, 'success');
 };
 
 /* ------------------------------ */
@@ -4549,6 +4936,12 @@ function isTwitterUrl(url) {
 }
 
 function renderMessageContent(text) {
+    if(!text) return '';
+    // Base64 image (from upload)
+    if(text.startsWith('data:image/')) {
+        return `<img class="msg-image" src="${text}" alt="Bild" onclick="openLightbox(this.src)" style="max-width:100%; max-height:300px; border-radius:8px; cursor:pointer; display:block;">`;
+    }
+
     // Check for plain image URL (whole message or standalone line)
     const lines = text.trim().split('\n');
     const results = [];
@@ -5250,7 +5643,7 @@ window.onload = () => {
                               'alias-overlay', 'user-info-overlay', 'emoji-picker', 'poll-overlay', 
                               'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
                               'forward-overlay', 'my-profile-overlay', 'changelog-overlay',
-                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay'];
+                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay'];
             let anyOpen = false;
             overlays.forEach(id => {
                 const el = document.getElementById(id);
@@ -5499,23 +5892,28 @@ window.onload = () => {
     };
 
     document.getElementById('btn-group-member-search').onclick = async () => {
-        const s = document.getElementById('group-member-search').value.trim().toLowerCase();
+        const s = document.getElementById('group-member-search').value.trim();
         if(!s) return;
-        const q = query(ref(db, 'accounts'), orderByChild('id'), startAt(s), endAt(s+"\uf8ff"));
-        const snap = await get(q);
         const results = document.getElementById('group-member-results');
         results.innerHTML = '';
-        if(!snap.exists()) { results.innerHTML = '<div style="opacity:0.5;font-size:13px;padding:6px;">Keine Ergebnisse</div>'; return; }
-        Object.values(snap.val()).forEach(acc => {
-            const name = acc.username;
-            if(name === myUsername || selectedGroupMembers.includes(name)) return;
-            const item = document.createElement('div');
-            item.className = 'contact-item';
-            item.style.padding = '8px 12px';
-            item.innerHTML = `${getAvatarHTML(name)} <span style="flex:1;">${name}</span> <span style="color:var(--primary);">+</span>`;
-            item.onclick = () => window.addGroupMember(name);
-            results.appendChild(item);
-        });
+
+        // Direkter Lookup via Username
+        const snap = await get(ref(db, `accounts/${s}`));
+        if(!snap.exists()) {
+            results.innerHTML = '<div style="opacity:0.5;font-size:13px;padding:6px;">Kein Nutzer gefunden</div>';
+            return;
+        }
+        const name = snap.val().username;
+        if(name === myUsername || selectedGroupMembers.includes(name)) {
+            results.innerHTML = '<div style="opacity:0.5;font-size:13px;padding:6px;">Bereits hinzugefügt</div>';
+            return;
+        }
+        const item = document.createElement('div');
+        item.className = 'contact-item';
+        item.style.padding = '8px 12px';
+        item.innerHTML = `${getAvatarHTML(name)} <span style="flex:1;">${name}</span> <span style="color:var(--primary);">+</span>`;
+        item.onclick = () => window.addGroupMember(name);
+        results.appendChild(item);
     };
 
     // Allow enter in member search
@@ -5596,22 +5994,33 @@ window.onload = () => {
         const admins = g.admins ? Object.keys(g.admins).filter(a => g.admins[a] === true) : [];
         // Ersteller ist immer Admin, auch bei alten Gruppen ohne admins-Feld
         if(g.createdBy && !admins.includes(g.createdBy)) admins.push(g.createdBy);
+        const moderators = g.moderators ? Object.keys(g.moderators).filter(m => g.moderators[m] === true) : [];
         const isAdmin = admins.includes(myUsername);
+        const isModerator = moderators.includes(myUsername);
+        const canManage = isAdmin || isModerator;
         const avatar = g.avatar || '👥';
 
         const GROUP_EMOJIS = ['👥','🎮','🎵','🏀','🍕','✈️','💼','🎓','❤️','⚽','🌍','🔥','🎉','🏠','🤝','🎨','📚','🎯','🦁','🐶'];
 
         let membersHTML = members.map(m => {
             const isMemberAdmin = admins.includes(m);
+            const isMemberMod = moderators.includes(m);
             const canRemoveAdmin = isAdmin && isMemberAdmin && m !== myUsername && admins.length > 1;
+            const roleBadge = isMemberAdmin
+                ? `<span style="font-size:11px;background:var(--primary);color:white;border-radius:10px;padding:1px 7px;">Admin</span>`
+                : isMemberMod
+                ? `<span style="font-size:11px;background:#f39c12;color:white;border-radius:10px;padding:1px 7px;">Mod</span>`
+                : '';
             return `
             <div class="contact-item" style="padding:10px 0; border-bottom:1px solid var(--border-color);">
                 ${getAvatarHTML(m)}
-                <span style="flex:1;">${m}${isMemberAdmin ? ' <span style="font-size:11px;background:var(--primary);color:white;border-radius:10px;padding:1px 7px;">Admin</span>' : ''}</span>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    ${isAdmin && m !== myUsername && !isMemberAdmin ? `<span style="cursor:pointer; color:var(--primary); font-size:12px;" onclick="makeAdmin('${m}')">👑 Admin</span>` : ''}
-                    ${canRemoveAdmin ? `<span style="cursor:pointer; color:#f39c12; font-size:12px;" onclick="removeAdmin('${m}')">👑 Entziehen</span>` : ''}
-                    ${isAdmin && m !== myUsername ? `<span style="cursor:pointer; color:#dc3545; font-size:12px;" onclick="removeMemberFromGroup('${m}')">Entfernen</span>` : ''}
+                <span style="flex:1;">${m} ${roleBadge}</span>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+                    ${isAdmin && m !== myUsername && !isMemberAdmin && !isMemberMod ? `<span style="cursor:pointer; color:var(--primary); font-size:12px;" onclick="makeAdmin('${m}')">👑</span>` : ''}
+                    ${isAdmin && m !== myUsername && !isMemberMod && !isMemberAdmin ? `<span style="cursor:pointer; color:#f39c12; font-size:12px;" onclick="makeModerator('${m}')">🛡️</span>` : ''}
+                    ${canRemoveAdmin ? `<span style="cursor:pointer; color:#999; font-size:12px;" onclick="removeAdmin('${m}')">👑✕</span>` : ''}
+                    ${isAdmin && isMemberMod && m !== myUsername ? `<span style="cursor:pointer; color:#999; font-size:12px;" onclick="removeModerator('${m}')">🛡️✕</span>` : ''}
+                    ${canManage && m !== myUsername && !isMemberAdmin ? `<span style="cursor:pointer; color:#dc3545; font-size:12px;" onclick="removeMemberFromGroup('${m}')">Entfernen</span>` : ''}
                 </div>
             </div>
         `}).join('');
@@ -5687,6 +6096,30 @@ window.onload = () => {
         navigator.clipboard.writeText(link).then(() => {
             showNotification('📋 Einladungslink kopiert!', 'success');
         });
+    };
+
+    window.makeModerator = async (memberName) => {
+        if(!activeGroupId) return;
+        await update(ref(db, `groups/${activeGroupId}/moderators`), { [memberName]: true });
+        push(ref(db, `chats/${activeGroupId}`), {
+            sender: '🤖 System',
+            text: `${memberName} wurde von ${myUsername} zum Moderator ernannt.`,
+            timestamp: Date.now(), read: false, isSystem: true
+        });
+        showNotification(`✅ ${memberName} ist jetzt Moderator`, 'success');
+        window.openGroupInfo();
+    };
+
+    window.removeModerator = async (memberName) => {
+        if(!activeGroupId) return;
+        await update(ref(db, `groups/${activeGroupId}/moderators`), { [memberName]: null });
+        push(ref(db, `chats/${activeGroupId}`), {
+            sender: '🤖 System',
+            text: `${memberName} ist kein Moderator mehr.`,
+            timestamp: Date.now(), read: false, isSystem: true
+        });
+        showNotification(`✅ Moderator-Rolle entzogen`, 'success');
+        window.openGroupInfo();
     };
 
     window.makeAdmin = async (memberName) => {
