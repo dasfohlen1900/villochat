@@ -1171,6 +1171,7 @@
         .story-bubble .story-name { font-size:10px; max-width:52px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.7; }
         #story-viewer-overlay { display:none !important; }
         #story-viewer-overlay.show { display:flex !important; }
+        #story-create-overlay[style*="flex"] .modal { display: flex; }
         /* Avatar type buttons */
         #avtype-letter, #avtype-emoji, #avtype-image { transition: all 0.15s; border-radius: 8px; padding: 8px; cursor: pointer; }
 
@@ -2003,7 +2004,7 @@
 
     <!-- STORY CREATE OVERLAY -->
     <div id="story-create-overlay" class="overlay">
-        <div class="modal" style="max-width:420px; width:95vw; max-height:92vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+        <div class="modal" style="max-width:420px; width:95vw; max-height:92vh; flex-direction:column; padding:0; overflow:hidden;">
             <div class="modal-header" style="flex-shrink:0; padding:14px 18px;">
                 <h2>📖 Geschichte erstellen</h2>
                 <span style="cursor:pointer;" onclick="closeOverlay('story-create-overlay')">✕</span>
