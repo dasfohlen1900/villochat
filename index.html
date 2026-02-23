@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.5</title>
+    <title>VilloChat - Version 5.6</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1342,7 +1342,7 @@
                         <div style="text-align:center; margin-bottom:20px;">
                             <div id="settings-avatar-preview" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
                             <div style="font-size:18px; font-weight:700;" id="set-username"></div>
-                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.5 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
+                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.6 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
                         </div>
 
                         <!-- Avatar type tabs -->
@@ -1413,6 +1413,17 @@
                         <button onclick="openChangePIN()" style="width:100%; margin-bottom:10px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔑 PIN ändern</button>
                         <button onclick="logout()" style="background:#dc3545; width:100%;">🚪 Abmelden</button>
 
+                        <!-- Group add privacy -->
+                        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
+                            <label class="settings-label">👥 Wer kann mich zu Gruppen hinzufügen?</label>
+                            <select id="group-add-privacy-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:8px;">
+                                <option value="all">Alle</option>
+                                <option value="contacts">Nur Kontakte</option>
+                                <option value="none">Niemand</option>
+                            </select>
+                            <button onclick="saveGroupAddPrivacy()" style="width:100%; background:var(--primary);">Einstellung speichern</button>
+                        </div>
+
                         <!-- Story visibility -->
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
                             <label class="settings-label">👁️ Wer sieht meine Geschichten?</label>
@@ -1446,7 +1457,7 @@
                         <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);">📖 Hilfe-Center öffnen</button>
                         <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">📋 Changelog</button>
                         <div style="margin-top:20px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color); font-size:13px; line-height:1.7; opacity:0.8;">
-                            <strong>VilloChat 5.5</strong><br>
+                            <strong>VilloChat 5.6</strong><br>
                             Entwickelt als Single-File Web-App.<br>
                             Firebase Realtime Database · Web Audio API · keine externen Tracker.
                         </div>
@@ -1595,7 +1606,12 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.5 ✨</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.6 🔍</h3>
+                <ul>
+                    <li>🔍 <strong>Teilstring-Suche</strong> — Kontaktfelder in Gruppe erstellen, Gruppeninfo und Story-Sichtbarkeit zeigen bereits bei Teileingabe passende Kontakte — live beim Tippen. "Kontakt hinzufügen" bleibt weiterhin exact-match</li>
+                    <li>👥 <strong>Gruppeneinladungs-Datenschutz</strong> — Einstellungen → Sicherheit: Wer kann mich zu Gruppen hinzufügen? (Alle / Nur Kontakte / Niemand). Wird bei jedem Hinzufügen geprüft</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.5 ✨</h3>
                 <ul>
                     <li>📖 <strong>Geschichten — Multi-Slide</strong> — Bis zu 15 Slides pro Geschichte (Text, Emoji, Bild). Schriftart pro Slide wählbar. Slides-Leiste mit Thumbnail-Vorschau im Creator</li>
                     <li>🖼️ <strong>Profilbild</strong> — Drei Typen: Buchstabe (Farbe + Schrift), Emoji (via Emoji-Dialog) oder Bild (Base64, max. 200 KB). Überall sichtbar: Sidebar, Chat, Gruppen, Geschichten</li>
@@ -1951,7 +1967,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.5</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.6</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -2318,6 +2334,39 @@ let selectedGroupMembers = [];
 marked.setOptions({ breaks: true });
 
 /* ------------------------------ */
+/* ------------------------------ */
+/* PARTIAL CONTACT SEARCH HELPER  */
+/* ------------------------------ */
+async function searchContactsPartial(query, excludeList = []) {
+    const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+    if(!snap.exists()) return [];
+    const contacts = Object.values(snap.val()).filter(Boolean);
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    const q = query.toLowerCase();
+    return contacts.filter(c =>
+        !excludeList.includes(c) &&
+        (c.toLowerCase().includes(q) || (aliases[c] || '').toLowerCase().includes(q))
+    );
+}
+
+function renderContactSearchResults(results, container, onSelect, alreadyLabel = 'Bereits hinzugefügt') {
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    container.innerHTML = '';
+    if(!results.length) {
+        container.innerHTML = '<div style="opacity:0.5;font-size:13px;padding:6px;">Kein Kontakt gefunden</div>';
+        return;
+    }
+    results.forEach(name => {
+        const item = document.createElement('div');
+        item.className = 'contact-item';
+        item.style.padding = '8px 12px';
+        const displayName = aliases[name] || name;
+        item.innerHTML = `${getAvatarHTML(name)} <span style="flex:1;">${displayName}</span> <span style="color:var(--primary);">+</span>`;
+        item.onclick = () => onSelect(name);
+        container.appendChild(item);
+    });
+}
+
 /* AVATAR HELPERS */
 /* ------------------------------ */
 function stringToColor(str) {
@@ -2541,7 +2590,7 @@ window.switchSettingsTab = (tab) => {
     document.querySelectorAll('.settings-panel').forEach(p => {
         p.style.display = p.id === `stab-${tab}` ? 'block' : 'none';
     });
-    if(tab === 'security' && myUsername) loadStoryVisibilitySettings();
+    if(tab === 'security' && myUsername) { loadStoryVisibilitySettings(); loadGroupAddPrivacySetting(); }
 };
 
 window.saveMyAvatar = async () => {
@@ -4700,7 +4749,22 @@ window.deleteMyStory = async () => {
     loadContactStories();
 };
 
-/* ----- Story Visibility ----- */
+window.saveGroupAddPrivacy = async () => {
+    const val = document.getElementById('group-add-privacy-select').value;
+    await set(ref(db, `accounts/${myUsername}/groupAddPrivacy`), val);
+    localStorage.setItem('group_add_privacy', val);
+    showNotification('✅ Einstellung gespeichert', 'success');
+};
+
+async function loadGroupAddPrivacySetting() {
+    const saved = localStorage.getItem('group_add_privacy')
+        || (await get(ref(db, `accounts/${myUsername}/groupAddPrivacy`))).val()
+        || 'all';
+    const el = document.getElementById('group-add-privacy-select');
+    if(el) el.value = saved;
+}
+
+
 let _storyVisibilityContacts = []; // selected contacts for except/only
 
 window.onStoryVisibilityChange = () => {
@@ -6907,34 +6971,24 @@ window.onload = () => {
         document.getElementById('group-create-overlay').style.display = 'flex';
     };
 
-    document.getElementById('btn-group-member-search').onclick = async () => {
-        const s = document.getElementById('group-member-search').value.trim();
-        if(!s) return;
+    document.getElementById('group-member-search').addEventListener('input', async (e) => {
+        const s = e.target.value.trim();
         const results = document.getElementById('group-member-results');
-        results.innerHTML = '';
+        if(!s) { results.innerHTML = ''; return; }
+        const found = await searchContactsPartial(s, [myUsername, ...selectedGroupMembers]);
+        renderContactSearchResults(found, results, (name) => {
+            window.addGroupMember(name);
+        });
+    });
 
-        // Direkter Lookup via Username
-        const snap = await get(ref(db, `accounts/${s}`));
-        if(!snap.exists()) {
-            results.innerHTML = '<div style="opacity:0.5;font-size:13px;padding:6px;">Kein Nutzer gefunden</div>';
-            return;
-        }
-        const name = snap.val().username;
-        if(name === myUsername || selectedGroupMembers.includes(name)) {
-            results.innerHTML = '<div style="opacity:0.5;font-size:13px;padding:6px;">Bereits hinzugefügt</div>';
-            return;
-        }
-        const item = document.createElement('div');
-        item.className = 'contact-item';
-        item.style.padding = '8px 12px';
-        item.innerHTML = `${getAvatarHTML(name)} <span style="flex:1;">${name}</span> <span style="color:var(--primary);">+</span>`;
-        item.onclick = () => window.addGroupMember(name);
-        results.appendChild(item);
-    };
+    document.getElementById('btn-group-member-search').onclick = () => {}; // kept for layout, search is now live
 
-    // Allow enter in member search
+    // Allow enter to pick first result
     document.getElementById('group-member-search').addEventListener('keydown', (e) => {
-        if(e.key === 'Enter') document.getElementById('btn-group-member-search').click();
+        if(e.key === 'Enter') {
+            const first = document.querySelector('#group-member-results .contact-item');
+            if(first) first.click();
+        }
     });
 
     window.addGroupMember = function(name) {
@@ -7086,10 +7140,11 @@ window.onload = () => {
             ${isAdmin ? `
             <div style="margin-top:16px; border-top:1px solid var(--border-color); padding-top:14px;">
                 <div style="font-weight:600; margin-bottom:8px;">Mitglied hinzufügen:</div>
-                <div style="display:flex; gap:6px; margin-bottom:8px;">
-                    <input type="text" id="group-add-member-input" placeholder="Username..." style="flex:1; margin:0;">
+                <div style="display:flex; gap:6px; margin-bottom:4px;">
+                    <input type="text" id="group-add-member-input" placeholder="Kontakt suchen..." style="flex:1; margin:0;" oninput="liveSearchGroupAddMember()">
                     <button onclick="addMemberToGroup()" style="width:50px; margin:0;">+</button>
                 </div>
+                <div id="group-add-member-results" style="margin-bottom:8px;"></div>
             </div>
             ` : ''}
             <button onclick="leaveGroup('${activeGroupId}')" style="width:100%; margin-top:14px; background:#dc3545;">🚪 Gruppe verlassen</button>
@@ -7197,17 +7252,43 @@ window.onload = () => {
         loadGroups();
     };
 
+    window.liveSearchGroupAddMember = async () => {
+        const q = document.getElementById('group-add-member-input').value.trim();
+        const resultsEl = document.getElementById('group-add-member-results');
+        if(!resultsEl) return;
+        if(!q) { resultsEl.innerHTML = ''; return; }
+        // Get current group members to exclude
+        const gSnap = await get(ref(db, `groups/${activeGroupId}/members`));
+        const currentMembers = gSnap.exists() ? Object.keys(gSnap.val()) : [];
+        const found = await searchContactsPartial(q, currentMembers);
+        renderContactSearchResults(found, resultsEl, (name) => {
+            document.getElementById('group-add-member-input').value = name;
+            resultsEl.innerHTML = '';
+        });
+    };
+
     window.addMemberToGroup = async () => {
         const input = document.getElementById('group-add-member-input');
         const newMember = input.value.trim();
         if(!newMember || !activeGroupId) return;
+
+        // Check group add permission
+        const targetPrivSnap = await get(ref(db, `accounts/${newMember}/groupAddPrivacy`));
+        const priv = targetPrivSnap.val() || 'all';
+        if(priv === 'none') { showNotification('❌ Dieser User lässt keine Gruppeneinladungen zu', 'error'); return; }
+        if(priv === 'contacts') {
+            const theirContactsSnap = await get(ref(db, `accounts/${newMember}/contacts`));
+            const theirContacts = theirContactsSnap.exists() ? Object.values(theirContactsSnap.val()).filter(Boolean) : [];
+            if(!theirContacts.includes(myUsername)) { showNotification('❌ Dieser User nimmt nur Einladungen von Kontakten an', 'error'); return; }
+        }
+
+        // Try contacts first, then Firebase fallback
         const accSnap = await get(ref(db, `accounts/${newMember}`));
         if(!accSnap.exists()) { showNotification('❌ User nicht gefunden', 'error'); return; }
 
         await update(ref(db, `groups/${activeGroupId}/members`), { [newMember]: true });
         await push(ref(db, `accounts/${newMember}/groups`), activeGroupId);
 
-        // System message
         push(ref(db, `chats/${activeGroupId}`), {
             sender: '🤖 System',
             text: `${newMember} wurde von ${myUsername} hinzugefügt.`,
@@ -7217,8 +7298,10 @@ window.onload = () => {
         });
 
         input.value = '';
+        const resultsEl = document.getElementById('group-add-member-results');
+        if(resultsEl) resultsEl.innerHTML = '';
         showNotification(`✅ ${newMember} hinzugefügt`, 'success');
-        openGroupInfo(); // Refresh
+        openGroupInfo();
     };
 
     window.removeMemberFromGroup = async (memberName) => {
