@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.4</title>
+    <title>VilloChat - Version 5.5</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1374,7 +1374,11 @@
                         <!-- Emoji section -->
                         <div id="avs-emoji" style="display:none;">
                             <label class="settings-label">Emoji als Profilbild:</label>
-                            <input type="text" id="my-avatar-emoji-input" maxlength="4" placeholder="😎" style="width:100%; text-align:center; font-size:48px; height:72px; margin-bottom:8px; letter-spacing:0;">
+                            <input type="text" id="my-avatar-emoji-input" style="display:none;" readonly>
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                                <div id="avatar-emoji-display" style="font-size:52px; min-width:60px; text-align:center; line-height:1;">😎</div>
+                                <button onclick="emojiTarget='my-avatar-emoji-input'; openEmojiPicker();" style="flex:1; background:var(--primary); color:white; border:none;">😊 Emoji wählen</button>
+                            </div>
                             <label class="settings-label" style="margin-top:4px;">Hintergrundfarbe:</label>
                             <input type="color" id="my-avatar-color-picker-emoji" style="width:100%; height:36px; margin-bottom:12px; cursor:pointer;">
                         </div>
@@ -1442,7 +1446,7 @@
                         <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);">📖 Hilfe-Center öffnen</button>
                         <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">📋 Changelog</button>
                         <div style="margin-top:20px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color); font-size:13px; line-height:1.7; opacity:0.8;">
-                            <strong>VilloChat 5.4</strong><br>
+                            <strong>VilloChat 5.5</strong><br>
                             Entwickelt als Single-File Web-App.<br>
                             Firebase Realtime Database · Web Audio API · keine externen Tracker.
                         </div>
@@ -1591,7 +1595,15 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.4 💡</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.5 ✨</h3>
+                <ul>
+                    <li>📖 <strong>Geschichten — Multi-Slide</strong> — Bis zu 15 Slides pro Geschichte (Text, Emoji, Bild). Schriftart pro Slide wählbar. Slides-Leiste mit Thumbnail-Vorschau im Creator</li>
+                    <li>🖼️ <strong>Profilbild</strong> — Drei Typen: Buchstabe (Farbe + Schrift), Emoji (via Emoji-Dialog) oder Bild (Base64, max. 200 KB). Überall sichtbar: Sidebar, Chat, Gruppen, Geschichten</li>
+                    <li>📋 <strong>Story-Kontextmenü</strong> — Rechtsklick / Langtipp auf eigene Geschichte: Alle löschen, einzelne Slides löschen (Thumbnail-Liste), neue Geschichte hinzufügen</li>
+                    <li>👁️ <strong>Story-Sichtbarkeit</strong> — Einstellungen → Sicherheit: Alle Kontakte / Kontakte außer... / Nur teilen für... / Niemand</li>
+                    <li>📚 <strong>Hilfe erweitert</strong> — Neue Artikel: „Geschichten" und „Profilbild". Feature-Übersicht aktualisiert</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.4 💡</h3>
                 <ul>
                     <li>🖼️ <strong>Bildversand</strong> — Bilder via 🖼️-Button hochladen oder direkt aus Zwischenablage einfügen (Ctrl+V). Max. 500 KB, wird automatisch komprimiert. Klick auf Bild öffnet Lightbox</li>
                     <li>💡 <strong>PIN-Hinweis</strong> — Beim Registrieren oder in Einstellungen → PIN ändern einen Hinweis hinterlegen. Erscheint automatisch beim Login sobald der Username eingegeben wird</li>
@@ -1939,7 +1951,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.4</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.5</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
@@ -2035,7 +2047,11 @@
 
                 <!-- Emoji input -->
                 <div id="story-emoji-section" style="display:none;">
-                    <input type="text" id="story-emoji-input" placeholder="Emoji eingeben..." maxlength="4" oninput="updateStoryPreview()" style="width:100%; text-align:center; font-size:40px; height:70px; margin-bottom:8px;">
+                    <input type="text" id="story-emoji-input" style="display:none;" readonly>
+                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
+                        <div id="story-emoji-display" style="font-size:52px; min-width:60px; text-align:center; line-height:1;">😊</div>
+                        <button onclick="emojiTarget='story-emoji-input'; openEmojiPicker();" style="flex:1; background:var(--primary); color:white; border:none;">😊 Emoji wählen</button>
+                    </div>
                     <div style="margin-bottom:8px;">
                         <label style="font-size:11px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
@@ -4404,7 +4420,10 @@ window.updateStoryPreview = () => {
         previewText.textContent = document.getElementById('story-text-input').value;
         if(fontPicker) previewText.style.fontFamily = fontPicker.value;
     } else if(storyType === 'emoji') {
-        previewText.textContent = document.getElementById('story-emoji-input').value;
+        const val = document.getElementById('story-emoji-input').value;
+        const display = document.getElementById('story-emoji-display');
+        if(display) display.textContent = val || '😊';
+        previewText.textContent = val;
         previewText.style.fontFamily = '';
     } else {
         previewText.textContent = storyImageData ? '' : '🖼️';
@@ -4874,9 +4893,11 @@ document.getElementById('avatar-img-input').addEventListener('change', async (e)
 
 // Bind avatar emoji input live preview
 document.getElementById('my-avatar-emoji-input').addEventListener('input', () => {
+    const val = document.getElementById('my-avatar-emoji-input').value || '😎';
+    document.getElementById('avatar-emoji-display').textContent = val;
     const preview = document.getElementById('settings-avatar-preview');
     if(preview && currentAvatarType === 'emoji') {
-        preview.textContent = document.getElementById('my-avatar-emoji-input').value || '😎';
+        preview.textContent = val;
         preview.style.background = document.getElementById('my-avatar-color-picker-emoji').value;
         preview.style.fontSize = '40px';
     }
@@ -6400,15 +6421,21 @@ window.openEmojiPicker = () => {
     populateEmojiGrid();
 };
 
+let emojiTarget = null; // null = default msg-input, otherwise target element id
+
 function insertEmoji(emoji) {
-    const input = document.getElementById('msg-input');
-    const start = input.selectionStart;
-    const end = input.selectionEnd;
-    const text = input.value;
-    input.value = text.substring(0, start) + emoji + text.substring(end);
+    const targetId = emojiTarget || 'msg-input';
+    const input = document.getElementById(targetId);
+    emojiTarget = null;
+    closeOverlay('emoji-overlay');
+    if(!input) return;
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? input.value.length;
+    input.value = input.value.substring(0, start) + emoji + input.value.substring(end);
     input.focus();
     input.selectionStart = input.selectionEnd = start + emoji.length;
-    closeOverlay('emoji-overlay');
+    // Trigger oninput handlers
+    input.dispatchEvent(new Event('input'));
 }
 
 // Emoji search
