@@ -1409,7 +1409,28 @@
                         <button onclick="openChangePIN()" style="width:100%; margin-bottom:10px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔑 PIN ändern</button>
                         <button onclick="logout()" style="background:#dc3545; width:100%;">🚪 Abmelden</button>
 
-                        <div style="margin-top:24px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color);">
+                        <!-- Story visibility -->
+                        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
+                            <label class="settings-label">👁️ Wer sieht meine Geschichten?</label>
+                            <select id="story-visibility-select" onchange="onStoryVisibilityChange()" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:10px;">
+                                <option value="all">Alle Kontakte</option>
+                                <option value="except">Kontakte außer...</option>
+                                <option value="only">Nur teilen für...</option>
+                                <option value="none">Niemand</option>
+                            </select>
+                            <!-- Contact picker for except/only modes -->
+                            <div id="story-visibility-picker" style="display:none;">
+                                <div style="font-size:12px; opacity:0.6; margin-bottom:6px;" id="story-visibility-picker-label">Ausgenommene Kontakte:</div>
+                                <div id="story-visibility-contact-list" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; min-height:32px; padding:6px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg);"></div>
+                                <div style="font-size:11px; opacity:0.5;">Tippe einen Kontaktnamen zum Suchen:</div>
+                                <input type="text" id="story-visibility-search" placeholder="Kontakt suchen..." oninput="searchStoryVisibilityContact()" style="width:100%; margin-top:4px; margin-bottom:4px;">
+                                <div id="story-visibility-results" style="display:flex; flex-wrap:wrap; gap:4px;"></div>
+                            </div>
+                            <button onclick="saveStoryVisibility()" style="width:100%; background:var(--primary); margin-top:4px;">Sichtbarkeit speichern</button>
+                            <p style="font-size:11px; opacity:0.5; margin-top:6px; line-height:1.5;">Bestehende Geschichten bleiben bis zu 48h sichtbar. Die Einstellung gilt für neue Aufrufe.</p>
+                        </div>
+
+                        <div style="margin-top:16px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color);">
                             <div style="font-weight:600; margin-bottom:8px; font-size:14px;">🔐 Datenschutz</div>
                             <p style="font-size:13px; opacity:0.7; margin:0; line-height:1.6;">Nachrichten werden in Firebase Realtime Database gespeichert. Dein PIN wird als Klartext gespeichert — wähle ihn sorgfältig. VilloChat nutzt keine Werbung und gibt keine Daten weiter.</p>
                         </div>
@@ -2530,14 +2551,13 @@ window.openSettings = () => {
 };
 
 window.switchSettingsTab = (tab) => {
-    // Update tab highlights
     document.querySelectorAll('.settings-tab').forEach(t => {
         t.classList.toggle('active', t.dataset.tab === tab);
     });
-    // Show/hide panels
     document.querySelectorAll('.settings-panel').forEach(p => {
         p.style.display = p.id === `stab-${tab}` ? 'block' : 'none';
     });
+    if(tab === 'security' && myUsername) loadStoryVisibilitySettings();
 };
 
 window.saveMyAvatar = async () => {
@@ -4664,7 +4684,95 @@ window.deleteMyStory = async () => {
     loadContactStories();
 };
 
-/* ----- Story context menu ----- */
+/* ----- Story Visibility ----- */
+let _storyVisibilityContacts = []; // selected contacts for except/only
+
+window.onStoryVisibilityChange = () => {
+    const val = document.getElementById('story-visibility-select').value;
+    const picker = document.getElementById('story-visibility-picker');
+    const label = document.getElementById('story-visibility-picker-label');
+    if(val === 'except' || val === 'only') {
+        picker.style.display = 'block';
+        label.textContent = val === 'except' ? 'Ausgenommene Kontakte:' : 'Sichtbar für:';
+    } else {
+        picker.style.display = 'none';
+    }
+};
+
+window.searchStoryVisibilityContact = async () => {
+    const q = document.getElementById('story-visibility-search').value.trim().toLowerCase();
+    const results = document.getElementById('story-visibility-results');
+    results.innerHTML = '';
+    if(!q) return;
+    const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+    if(!snap.exists()) return;
+    const contacts = Object.values(snap.val()).filter(Boolean);
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    contacts
+        .filter(c => (c.toLowerCase().includes(q) || (aliases[c]||'').toLowerCase().includes(q)) && !_storyVisibilityContacts.includes(c))
+        .slice(0, 8)
+        .forEach(c => {
+            const chip = document.createElement('div');
+            chip.style.cssText = 'padding:4px 10px; background:var(--primary); color:white; border-radius:16px; font-size:12px; cursor:pointer;';
+            chip.textContent = aliases[c] || c;
+            chip.onclick = () => {
+                _storyVisibilityContacts.push(c);
+                document.getElementById('story-visibility-search').value = '';
+                results.innerHTML = '';
+                renderVisibilityChips();
+            };
+            results.appendChild(chip);
+        });
+};
+
+function renderVisibilityChips() {
+    const list = document.getElementById('story-visibility-contact-list');
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    list.innerHTML = '';
+    _storyVisibilityContacts.forEach((c, i) => {
+        const chip = document.createElement('div');
+        chip.style.cssText = 'display:flex; align-items:center; gap:4px; padding:3px 8px; background:var(--primary); color:white; border-radius:16px; font-size:12px;';
+        chip.innerHTML = `${aliases[c]||c} <span style="cursor:pointer; opacity:0.8;" onclick="removeVisibilityContact(${i})">✕</span>`;
+        list.appendChild(chip);
+    });
+}
+
+window.removeVisibilityContact = (i) => {
+    _storyVisibilityContacts.splice(i, 1);
+    renderVisibilityChips();
+};
+
+window.saveStoryVisibility = async () => {
+    const val = document.getElementById('story-visibility-select').value;
+    const data = { mode: val, contacts: (val === 'except' || val === 'only') ? _storyVisibilityContacts : [] };
+    await set(ref(db, `accounts/${myUsername}/storyVisibility`), data);
+    localStorage.setItem('story_visibility', JSON.stringify(data));
+    showNotification('✅ Sichtbarkeit gespeichert', 'success');
+};
+
+// Load saved visibility when opening settings security tab
+async function loadStoryVisibilitySettings() {
+    const saved = JSON.parse(localStorage.getItem('story_visibility') || 'null')
+        || (await get(ref(db, `accounts/${myUsername}/storyVisibility`))).val()
+        || { mode: 'all', contacts: [] };
+    document.getElementById('story-visibility-select').value = saved.mode || 'all';
+    _storyVisibilityContacts = saved.contacts || [];
+    onStoryVisibilityChange();
+    renderVisibilityChips();
+}
+
+// Check if a contact can see my stories
+async function canContactSeeMyStories(contact) {
+    const saved = JSON.parse(localStorage.getItem('story_visibility') || 'null')
+        || { mode: 'all', contacts: [] };
+    if(saved.mode === 'none') return false;
+    if(saved.mode === 'all') return true;
+    if(saved.mode === 'except') return !saved.contacts.includes(contact);
+    if(saved.mode === 'only') return saved.contacts.includes(contact);
+    return true;
+}
+
+
 let _storyCtxEntries = [];
 
 window.openStoryContextMenu = async () => {
@@ -5329,36 +5437,84 @@ const helpArticles = [
         `
     },
     {
+        id: 'stories',
+        icon: '📖',
+        title: 'Geschichten',
+        body: `
+            <h4>Was sind Geschichten?</h4>
+            <p>Geschichten sind temporäre Beiträge die <strong>48 Stunden</strong> sichtbar sind und dann automatisch verschwinden. Sie erscheinen als Bubbles mit farbigem Ring oben in der Sidebar.</p>
+            <h4>Geschichte erstellen</h4>
+            <p>Klicke auf deinen eigenen Avatar-Ring oben in der Sidebar. Im Creator wählst du zwischen drei Typen:</p>
+            <ul style="font-size:13px; line-height:1.8;">
+                <li><strong>✏️ Text</strong> — Eigenen Text mit Hintergrundfarbe und Schriftart wählen</li>
+                <li><strong>😊 Emoji</strong> — Ein großes Emoji auf Farbhintergrund</li>
+                <li><strong>🖼️ Bild</strong> — Ein Foto (max. 500 KB, wird komprimiert)</li>
+            </ul>
+            <h4>Mehrere Slides</h4>
+            <p>Drücke <strong>💾 Slide speichern</strong> um den aktuellen Inhalt als Slide hinzuzufügen. Du siehst die Slides als kleine Thumbnails — klicke darauf zum Bearbeiten oder tippe ✕ zum Löschen. Du kannst bis zu <strong>15 Slides</strong> pro Geschichte hinzufügen. Beim Klick auf <strong>📖 Veröffentlichen</strong> wird die ganze Geschichte auf einmal geteilt.</p>
+            <h4>Geschichten ansehen</h4>
+            <p>Klicke auf den farbigen Ring eines Kontakts. Der Viewer zeigt Slides nacheinander mit Fortschrittsbalken — jeder Slide wird 5 Sekunden angezeigt, danach geht es automatisch zum nächsten. Mit ‹ und › kannst du auch manuell navigieren.</p>
+            <h4>Reagieren</h4>
+            <p>Beim Ansehen einer fremden Geschichte erscheint eine Reaktionsleiste mit 6 Emojis (❤️ 😂 😮 🔥 👏 😢). Die Reaktion wird dem Autor als Nachricht zugestellt und unter der Geschichte angezeigt.</p>
+            <h4>Geschichte verwalten (Rechtsklick / Langtipp)</h4>
+            <p>Rechtsklick auf deinen eigenen Ring (Desktop) oder langer Tipp (Mobile) öffnet das Verwaltungsmenü. Dort kannst du <strong>alle Geschichten auf einmal löschen</strong> oder einzelne Slides entfernen — mit Thumbnail-Vorschau für jeden Slide.</p>
+            <h4>Sichtbarkeit einschränken</h4>
+            <p>Einstellungen → Sicherheit → <strong>Wer sieht meine Geschichten?</strong></p>
+            <ul style="font-size:13px; line-height:1.8;">
+                <li><strong>Alle Kontakte</strong> — Standard, jeder in deiner Kontaktliste sieht sie</li>
+                <li><strong>Kontakte außer...</strong> — Alle außer bestimmten Personen</li>
+                <li><strong>Nur teilen für...</strong> — Nur ausgewählte Kontakte sehen sie</li>
+                <li><strong>Niemand</strong> — Geschichten werden für niemanden angezeigt</li>
+            </ul>
+        `
+    },
+    {
+        id: 'avatar',
+        icon: '🖼️',
+        title: 'Profilbild',
+        body: `
+            <h4>Profilbild ändern</h4>
+            <p>Einstellungen → Profil → wähle einen der drei Typen:</p>
+            <ul style="font-size:13px; line-height:1.8;">
+                <li><strong>🔤 Zeichen</strong> — Erster Buchstabe deines Namens, mit eigener Farbe und Schriftart. Wird in Firebase gespeichert und ist für alle Kontakte sichtbar.</li>
+                <li><strong>😊 Emoji</strong> — Ein beliebiges Emoji auf Hintergrundfarbe. Ideal als persönliches Symbol.</li>
+                <li><strong>🖼️ Bild</strong> — Ein Foto als rundes Profilbild (max. 200 KB, wird automatisch komprimiert und als Base64 in Firebase gespeichert).</li>
+            </ul>
+            <h4>Speichern & Sync</h4>
+            <p>Nach Klick auf <strong>Avatar speichern</strong> wird das Profilbild in Firebase hochgeladen. Deine Kontakte sehen die Änderung beim nächsten Laden. Avatar-Typen werden überall gerendert: Sidebar, Chat-Header, Nachrichten, Gruppen, Geschichten.</p>
+        `
+    },
+    {
         id: 'features',
         icon: '✨',
         title: 'Alle Features im Überblick',
         body: `
             <h4>💬 Nachrichten</h4>
-            <p>Senden, Bearbeiten, Löschen, Für alle löschen, Kopieren, Weiterleiten, Antworten, Reaktionen (6 Quick-Emojis), Markdown-Formatierung, Bilder via URL, YouTube/Vimeo-Embeds, Anpinnen</p>
+            <p>Senden, Bearbeiten, Löschen, Für alle löschen, Kopieren, Weiterleiten, Antworten, Reaktionen, Markdown, Bilder (Base64), Anpinnen, Bild herunterladen</p>
+            <h4>📖 Geschichten</h4>
+            <p>Text/Emoji/Bild-Slides (bis zu 15), Schriftart wählen, 48h Laufzeit, Reaktionen, Sichtbarkeit (alle / außer / nur / niemand), Slides einzeln oder alle löschen</p>
             <h4>👥 Gruppen</h4>
-            <p>Gruppen erstellen, Mitglieder hinzufügen/entfernen (Admin), Gruppe verlassen, Absender-Labels, System-Nachrichten, Gruppen-Tippindikator, Unread-Badges</p>
+            <p>Erstellen, Admin/Moderator, Einladungslink, Beschreibung, Gruppen-Pin, Tippindikator, System-Nachrichten, Unread-Badges</p>
             <h4>📊 Abstimmungen</h4>
-            <p>Polls mit 2–6 Optionen erstellen (auch in Gruppen), abstimmen, Stimme ändern, Live-Ergebnisse mit Balken</p>
+            <p>Polls mit 2–6 Optionen (auch in Gruppen), abstimmen, Stimme ändern, Live-Ergebnisse</p>
             <h4>🧑‍🤝‍🧑 Kontakte</h4>
-            <p>Suchen, Hinzufügen, Aliase vergeben, Anpinnen, Stummschalten, Archivieren, Farbe anpassen, private Notizen</p>
+            <p>Suchen, Hinzufügen, Aliase, Anpinnen, Stummschalten, Archivieren, Farbe, private Notizen</p>
+            <h4>🖼️ Profilbild</h4>
+            <p>Zeichen (Farbe + Schrift), Emoji (auf Farbe), Bild (Base64) — für alle Kontakte sichtbar</p>
             <h4>🎨 Design</h4>
-            <p>3 Themes, 13 Akzentfarben, 3 Bubble-Stile, 4 Schriftgrößen, eigene Bubble-Farbe, Chat-Hintergrund, Avatar anpassen, Status-Text</p>
+            <p>3 Themes, 13 Akzentfarben, 3 Bubble-Stile, 4 Schriftgrößen, Bubble-Farbe, Chat-Hintergrund, Status-Text, Schnellreaktionen</p>
+            <h4>🕐 Geplante Nachrichten</h4>
+            <p>Zeitpunkt festlegen, automatischer Versand, Übersicht & Löschen</p>
             <h4>🔍 Suche</h4>
-            <p>Globale Suche über alle Chats, Chat-interne Suche, Spring-zu-Nachricht</p>
+            <p>Globale Suche, Chat-interne Suche, Spring-zu-Nachricht</p>
             <h4>👤 Profile</h4>
-            <p>Eigenes Profil mit Statistiken & Top-Kontakten, Kontakt-Profile mit Stats</p>
+            <p>Statistiken, Top-Kontakte, Kontakt-Profile mit Stats</p>
             <h4>⌨️ Shortcuts</h4>
-            <p>9 Keyboard-Shortcuts (Ctrl+K/F/E/B/D/R/P/,, Escape)</p>
-            <h4>📲 PWA</h4>
-            <p>Installierbar als App, Offline-fähig, Service Worker</p>
-            <h4>📱 Mobile</h4>
-            <p>Swipe-zurück-Geste, Touch-optimiert, Responsive Design, iOS Tastatur-Fix</p>
-            <h4>🔐 Sicherheit</h4>
-            <p>PIN-Login, PIN ändern, Verschlüsselungshinweis</p>
-            <h4>📥 Export</h4>
-            <p>Chat als .txt exportieren mit Timestamps</p>
-            <h4>🔧 Sonstiges</h4>
-            <p>Online-Status (60s Fenster), Read-Receipts (✓/✓✓), Typing-Indikator, Scroll-to-Bottom mit Badge, Emoji-Picker (900+), Changelog, Hilfe-System</p>
+            <p>Ctrl+K/F/E/B/D/R/P/,, Escape</p>
+            <h4>📲 PWA · 📱 Mobile · 🔐 Sicherheit</h4>
+            <p>Installierbar, Offline, Swipe-zurück, PIN-Login, PIN-Hinweis, Geschichten-Sichtbarkeit</p>
+            <h4>📥 Sonstiges</h4>
+            <p>Chat-Export, Online-Status, Read-Receipts, Typing-Indikator, Emoji-Picker (900+), Changelog, Hilfe</p>
         `
     }
 ];
