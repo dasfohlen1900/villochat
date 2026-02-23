@@ -2638,9 +2638,15 @@ window.saveMyAvatar = async () => {
     showApp();
 };
 window.closeOverlay = (id) => {
-    document.getElementById(id).style.display = 'none';
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.style.display = 'none';
     if(id === 'chat-menu') {
-        document.getElementById('chat-menu').classList.remove('show');
+        el.classList.remove('show');
+    }
+    if(id === 'story-create-overlay') {
+        const modal = el.querySelector('.modal');
+        if(modal) modal.style.display = '';
     }
 };
 
@@ -4437,7 +4443,11 @@ function openStoryCreate() {
     document.getElementById('story-preview-text').textContent = '';
     setStoryType('text');
     renderSlidesStrip();
-    document.getElementById('story-create-overlay').style.display = 'flex';
+    const overlay = document.getElementById('story-create-overlay');
+    overlay.style.display = 'flex';
+    // Also ensure the modal inside gets flex layout
+    const modal = overlay.querySelector('.modal');
+    if(modal) modal.style.display = 'flex';
 }
 
 window.setStoryType = (type) => {
