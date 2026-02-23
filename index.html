@@ -1935,9 +1935,16 @@
                     <div style="margin-bottom:8px;">
                         <label style="font-size:12px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                            ${['#075e54','#1a73e8','#e91e63','#ff6d00','#7b1fa2','#2e7d32','#c62828','#37474f','#f57f17','#000000'].map(c =>
-                                `<div onclick="setStoryBg('${c}')" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;" data-story-color="${c}"></div>`
-                            ).join('')}
+                            <div onclick="setStoryBg('#075e54')" data-story-color="#075e54" style="width:28px;height:28px;border-radius:50%;background:#075e54;cursor:pointer;border:2px solid white;"></div>
+                            <div onclick="setStoryBg('#1a73e8')" data-story-color="#1a73e8" style="width:28px;height:28px;border-radius:50%;background:#1a73e8;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#e91e63')" data-story-color="#e91e63" style="width:28px;height:28px;border-radius:50%;background:#e91e63;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#ff6d00')" data-story-color="#ff6d00" style="width:28px;height:28px;border-radius:50%;background:#ff6d00;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#7b1fa2')" data-story-color="#7b1fa2" style="width:28px;height:28px;border-radius:50%;background:#7b1fa2;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#2e7d32')" data-story-color="#2e7d32" style="width:28px;height:28px;border-radius:50%;background:#2e7d32;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#c62828')" data-story-color="#c62828" style="width:28px;height:28px;border-radius:50%;background:#c62828;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#37474f')" data-story-color="#37474f" style="width:28px;height:28px;border-radius:50%;background:#37474f;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#f57f17')" data-story-color="#f57f17" style="width:28px;height:28px;border-radius:50%;background:#f57f17;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#000000')" data-story-color="#000000" style="width:28px;height:28px;border-radius:50%;background:#000000;cursor:pointer;border:2px solid transparent;"></div>
                         </div>
                     </div>
                 </div>
@@ -1948,9 +1955,16 @@
                     <div style="margin-bottom:8px;">
                         <label style="font-size:12px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                            ${['#075e54','#1a73e8','#e91e63','#ff6d00','#7b1fa2','#2e7d32','#c62828','#37474f','#f57f17','#000000'].map(c =>
-                                `<div onclick="setStoryBg('${c}')" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;" data-story-color="${c}"></div>`
-                            ).join('')}
+                            <div onclick="setStoryBg('#075e54')" data-story-color="#075e54" style="width:28px;height:28px;border-radius:50%;background:#075e54;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#1a73e8')" data-story-color="#1a73e8" style="width:28px;height:28px;border-radius:50%;background:#1a73e8;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#e91e63')" data-story-color="#e91e63" style="width:28px;height:28px;border-radius:50%;background:#e91e63;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#ff6d00')" data-story-color="#ff6d00" style="width:28px;height:28px;border-radius:50%;background:#ff6d00;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#7b1fa2')" data-story-color="#7b1fa2" style="width:28px;height:28px;border-radius:50%;background:#7b1fa2;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#2e7d32')" data-story-color="#2e7d32" style="width:28px;height:28px;border-radius:50%;background:#2e7d32;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#c62828')" data-story-color="#c62828" style="width:28px;height:28px;border-radius:50%;background:#c62828;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#37474f')" data-story-color="#37474f" style="width:28px;height:28px;border-radius:50%;background:#37474f;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#f57f17')" data-story-color="#f57f17" style="width:28px;height:28px;border-radius:50%;background:#f57f17;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#000000')" data-story-color="#000000" style="width:28px;height:28px;border-radius:50%;background:#000000;cursor:pointer;border:2px solid transparent;"></div>
                         </div>
                     </div>
                 </div>
@@ -1982,16 +1996,28 @@
                     <div id="viewer-username" style="color:white; font-weight:600; font-size:14px;"></div>
                     <div id="viewer-time" style="color:rgba(255,255,255,0.6); font-size:11px;"></div>
                 </div>
-                <span onclick="closeStoryViewer()" style="margin-left:auto; color:white; font-size:24px; cursor:pointer; opacity:0.7;">✕</span>
+                <span id="viewer-add-btn" style="display:none; color:white; font-size:22px; cursor:pointer; margin-left:auto;" title="Neue Geschichte" onclick="closeStoryViewer(); openStoryCreate();">➕</span>
+                <span onclick="closeStoryViewer()" style="color:white; font-size:24px; cursor:pointer; opacity:0.7; margin-left:auto;" id="viewer-close-x">✕</span>
                 <span id="viewer-delete-btn" style="display:none; color:#ff6b6b; font-size:20px; cursor:pointer; margin-left:4px;" onclick="deleteMyStory()">🗑️</span>
             </div>
             <!-- Story content -->
-            <div id="story-viewer-content" style="width:100%; height:480px; border-radius:16px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+            <div id="story-viewer-content" style="width:100%; height:460px; border-radius:16px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
                 <img id="viewer-img" style="display:none; width:100%; height:100%; object-fit:cover;">
                 <div id="viewer-text" style="color:white; font-size:28px; font-weight:700; text-align:center; padding:20px; word-break:break-word; text-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>
             </div>
+            <!-- Reactions -->
+            <div id="story-reactions-bar" style="display:flex; gap:6px; margin-top:10px; align-items:center; flex-wrap:wrap; justify-content:center;">
+                <span style="color:rgba(255,255,255,0.5); font-size:12px; width:100%; text-align:center; margin-bottom:2px;">Reagieren:</span>
+                <span onclick="reactToStory('❤️')" style="font-size:26px; cursor:pointer; background:rgba(255,255,255,0.1); border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">❤️</span>
+                <span onclick="reactToStory('😂')" style="font-size:26px; cursor:pointer; background:rgba(255,255,255,0.1); border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">😂</span>
+                <span onclick="reactToStory('😮')" style="font-size:26px; cursor:pointer; background:rgba(255,255,255,0.1); border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">😮</span>
+                <span onclick="reactToStory('🔥')" style="font-size:26px; cursor:pointer; background:rgba(255,255,255,0.1); border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">🔥</span>
+                <span onclick="reactToStory('👏')" style="font-size:26px; cursor:pointer; background:rgba(255,255,255,0.1); border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">👏</span>
+                <span onclick="reactToStory('😢')" style="font-size:26px; cursor:pointer; background:rgba(255,255,255,0.1); border-radius:50%; width:44px; height:44px; display:flex; align-items:center; justify-content:center;">😢</span>
+                <div id="story-reactions-display" style="width:100%; text-align:center; font-size:13px; color:rgba(255,255,255,0.7); margin-top:4px; min-height:20px;"></div>
+            </div>
             <!-- Nav buttons -->
-            <div style="display:flex; gap:12px; margin-top:12px;">
+            <div style="display:flex; gap:12px; margin-top:10px;">
                 <button onclick="navigateStory(-1)" style="background:rgba(255,255,255,0.15); color:white; border:none; padding:10px 24px; border-radius:20px;">‹ Zurück</button>
                 <button onclick="navigateStory(1)" style="background:rgba(255,255,255,0.15); color:white; border:none; padding:10px 24px; border-radius:20px;">Weiter ›</button>
             </div>
@@ -4300,7 +4326,14 @@ function renderCurrentStory() {
     document.getElementById('viewer-time').textContent = h < 1 ? 'Gerade eben' : `vor ${h}h`;
 
     const deleteBtn = document.getElementById('viewer-delete-btn');
-    deleteBtn.style.display = currentStoryUser === myUsername ? 'inline' : 'none';
+    const addBtn = document.getElementById('viewer-add-btn');
+    const closeX = document.getElementById('viewer-close-x');
+    const reactionsBar = document.getElementById('story-reactions-bar');
+    const isOwn = currentStoryUser === myUsername;
+    deleteBtn.style.display = isOwn ? 'inline' : 'none';
+    addBtn.style.display = isOwn ? 'inline' : 'none';
+    closeX.style.marginLeft = isOwn ? '4px' : 'auto';
+    reactionsBar.style.display = isOwn ? 'none' : 'flex';
     deleteBtn.dataset.storyKey = s.key;
 
     const img = document.getElementById('viewer-img');
@@ -4323,6 +4356,12 @@ function renderCurrentStory() {
         fill.style.transition = 'width 5s linear'; fill.style.width = '100%';
     });
     storyProgressTimer = setTimeout(() => navigateStory(1), 5000);
+
+    // Load reactions display
+    if(!isOwn) {
+        document.getElementById('story-reactions-display').textContent = '';
+        loadStoryReactions(s);
+    }
 }
 
 window.navigateStory = (dir) => {
@@ -4337,6 +4376,37 @@ window.closeStoryViewer = () => {
     clearTimeout(storyProgressTimer);
     document.getElementById('story-viewer-overlay').classList.remove('show');
 };
+
+window.reactToStory = async (emoji) => {
+    const s = currentStoryList[currentStoryIndex];
+    if(!s) return;
+    // Send reaction as a chat message to the story author
+    const chatId = myUsername < currentStoryUser
+        ? `${myUsername}_${currentStoryUser}`
+        : `${currentStoryUser}_${myUsername}`;
+    await push(ref(db, `chats/${chatId}`), {
+        sender: myUsername,
+        text: `${emoji} auf deine Geschichte reagiert`,
+        timestamp: Date.now(),
+        read: false,
+        isStoryReaction: true
+    });
+    // Save reaction to story
+    await update(ref(db, `stories/${currentStoryUser}/${s.key}/reactions`), { [myUsername]: emoji });
+    showNotification(`${emoji} Reaktion gesendet!`, 'success');
+    loadStoryReactions(s);
+};
+
+async function loadStoryReactions(s) {
+    const snap = await get(ref(db, `stories/${currentStoryUser}/${s.key}/reactions`));
+    const display = document.getElementById('story-reactions-display');
+    if(!snap.exists() || !display) return;
+    const reactions = snap.val();
+    const counts = {};
+    Object.values(reactions).forEach(e => counts[e] = (counts[e]||0)+1);
+    display.textContent = Object.entries(counts).map(([e,c]) => `${e} ${c}`).join('  ');
+}
+
 
 window.deleteMyStory = async () => {
     const key = document.getElementById('viewer-delete-btn').dataset.storyKey;
