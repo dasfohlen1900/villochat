@@ -1965,6 +1965,7 @@
                 <span onclick="closeOverlay('story-ctx-overlay')" style="cursor:pointer;">✕</span>
             </div>
             <div style="padding:12px 16px;">
+                <button onclick="closeOverlay('story-ctx-overlay'); openStoryCreate();" style="width:100%; background:var(--primary); margin-bottom:8px;">➕ Zur Geschichte hinzufügen</button>
                 <button onclick="deleteAllMyStories()" style="width:100%; background:#dc3545; margin-bottom:12px;">🗑️ Alle Geschichten löschen</button>
                 <div style="font-size:12px; opacity:0.5; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">Einzelne Slides</div>
                 <div id="story-ctx-slides-list"></div>
@@ -2193,7 +2194,6 @@
                 <!-- My story bubble (always first) -->
                 <div id="my-story-bubble" style="display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; flex-shrink:0;" onclick="openMyStoryOrCreate()" oncontextmenu="event.preventDefault(); openStoryContextMenu()">
                     <div id="my-story-avatar" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold; color:white; position:relative; border:3px solid var(--border-color);">
-                        <span id="my-story-plus" style="position:absolute; bottom:-2px; right:-2px; width:18px; height:18px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; color:white; border:2px solid var(--white);">+</span>
                     </div>
                     <span style="font-size:10px; max-width:52px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.7;">Deine</span>
                 </div>
@@ -2332,44 +2332,28 @@ async function fetchAvatarFromFirebase(name) {
 
 function getAvatarHTML(name, showOnline = false) {
     const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
-    const settings = avatarSettings[name] || avatarCache[name] || {};
+    const data = avatarSettings[name] || avatarCache[name] || {};
     const onlineIndicator = showOnline ? '<div class="online-indicator"></div>' : '';
 
-    if(settings.type === 'emoji' && settings.emoji) {
-        const bg = settings.color || stringToColor(name);
-        return `<div class="avatar" style="background:${bg}; font-size:20px;" data-avatar-name="${name}">${settings.emoji}${onlineIndicator}</div>`;
-    }
-    if(settings.type === 'image' && settings.image) {
-        return `<div class="avatar" style="background:#333; overflow:hidden; padding:0;" data-avatar-name="${name}"><img src="${settings.image}" style="width:100%;height:100%;object-fit:cover;">${onlineIndicator}</div>`;
-    }
-    // Default: letter
-    const color = settings.color || stringToColor(name);
-    const font = settings.font || "'Playfair Display', serif";
-    const letter = name.charAt(0);
-
+    // Kick off background fetch to keep cache fresh (only if not yet cached)
     if(!avatarCache[name]) {
-        fetchAvatarFromFirebase(name).then(data => {
-            if(data) {
-                document.querySelectorAll(`[data-avatar-name="${name}"]`).forEach(el => {
-                    if(data.type === 'emoji' && data.emoji) {
-                        el.style.background = data.color || stringToColor(name);
-                        el.textContent = data.emoji;
-                        el.style.fontSize = '20px';
-                    } else if(data.type === 'image' && data.image) {
-                        el.style.background = '#333';
-                        el.style.padding = '0';
-                        el.style.overflow = 'hidden';
-                        el.innerHTML = `<img src="${data.image}" style="width:100%;height:100%;object-fit:cover;">`;
-                    } else {
-                        el.style.background = data.color || stringToColor(name);
-                        el.style.fontFamily = data.font || "'Playfair Display', serif";
-                    }
-                });
-            }
+        fetchAvatarFromFirebase(name).then(fetched => {
+            if(!fetched) return;
+            document.querySelectorAll(`[data-avatar-name="${name}"]`).forEach(el => _applyAvatarToEl(el, name, fetched));
         });
     }
 
-    return `<div class="avatar" style="background:${color}; font-family:${font}" data-avatar-name="${name}">${letter}${onlineIndicator}</div>`;
+    if(data.type === 'emoji' && data.emoji) {
+        const bg = data.color || stringToColor(name);
+        return `<div class="avatar" style="background:${bg}; font-size:20px;" data-avatar-name="${name}">${data.emoji}${onlineIndicator}</div>`;
+    }
+    if(data.type === 'image' && data.image) {
+        return `<div class="avatar" style="background:#333; overflow:hidden; padding:0;" data-avatar-name="${name}"><img src="${data.image}" style="width:100%;height:100%;object-fit:cover;">${onlineIndicator}</div>`;
+    }
+    // Default: letter
+    const color = data.color || stringToColor(name);
+    const font = data.font || "'Playfair Display', serif";
+    return `<div class="avatar" style="background:${color}; font-family:${font}" data-avatar-name="${name}">${name.charAt(0)}${onlineIndicator}</div>`;
 }
 
 /* ------------------------------ */
@@ -2488,50 +2472,34 @@ function markChatAsRead(chatId) {
 /* OVERLAY FUNCTIONS */
 /* ------------------------------ */
 window.openSettings = () => {
-    if(!myUsername) {
-        console.error('myUsername not set');
-        return;
-    }
-    
+    if(!myUsername) return;
+
     document.getElementById('set-username').innerText = myUsername;
     const theme = localStorage.getItem('villo_theme') || 'system';
     updateThemeButtons(theme);
-    
-    // Load own avatar settings
+
+    // Load own avatar settings — prefer cache (fresher from Firebase)
     const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
-    const mySettings = avatarSettings[myUsername] || {};
+    const mySettings = avatarCache[myUsername] || avatarSettings[myUsername] || {};
     const myColor = mySettings.color || stringToColor(myUsername);
     const myFont = mySettings.font || "'Playfair Display', serif";
-    
-    // Set preview
+
+    // Set preview using the helper so all types render correctly
     const preview = document.getElementById('settings-avatar-preview');
-    if(preview) {
-        preview.style.background = myColor;
-        preview.style.fontFamily = myFont;
-        preview.textContent = myUsername.charAt(0).toUpperCase();
-    }
-    
-    // Set pickers
+    if(preview) _applyAvatarToEl(preview, myUsername, mySettings);
+
+    // Set letter pickers
     const colorPicker = document.getElementById('my-avatar-color-picker');
     if(colorPicker) {
         colorPicker.value = myColor;
-        
-        // Live preview on change
-        colorPicker.oninput = () => {
-            if(preview) preview.style.background = colorPicker.value;
-        };
+        colorPicker.oninput = () => { if(preview && currentAvatarType === 'letter') preview.style.background = colorPicker.value; };
     }
-    
     const fontPicker = document.getElementById('my-avatar-font-picker');
     if(fontPicker) {
         fontPicker.value = myFont;
-        
-        // Live preview on change
-        fontPicker.onchange = () => {
-            if(preview) preview.style.fontFamily = fontPicker.value;
-        };
+        fontPicker.onchange = () => { if(preview && currentAvatarType === 'letter') preview.style.fontFamily = fontPicker.value; };
     }
-    
+
     // Avatar type setup
     const avType = mySettings.type || 'letter';
     currentAvatarType = avType;
@@ -2580,7 +2548,10 @@ window.saveMyAvatar = async () => {
     const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
     avatarSettings[myUsername] = avatarData;
     localStorage.setItem('avatar_settings', JSON.stringify(avatarSettings));
-    
+
+    // Bust cache so next render uses fresh data
+    delete avatarCache[myUsername];
+
     // Save to Firebase so others can see it
     try {
         await set(ref(db, `accounts/${myUsername}/avatar`), avatarData);
@@ -2588,8 +2559,16 @@ window.saveMyAvatar = async () => {
     } catch(e) {
         showNotification('✅ Avatar lokal gespeichert', 'success');
     }
-    
-    // Refresh to apply changes everywhere
+
+    // Update story bubble avatar immediately
+    const storyAv = document.getElementById('my-story-avatar');
+    if(storyAv) _applyAvatarToEl(storyAv, myUsername, avatarData);
+
+    // Update settings preview
+    const preview = document.getElementById('settings-avatar-preview');
+    if(preview) _applyAvatarToEl(preview, myUsername, avatarData);
+
+    // Refresh contact list to re-render all avatars
     showApp();
 };
 window.closeOverlay = (id) => {
@@ -4282,14 +4261,8 @@ function initMyStoryBubble() {
     const av = document.getElementById('my-story-avatar');
     if(!av) return;
     const settings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
-    const mine = settings[myUsername] || {};
-    av.style.background = mine.color || stringToColor(myUsername);
-    av.style.fontFamily = mine.font || "'Playfair Display', serif";
-    av.textContent = myUsername.charAt(0).toUpperCase();
-    const plus = document.createElement('span');
-    plus.style.cssText = 'position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:white;border:2px solid var(--white);z-index:1;';
-    plus.textContent = '+';
-    av.appendChild(plus);
+    const mine = settings[myUsername] || avatarCache[myUsername] || {};
+    _applyAvatarToEl(av, myUsername, mine);
     checkMyActiveStory();
 
     // Mobile long-press for story context menu
@@ -4298,6 +4271,30 @@ function initMyStoryBubble() {
     bubble.addEventListener('touchstart', () => { _storyLongPress = setTimeout(openStoryContextMenu, 500); }, { passive: true });
     bubble.addEventListener('touchend', () => clearTimeout(_storyLongPress));
     bubble.addEventListener('touchmove', () => clearTimeout(_storyLongPress));
+}
+
+// Helper: apply avatar data to a DOM element directly
+function _applyAvatarToEl(el, name, data) {
+    if(data && data.type === 'emoji' && data.emoji) {
+        el.style.background = data.color || stringToColor(name);
+        el.style.fontFamily = '';
+        el.style.padding = '';
+        el.style.overflow = '';
+        el.innerHTML = data.emoji;
+        el.style.fontSize = '22px';
+    } else if(data && data.type === 'image' && data.image) {
+        el.style.background = '#333';
+        el.style.padding = '0';
+        el.style.overflow = 'hidden';
+        el.innerHTML = `<img src="${data.image}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+        el.style.background = (data && data.color) || stringToColor(name);
+        el.style.fontFamily = (data && data.font) || "'Playfair Display', serif";
+        el.style.overflow = '';
+        el.style.padding = '';
+        el.innerHTML = name.charAt(0).toUpperCase();
+        el.style.fontSize = '';
+    }
 }
 
 async function checkMyActiveStory() {
