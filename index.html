@@ -1171,6 +1171,8 @@
         .story-bubble .story-name { font-size:10px; max-width:52px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.7; }
         #story-viewer-overlay { display:none !important; }
         #story-viewer-overlay.show { display:flex !important; }
+        /* Avatar type buttons */
+        #avtype-letter, #avtype-emoji, #avtype-image { transition: all 0.15s; border-radius: 8px; padding: 8px; cursor: pointer; }
 
         body.dark-mode .notification-toast {
             background: var(--white);
@@ -1340,25 +1342,51 @@
                         <div style="text-align:center; margin-bottom:20px;">
                             <div id="settings-avatar-preview" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
                             <div style="font-size:18px; font-weight:700;" id="set-username"></div>
-                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.4 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
+                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.5 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
                         </div>
 
-                        <label class="settings-label">Avatar-Farbe:</label>
-                        <input type="color" id="my-avatar-color-picker" style="width:100%; height:40px; margin-bottom:12px; cursor:pointer;">
+                        <!-- Avatar type tabs -->
+                        <div style="display:flex; gap:6px; margin-bottom:12px;">
+                            <button id="avtype-letter" onclick="setAvatarType('letter')" style="flex:1; font-size:12px; background:var(--primary); color:white; border:none;">🔤 Zeichen</button>
+                            <button id="avtype-emoji" onclick="setAvatarType('emoji')" style="flex:1; font-size:12px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">😊 Emoji</button>
+                            <button id="avtype-image" onclick="setAvatarType('image')" style="flex:1; font-size:12px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🖼️ Bild</button>
+                        </div>
 
-                        <label class="settings-label">Avatar-Schriftart:</label>
-                        <select id="my-avatar-font-picker" style="width:100%; padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color);">
-                            <option value="'Playfair Display', serif">Playfair Display (Standard)</option>
-                            <option value="'Inter', sans-serif">Inter</option>
-                            <option value="'Arial', sans-serif">Arial</option>
-                            <option value="'Courier New', monospace">Courier New</option>
-                            <option value="'Georgia', serif">Georgia</option>
-                            <option value="'Times New Roman', serif">Times New Roman</option>
-                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                            <option value="'Verdana', sans-serif">Verdana</option>
-                            <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
-                            <option value="'Impact', sans-serif">Impact</option>
-                        </select>
+                        <!-- Letter section -->
+                        <div id="avs-letter">
+                            <label class="settings-label">Avatar-Farbe:</label>
+                            <input type="color" id="my-avatar-color-picker" style="width:100%; height:40px; margin-bottom:12px; cursor:pointer;">
+                            <label class="settings-label">Avatar-Schriftart:</label>
+                            <select id="my-avatar-font-picker" style="width:100%; padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color);">
+                                <option value="'Playfair Display', serif">Playfair Display (Standard)</option>
+                                <option value="'Inter', sans-serif">Inter</option>
+                                <option value="'Arial', sans-serif">Arial</option>
+                                <option value="'Courier New', monospace">Courier New</option>
+                                <option value="'Georgia', serif">Georgia</option>
+                                <option value="'Times New Roman', serif">Times New Roman</option>
+                                <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                                <option value="'Verdana', sans-serif">Verdana</option>
+                                <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                                <option value="'Impact', sans-serif">Impact</option>
+                            </select>
+                        </div>
+
+                        <!-- Emoji section -->
+                        <div id="avs-emoji" style="display:none;">
+                            <label class="settings-label">Emoji als Profilbild:</label>
+                            <input type="text" id="my-avatar-emoji-input" maxlength="4" placeholder="😎" style="width:100%; text-align:center; font-size:48px; height:72px; margin-bottom:8px; letter-spacing:0;">
+                            <label class="settings-label" style="margin-top:4px;">Hintergrundfarbe:</label>
+                            <input type="color" id="my-avatar-color-picker-emoji" style="width:100%; height:36px; margin-bottom:12px; cursor:pointer;">
+                        </div>
+
+                        <!-- Image section -->
+                        <div id="avs-image" style="display:none;">
+                            <label class="settings-label">Bild als Profilbild (max. 200 KB):</label>
+                            <button onclick="document.getElementById('avatar-img-input').click()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:8px;">📁 Bild auswählen</button>
+                            <input type="file" id="avatar-img-input" accept="image/*" style="display:none;">
+                            <div id="avatar-img-preview" style="display:none; width:80px; height:80px; border-radius:50%; overflow:hidden; margin:0 auto 8px;"><img id="avatar-img-preview-img" style="width:100%; height:100%; object-fit:cover;"></div>
+                        </div>
+
                         <button onclick="saveMyAvatar()" style="width:100%; background:var(--primary); margin-bottom:16px;">Avatar speichern</button>
 
                         <label class="settings-label">Mein Status:</label>
@@ -1908,43 +1936,77 @@
         </div>
     </div>
 
+    <!-- STORY CONTEXT MENU -->
+    <div id="story-ctx-overlay" class="overlay" style="background:rgba(0,0,0,0.5);" onclick="closeOverlay('story-ctx-overlay')">
+        <div class="modal" style="max-width:360px; width:95vw; max-height:80vh; overflow-y:auto; padding:0;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="padding:14px 18px;">
+                <h2>📖 Meine Geschichten</h2>
+                <span onclick="closeOverlay('story-ctx-overlay')" style="cursor:pointer;">✕</span>
+            </div>
+            <div style="padding:12px 16px;">
+                <button onclick="deleteAllMyStories()" style="width:100%; background:#dc3545; margin-bottom:12px;">🗑️ Alle Geschichten löschen</button>
+                <div style="font-size:12px; opacity:0.5; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">Einzelne Slides</div>
+                <div id="story-ctx-slides-list"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- STORY CREATE OVERLAY -->
     <div id="story-create-overlay" class="overlay">
-        <div class="modal" style="max-width:400px; width:95vw;">
-            <div class="modal-header">
+        <div class="modal" style="max-width:420px; width:95vw; max-height:92vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+            <div class="modal-header" style="flex-shrink:0; padding:14px 18px;">
                 <h2>📖 Geschichte erstellen</h2>
                 <span style="cursor:pointer;" onclick="closeOverlay('story-create-overlay')">✕</span>
             </div>
-            <div class="modal-body">
+            <div style="flex:1; overflow-y:auto; padding:16px;">
+
                 <!-- Preview -->
-                <div id="story-preview" style="width:100%; height:180px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; background:#075e54; position:relative; overflow:hidden; transition:background 0.2s;">
+                <div id="story-preview" style="width:100%; height:170px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; background:#075e54; position:relative; overflow:hidden; transition:background 0.2s;">
                     <img id="story-preview-img" style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" />
                     <div id="story-preview-text" style="color:white; font-size:22px; font-weight:700; text-align:center; padding:12px; z-index:1; word-break:break-word; text-shadow:0 1px 4px rgba(0,0,0,0.4);"></div>
                 </div>
 
+                <!-- Slides strip -->
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:12px; overflow-x:auto; padding-bottom:4px;">
+                    <div id="story-slides-strip" style="display:flex; gap:6px; flex-shrink:0;"></div>
+                    <div id="story-add-slide-btn" onclick="addStorySlide()" style="width:44px; height:60px; border-radius:8px; border:2px dashed var(--border-color); display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; flex-shrink:0; color:var(--primary);">+</div>
+                </div>
+
                 <!-- Type selector -->
-                <div style="display:flex; gap:8px; margin-bottom:12px;">
-                    <button id="story-type-text" onclick="setStoryType('text')" style="flex:1; background:var(--primary); color:white; border:none;">✏️ Text</button>
-                    <button id="story-type-emoji" onclick="setStoryType('emoji')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">😊 Emoji</button>
-                    <button id="story-type-image" onclick="setStoryType('image')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🖼️ Bild</button>
+                <div style="display:flex; gap:6px; margin-bottom:10px;">
+                    <button id="story-type-text" onclick="setStoryType('text')" style="flex:1; background:var(--primary); color:white; border:none; font-size:13px;">✏️ Text</button>
+                    <button id="story-type-emoji" onclick="setStoryType('emoji')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); font-size:13px;">😊 Emoji</button>
+                    <button id="story-type-image" onclick="setStoryType('image')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); font-size:13px;">🖼️ Bild</button>
                 </div>
 
                 <!-- Text input -->
                 <div id="story-text-section">
-                    <textarea id="story-text-input" placeholder="Was möchtest du teilen?" maxlength="120" rows="2" oninput="updateStoryPreview()" style="width:100%; resize:none; margin-bottom:8px;"></textarea>
+                    <textarea id="story-text-input" placeholder="Was möchtest du teilen?" maxlength="120" rows="2" oninput="updateStoryPreview()" style="width:100%; resize:none; margin-bottom:6px;"></textarea>
                     <div style="margin-bottom:8px;">
-                        <label style="font-size:12px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
+                        <label style="font-size:11px; opacity:0.6; display:block; margin-bottom:4px;">SCHRIFTART</label>
+                        <select id="story-font-picker" oninput="updateStoryPreview()" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:6px;">
+                            <option value="'Playfair Display', serif">Playfair Display</option>
+                            <option value="'Inter', sans-serif">Inter</option>
+                            <option value="'Georgia', serif">Georgia</option>
+                            <option value="'Courier New', monospace">Courier New</option>
+                            <option value="'Comic Sans MS', cursive">Comic Sans MS</option>
+                            <option value="'Impact', sans-serif">Impact</option>
+                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <label style="font-size:11px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                            <div onclick="setStoryBg('#075e54')" data-story-color="#075e54" style="width:28px;height:28px;border-radius:50%;background:#075e54;cursor:pointer;border:2px solid white;"></div>
-                            <div onclick="setStoryBg('#1a73e8')" data-story-color="#1a73e8" style="width:28px;height:28px;border-radius:50%;background:#1a73e8;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#e91e63')" data-story-color="#e91e63" style="width:28px;height:28px;border-radius:50%;background:#e91e63;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#ff6d00')" data-story-color="#ff6d00" style="width:28px;height:28px;border-radius:50%;background:#ff6d00;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#7b1fa2')" data-story-color="#7b1fa2" style="width:28px;height:28px;border-radius:50%;background:#7b1fa2;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#2e7d32')" data-story-color="#2e7d32" style="width:28px;height:28px;border-radius:50%;background:#2e7d32;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#c62828')" data-story-color="#c62828" style="width:28px;height:28px;border-radius:50%;background:#c62828;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#37474f')" data-story-color="#37474f" style="width:28px;height:28px;border-radius:50%;background:#37474f;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#f57f17')" data-story-color="#f57f17" style="width:28px;height:28px;border-radius:50%;background:#f57f17;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#000000')" data-story-color="#000000" style="width:28px;height:28px;border-radius:50%;background:#000000;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#075e54')" data-story-color="#075e54" style="width:26px;height:26px;border-radius:50%;background:#075e54;cursor:pointer;border:2px solid white;"></div>
+                            <div onclick="setStoryBg('#1a73e8')" data-story-color="#1a73e8" style="width:26px;height:26px;border-radius:50%;background:#1a73e8;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#e91e63')" data-story-color="#e91e63" style="width:26px;height:26px;border-radius:50%;background:#e91e63;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#ff6d00')" data-story-color="#ff6d00" style="width:26px;height:26px;border-radius:50%;background:#ff6d00;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#7b1fa2')" data-story-color="#7b1fa2" style="width:26px;height:26px;border-radius:50%;background:#7b1fa2;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#2e7d32')" data-story-color="#2e7d32" style="width:26px;height:26px;border-radius:50%;background:#2e7d32;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#c62828')" data-story-color="#c62828" style="width:26px;height:26px;border-radius:50%;background:#c62828;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#37474f')" data-story-color="#37474f" style="width:26px;height:26px;border-radius:50%;background:#37474f;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#f57f17')" data-story-color="#f57f17" style="width:26px;height:26px;border-radius:50%;background:#f57f17;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#000000')" data-story-color="#000000" style="width:26px;height:26px;border-radius:50%;background:#000000;cursor:pointer;border:2px solid transparent;"></div>
                         </div>
                     </div>
                 </div>
@@ -1953,18 +2015,18 @@
                 <div id="story-emoji-section" style="display:none;">
                     <input type="text" id="story-emoji-input" placeholder="Emoji eingeben..." maxlength="4" oninput="updateStoryPreview()" style="width:100%; text-align:center; font-size:40px; height:70px; margin-bottom:8px;">
                     <div style="margin-bottom:8px;">
-                        <label style="font-size:12px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
+                        <label style="font-size:11px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
                         <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                            <div onclick="setStoryBg('#075e54')" data-story-color="#075e54" style="width:28px;height:28px;border-radius:50%;background:#075e54;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#1a73e8')" data-story-color="#1a73e8" style="width:28px;height:28px;border-radius:50%;background:#1a73e8;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#e91e63')" data-story-color="#e91e63" style="width:28px;height:28px;border-radius:50%;background:#e91e63;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#ff6d00')" data-story-color="#ff6d00" style="width:28px;height:28px;border-radius:50%;background:#ff6d00;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#7b1fa2')" data-story-color="#7b1fa2" style="width:28px;height:28px;border-radius:50%;background:#7b1fa2;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#2e7d32')" data-story-color="#2e7d32" style="width:28px;height:28px;border-radius:50%;background:#2e7d32;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#c62828')" data-story-color="#c62828" style="width:28px;height:28px;border-radius:50%;background:#c62828;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#37474f')" data-story-color="#37474f" style="width:28px;height:28px;border-radius:50%;background:#37474f;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#f57f17')" data-story-color="#f57f17" style="width:28px;height:28px;border-radius:50%;background:#f57f17;cursor:pointer;border:2px solid transparent;"></div>
-                            <div onclick="setStoryBg('#000000')" data-story-color="#000000" style="width:28px;height:28px;border-radius:50%;background:#000000;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#075e54')" data-story-color="#075e54" style="width:26px;height:26px;border-radius:50%;background:#075e54;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#1a73e8')" data-story-color="#1a73e8" style="width:26px;height:26px;border-radius:50%;background:#1a73e8;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#e91e63')" data-story-color="#e91e63" style="width:26px;height:26px;border-radius:50%;background:#e91e63;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#ff6d00')" data-story-color="#ff6d00" style="width:26px;height:26px;border-radius:50%;background:#ff6d00;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#7b1fa2')" data-story-color="#7b1fa2" style="width:26px;height:26px;border-radius:50%;background:#7b1fa2;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#2e7d32')" data-story-color="#2e7d32" style="width:26px;height:26px;border-radius:50%;background:#2e7d32;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#c62828')" data-story-color="#c62828" style="width:26px;height:26px;border-radius:50%;background:#c62828;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#37474f')" data-story-color="#37474f" style="width:26px;height:26px;border-radius:50%;background:#37474f;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#f57f17')" data-story-color="#f57f17" style="width:26px;height:26px;border-radius:50%;background:#f57f17;cursor:pointer;border:2px solid transparent;"></div>
+                            <div onclick="setStoryBg('#000000')" data-story-color="#000000" style="width:26px;height:26px;border-radius:50%;background:#000000;cursor:pointer;border:2px solid transparent;"></div>
                         </div>
                     </div>
                 </div>
@@ -1975,20 +2037,20 @@
                     <input type="file" id="story-img-input" accept="image/*" style="display:none;">
                 </div>
 
-                <button onclick="publishStory()" style="width:100%; background:var(--primary); margin-top:4px;">📖 Veröffentlichen</button>
+                <!-- Actions -->
+                <div style="display:flex; gap:8px; margin-top:4px;">
+                    <button onclick="saveCurrentSlide()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">💾 Slide speichern</button>
+                    <button onclick="publishStory()" style="flex:1; background:var(--primary);">📖 Veröffentlichen</button>
+                </div>
+                <div id="story-slide-counter" style="text-align:center; font-size:12px; opacity:0.5; margin-top:6px;">0 / 15 Slides</div>
             </div>
         </div>
     </div>
-
     <!-- STORY VIEWER OVERLAY -->
     <div id="story-viewer-overlay" class="overlay" style="background:rgba(0,0,0,0.92);" onclick="closeStoryViewer()">
         <div style="position:relative; width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center;" onclick="event.stopPropagation()">
-            <!-- Progress bar -->
-            <div style="display:flex; gap:3px; width:100%; padding:0 12px; box-sizing:border-box; margin-bottom:8px;">
-                <div id="story-progress-bar" style="flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:2px;">
-                    <div id="story-progress-fill" style="height:100%; background:white; width:0%; border-radius:2px; transition:width linear;"></div>
-                </div>
-            </div>
+            <!-- Multi-slide progress bars -->
+            <div id="story-progress-bars" style="display:flex; gap:3px; width:100%; padding:0 12px; box-sizing:border-box; margin-bottom:8px;"></div>
             <!-- Header -->
             <div style="display:flex; align-items:center; gap:10px; width:100%; padding:0 12px 10px; box-sizing:border-box;">
                 <div id="viewer-avatar" style="width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; color:white;"></div>
@@ -2108,7 +2170,7 @@
             <!-- STORIES BAR -->
             <div id="stories-bar" style="display:flex; align-items:center; gap:10px; padding:8px 12px; overflow-x:auto; background:var(--white); border-bottom:1px solid var(--border-color); scrollbar-width:none; -webkit-overflow-scrolling:touch;">
                 <!-- My story bubble (always first) -->
-                <div id="my-story-bubble" style="display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; flex-shrink:0;" onclick="openMyStoryOrCreate()">
+                <div id="my-story-bubble" style="display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; flex-shrink:0;" onclick="openMyStoryOrCreate()" oncontextmenu="event.preventDefault(); openStoryContextMenu()">
                     <div id="my-story-avatar" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold; color:white; position:relative; border:3px solid var(--border-color);">
                         <span id="my-story-plus" style="position:absolute; bottom:-2px; right:-2px; width:18px; height:18px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; color:white; border:2px solid var(--white);">+</span>
                     </div>
@@ -2250,25 +2312,42 @@ async function fetchAvatarFromFirebase(name) {
 function getAvatarHTML(name, showOnline = false) {
     const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
     const settings = avatarSettings[name] || avatarCache[name] || {};
-    
+    const onlineIndicator = showOnline ? '<div class="online-indicator"></div>' : '';
+
+    if(settings.type === 'emoji' && settings.emoji) {
+        const bg = settings.color || stringToColor(name);
+        return `<div class="avatar" style="background:${bg}; font-size:20px;" data-avatar-name="${name}">${settings.emoji}${onlineIndicator}</div>`;
+    }
+    if(settings.type === 'image' && settings.image) {
+        return `<div class="avatar" style="background:#333; overflow:hidden; padding:0;" data-avatar-name="${name}"><img src="${settings.image}" style="width:100%;height:100%;object-fit:cover;">${onlineIndicator}</div>`;
+    }
+    // Default: letter
     const color = settings.color || stringToColor(name);
     const font = settings.font || "'Playfair Display', serif";
     const letter = name.charAt(0);
-    const onlineIndicator = showOnline ? '<div class="online-indicator"></div>' : '';
-    
-    // Async fetch in background to update on next render
+
     if(!avatarCache[name]) {
         fetchAvatarFromFirebase(name).then(data => {
             if(data) {
-                // Refresh avatar elements for this user
                 document.querySelectorAll(`[data-avatar-name="${name}"]`).forEach(el => {
-                    el.style.background = data.color || stringToColor(name);
-                    el.style.fontFamily = data.font || "'Playfair Display', serif";
+                    if(data.type === 'emoji' && data.emoji) {
+                        el.style.background = data.color || stringToColor(name);
+                        el.textContent = data.emoji;
+                        el.style.fontSize = '20px';
+                    } else if(data.type === 'image' && data.image) {
+                        el.style.background = '#333';
+                        el.style.padding = '0';
+                        el.style.overflow = 'hidden';
+                        el.innerHTML = `<img src="${data.image}" style="width:100%;height:100%;object-fit:cover;">`;
+                    } else {
+                        el.style.background = data.color || stringToColor(name);
+                        el.style.fontFamily = data.font || "'Playfair Display', serif";
+                    }
                 });
             }
         });
     }
-    
+
     return `<div class="avatar" style="background:${color}; font-family:${font}" data-avatar-name="${name}">${letter}${onlineIndicator}</div>`;
 }
 
@@ -2432,6 +2511,20 @@ window.openSettings = () => {
         };
     }
     
+    // Avatar type setup
+    const avType = mySettings.type || 'letter';
+    currentAvatarType = avType;
+    avatarImageData = null;
+    setAvatarType(avType);
+    if(avType === 'emoji') {
+        document.getElementById('my-avatar-emoji-input').value = mySettings.emoji || '';
+        document.getElementById('my-avatar-color-picker-emoji').value = mySettings.color || '#075e54';
+    } else if(avType === 'image' && mySettings.image) {
+        avatarImageData = mySettings.image;
+        document.getElementById('avatar-img-preview').style.display = 'block';
+        document.getElementById('avatar-img-preview-img').src = mySettings.image;
+    }
+
     document.getElementById('settings-overlay').style.display = 'flex';
     switchSettingsTab('personalization');
 };
@@ -2450,11 +2543,18 @@ window.switchSettingsTab = (tab) => {
 window.saveMyAvatar = async () => {
     const colorPicker = document.getElementById('my-avatar-color-picker');
     const fontPicker = document.getElementById('my-avatar-font-picker');
-    
-    const avatarData = {
-        color: colorPicker.value,
-        font: fontPicker.value
-    };
+
+    let avatarData;
+    if(currentAvatarType === 'letter') {
+        avatarData = { type: 'letter', color: colorPicker.value, font: fontPicker.value };
+    } else if(currentAvatarType === 'emoji') {
+        const emoji = document.getElementById('my-avatar-emoji-input').value.trim() || '😎';
+        const color = document.getElementById('my-avatar-color-picker-emoji').value;
+        avatarData = { type: 'emoji', emoji, color };
+    } else if(currentAvatarType === 'image') {
+        if(!avatarImageData) { showNotification('⚠️ Bitte Bild auswählen', 'warning'); return; }
+        avatarData = { type: 'image', image: avatarImageData };
+    }
     
     // Save to localStorage
     const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
@@ -4148,12 +4248,15 @@ function playNotificationSound() {
 /* ================================ */
 const STORY_TTL = 48 * 60 * 60 * 1000; // 48h in ms
 let currentStoryUser = null;
-let currentStoryList = [];
-let currentStoryIndex = 0;
+let currentStoryList = []; // list of story entries from Firebase (each has slides[])
+let currentStoryIndex = 0; // which story entry
+let currentSlideIndex = 0; // which slide within the entry
 let storyProgressTimer = null;
 let storyBg = '#075e54';
 let storyType = 'text';
 let storyImageData = null;
+let storySlides = []; // slides being built in creator
+let editingSlideIndex = -1; // -1 = new slide
 
 function initMyStoryBubble() {
     const av = document.getElementById('my-story-avatar');
@@ -4168,6 +4271,13 @@ function initMyStoryBubble() {
     plus.textContent = '+';
     av.appendChild(plus);
     checkMyActiveStory();
+
+    // Mobile long-press for story context menu
+    const bubble = document.getElementById('my-story-bubble');
+    let _storyLongPress;
+    bubble.addEventListener('touchstart', () => { _storyLongPress = setTimeout(openStoryContextMenu, 500); }, { passive: true });
+    bubble.addEventListener('touchend', () => clearTimeout(_storyLongPress));
+    bubble.addEventListener('touchmove', () => clearTimeout(_storyLongPress));
 }
 
 async function checkMyActiveStory() {
@@ -4199,15 +4309,15 @@ async function loadContactStories() {
     for(const contact of contacts) {
         const storySnap = await get(ref(db, `stories/${contact}`));
         if(!storySnap.exists()) continue;
-        const stories = Object.entries(storySnap.val())
+        const entries = Object.entries(storySnap.val())
             .map(([k,v]) => ({...v, key:k}))
             .filter(s => Date.now() - s.createdAt < STORY_TTL);
-        if(stories.length === 0) continue;
+        if(entries.length === 0) continue;
 
         const s = avatarSettings[contact] || {};
         const bubble = document.createElement('div');
         bubble.className = 'story-bubble has-story';
-        bubble.onclick = () => openStoryViewer(contact, stories);
+        bubble.onclick = () => openStoryViewer(contact, entries);
         const ring = document.createElement('div');
         ring.className = 'story-ring';
         ring.style.background = s.color || stringToColor(contact);
@@ -4235,12 +4345,15 @@ function openStoryCreate() {
     storyBg = '#075e54';
     storyType = 'text';
     storyImageData = null;
+    storySlides = [];
+    editingSlideIndex = -1;
     document.getElementById('story-text-input').value = '';
     if(document.getElementById('story-emoji-input')) document.getElementById('story-emoji-input').value = '';
     document.getElementById('story-preview-img').style.display = 'none';
     document.getElementById('story-preview').style.background = storyBg;
     document.getElementById('story-preview-text').textContent = '';
     setStoryType('text');
+    renderSlidesStrip();
     document.getElementById('story-create-overlay').style.display = 'flex';
 }
 
@@ -4269,9 +4382,16 @@ window.setStoryBg = (color) => {
 
 window.updateStoryPreview = () => {
     const previewText = document.getElementById('story-preview-text');
-    if(storyType === 'text') previewText.textContent = document.getElementById('story-text-input').value;
-    else if(storyType === 'emoji') previewText.textContent = document.getElementById('story-emoji-input').value;
-    else previewText.textContent = storyImageData ? '' : '🖼️';
+    const fontPicker = document.getElementById('story-font-picker');
+    if(storyType === 'text') {
+        previewText.textContent = document.getElementById('story-text-input').value;
+        if(fontPicker) previewText.style.fontFamily = fontPicker.value;
+    } else if(storyType === 'emoji') {
+        previewText.textContent = document.getElementById('story-emoji-input').value;
+        previewText.style.fontFamily = '';
+    } else {
+        previewText.textContent = storyImageData ? '' : '🖼️';
+    }
 };
 
 document.getElementById('story-img-input').addEventListener('change', async (e) => {
@@ -4287,33 +4407,150 @@ document.getElementById('story-img-input').addEventListener('change', async (e) 
     document.getElementById('story-preview').style.background = '#000';
 });
 
-window.publishStory = async () => {
+window.saveCurrentSlide = () => {
     let content = '';
     if(storyType === 'text') content = document.getElementById('story-text-input').value.trim();
     else if(storyType === 'emoji') content = document.getElementById('story-emoji-input').value.trim();
     else content = storyImageData || '';
     if(!content) { showNotification('⚠️ Bitte Inhalt hinzufügen', 'warning'); return; }
 
+    const slide = { type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg, font: storyType === 'text' ? (document.getElementById('story-font-picker')?.value || '') : '' };
+    if(editingSlideIndex >= 0) {
+        storySlides[editingSlideIndex] = slide;
+        editingSlideIndex = -1;
+    } else {
+        storySlides.push(slide);
+    }
+    // Reset current input for next slide
+    document.getElementById('story-text-input').value = '';
+    if(document.getElementById('story-emoji-input')) document.getElementById('story-emoji-input').value = '';
+    storyImageData = null;
+    document.getElementById('story-preview-img').style.display = 'none';
+    document.getElementById('story-preview-text').textContent = '';
+    document.getElementById('story-preview').style.background = storyBg;
+    renderSlidesStrip();
+    showNotification(`✅ Slide ${storySlides.length} gespeichert`, 'success');
+};
+
+window.addStorySlide = () => {
+    if(storySlides.length >= 15) { showNotification('⚠️ Maximal 15 Slides', 'warning'); return; }
+    editingSlideIndex = -1;
+    document.getElementById('story-text-input').value = '';
+    if(document.getElementById('story-emoji-input')) document.getElementById('story-emoji-input').value = '';
+    storyImageData = null;
+    document.getElementById('story-preview-img').style.display = 'none';
+    document.getElementById('story-preview-text').textContent = 'Neuer Slide...';
+    document.getElementById('story-preview').style.background = storyBg;
+};
+
+function renderSlidesStrip() {
+    const strip = document.getElementById('story-slides-strip');
+    const counter = document.getElementById('story-slide-counter');
+    const addBtn = document.getElementById('story-add-slide-btn');
+    strip.innerHTML = '';
+    storySlides.forEach((slide, i) => {
+        const thumb = document.createElement('div');
+        thumb.style.cssText = `width:44px;height:60px;border-radius:8px;background:${slide.bg};display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0;border:2px solid ${editingSlideIndex===i?'var(--primary)':'transparent'};overflow:hidden;`;
+        if(slide.type === 'image') {
+            const img = document.createElement('img');
+            img.src = slide.content;
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+            thumb.appendChild(img);
+        } else {
+            thumb.style.fontSize = slide.type === 'emoji' ? '22px' : '9px';
+            thumb.style.color = 'white';
+            thumb.style.textAlign = 'center';
+            thumb.style.padding = '2px';
+            thumb.style.wordBreak = 'break-word';
+            thumb.textContent = slide.content.substring(0, slide.type==='emoji'?2:30);
+        }
+        // Number badge
+        const badge = document.createElement('div');
+        badge.style.cssText = 'position:absolute;top:2px;left:2px;background:rgba(0,0,0,0.5);color:white;font-size:9px;border-radius:4px;padding:1px 3px;';
+        badge.textContent = i + 1;
+        thumb.appendChild(badge);
+        // Delete button
+        const del = document.createElement('div');
+        del.style.cssText = 'position:absolute;top:2px;right:2px;background:rgba(220,53,69,0.85);color:white;font-size:10px;border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+        del.textContent = '✕';
+        del.onclick = (e) => { e.stopPropagation(); storySlides.splice(i,1); renderSlidesStrip(); };
+        thumb.appendChild(del);
+        // Click to edit
+        thumb.onclick = (e) => {
+            if(e.target === del) return;
+            editingSlideIndex = i;
+            const s = storySlides[i];
+            setStoryType(s.type);
+            storyBg = s.bg;
+            document.getElementById('story-preview').style.background = s.bg;
+            if(s.type === 'text') { document.getElementById('story-text-input').value = s.content; }
+            else if(s.type === 'emoji') { document.getElementById('story-emoji-input').value = s.content; }
+            else { storyImageData = s.content; document.getElementById('story-preview-img').src = s.content; document.getElementById('story-preview-img').style.display='block'; }
+            updateStoryPreview();
+            renderSlidesStrip();
+        };
+        strip.appendChild(thumb);
+    });
+    counter.textContent = `${storySlides.length} / 15 Slides`;
+    addBtn.style.display = storySlides.length >= 15 ? 'none' : 'flex';
+}
+
+window.publishStory = async () => {
+    // Auto-save current input as a slide if there's content
+    let content = '';
+    if(storyType === 'text') content = document.getElementById('story-text-input').value.trim();
+    else if(storyType === 'emoji') content = document.getElementById('story-emoji-input').value.trim();
+    else content = storyImageData || '';
+    if(content && editingSlideIndex < 0) {
+        storySlides.push({ type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg });
+    } else if(content && editingSlideIndex >= 0) {
+        storySlides[editingSlideIndex] = { type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg };
+    }
+    if(storySlides.length === 0) { showNotification('⚠️ Mindestens 1 Slide hinzufügen', 'warning'); return; }
+
     await push(ref(db, `stories/${myUsername}`), {
-        type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg,
-        createdAt: Date.now(), author: myUsername
+        slides: storySlides,
+        createdAt: Date.now(),
+        author: myUsername
     });
     closeOverlay('story-create-overlay');
-    showNotification('✅ Geschichte veröffentlicht!', 'success');
+    showNotification(`✅ Geschichte mit ${storySlides.length} Slide(s) veröffentlicht!`, 'success');
     checkMyActiveStory();
     loadContactStories();
 };
 
-function openStoryViewer(username, stories) {
+function buildViewerProgressBars() {
+    const container = document.getElementById('story-progress-bars');
+    container.innerHTML = '';
+    currentStoryList.forEach((_, i) => {
+        const bar = document.createElement('div');
+        bar.style.cssText = 'flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:2px; overflow:hidden;';
+        const fill = document.createElement('div');
+        fill.id = `story-bar-fill-${i}`;
+        fill.style.cssText = 'height:100%; background:white; width:0%; border-radius:2px;';
+        bar.appendChild(fill);
+        container.appendChild(bar);
+    });
+}
+
+function openStoryViewer(username, entries) {
     currentStoryUser = username;
-    currentStoryList = stories.sort((a,b) => a.createdAt - b.createdAt);
-    currentStoryIndex = 0;
+    // Flatten entries → slides for sequential viewing
+    currentStoryList = [];
+    entries.sort((a,b) => a.createdAt - b.createdAt).forEach(entry => {
+        const slides = entry.slides || [{ type: entry.type, content: entry.content, bg: entry.bg }];
+        slides.forEach((slide) => {
+            currentStoryList.push({ ...slide, key: entry.key, createdAt: entry.createdAt });
+        });
+    });
+    currentSlideIndex = 0;
+    buildViewerProgressBars();
     document.getElementById('story-viewer-overlay').classList.add('show');
     renderCurrentStory();
 }
 
 function renderCurrentStory() {
-    const s = currentStoryList[currentStoryIndex];
+    const s = currentStoryList[currentSlideIndex];
     if(!s) { closeStoryViewer(); return; }
 
     const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
@@ -4345,19 +4582,29 @@ function renderCurrentStory() {
     } else {
         img.style.display = 'none';
         txt.textContent = s.content;
+        txt.style.fontFamily = s.font || "'Playfair Display', serif";
         content.style.background = s.bg || '#075e54';
         txt.style.fontSize = s.type === 'emoji' ? '80px' : '28px';
     }
 
+    // Progress bars
     clearTimeout(storyProgressTimer);
-    const fill = document.getElementById('story-progress-fill');
-    fill.style.transition = 'none'; fill.style.width = '0%';
-    requestAnimationFrame(() => {
-        fill.style.transition = 'width 5s linear'; fill.style.width = '100%';
+    // Mark past bars as full, current animating, future as empty
+    currentStoryList.forEach((_, i) => {
+        const fill = document.getElementById(`story-bar-fill-${i}`);
+        if(!fill) return;
+        fill.style.transition = 'none';
+        fill.style.width = i < currentSlideIndex ? '100%' : '0%';
     });
+    const currentFill = document.getElementById(`story-bar-fill-${currentSlideIndex}`);
+    if(currentFill) {
+        requestAnimationFrame(() => {
+            currentFill.style.transition = 'width 5s linear';
+            currentFill.style.width = '100%';
+        });
+    }
     storyProgressTimer = setTimeout(() => navigateStory(1), 5000);
 
-    // Load reactions display
     if(!isOwn) {
         document.getElementById('story-reactions-display').textContent = '';
         loadStoryReactions(s);
@@ -4366,9 +4613,9 @@ function renderCurrentStory() {
 
 window.navigateStory = (dir) => {
     clearTimeout(storyProgressTimer);
-    currentStoryIndex += dir;
-    if(currentStoryIndex < 0) currentStoryIndex = 0;
-    if(currentStoryIndex >= currentStoryList.length) { closeStoryViewer(); return; }
+    currentSlideIndex += dir;
+    if(currentSlideIndex < 0) currentSlideIndex = 0;
+    if(currentSlideIndex >= currentStoryList.length) { closeStoryViewer(); return; }
     renderCurrentStory();
 };
 
@@ -4378,7 +4625,7 @@ window.closeStoryViewer = () => {
 };
 
 window.reactToStory = async (emoji) => {
-    const s = currentStoryList[currentStoryIndex];
+    const s = currentStoryList[currentSlideIndex];
     if(!s) return;
     // Send reaction as a chat message to the story author
     const chatId = myUsername < currentStoryUser
@@ -4417,7 +4664,125 @@ window.deleteMyStory = async () => {
     loadContactStories();
 };
 
-/* GEPLANTE NACHRICHTEN           */
+/* ----- Story context menu ----- */
+let _storyCtxEntries = [];
+
+window.openStoryContextMenu = async () => {
+    const snap = await get(ref(db, `stories/${myUsername}`));
+    _storyCtxEntries = snap.exists()
+        ? Object.entries(snap.val()).map(([k,v])=>({...v,key:k})).filter(s=>Date.now()-s.createdAt < STORY_TTL)
+        : [];
+
+    const list = document.getElementById('story-ctx-slides-list');
+    list.innerHTML = '';
+
+    if(_storyCtxEntries.length === 0) {
+        list.innerHTML = '<div style="text-align:center; opacity:0.5; padding:12px;">Keine aktiven Geschichten</div>';
+    } else {
+        _storyCtxEntries.forEach((entry, ei) => {
+            const slides = entry.slides || [{ type: entry.type, content: entry.content, bg: entry.bg }];
+            slides.forEach((slide, si) => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; margin-bottom:4px; background:var(--bg);';
+
+                // Thumbnail
+                const thumb = document.createElement('div');
+                thumb.style.cssText = `width:36px; height:48px; border-radius:6px; background:${slide.bg||'#075e54'}; flex-shrink:0; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:${slide.type==='emoji'?'20px':'9px'}; color:white; text-align:center; word-break:break-word;`;
+                if(slide.type === 'image') {
+                    thumb.innerHTML = `<img src="${slide.content}" style="width:100%;height:100%;object-fit:cover;">`;
+                } else {
+                    thumb.textContent = slide.content.substring(0, slide.type==='emoji'?2:20);
+                }
+
+                // Label
+                const label = document.createElement('div');
+                label.style.cssText = 'flex:1; font-size:13px;';
+                label.textContent = `Slide ${si+1}${slides.length>1?` / ${slides.length}`:''}`;
+
+                // Delete button
+                const del = document.createElement('button');
+                del.style.cssText = 'background:#dc3545; color:white; border:none; border-radius:6px; padding:4px 10px; font-size:12px; cursor:pointer;';
+                del.textContent = '🗑️';
+                del.onclick = async () => {
+                    if(slides.length === 1) {
+                        // Delete entire entry
+                        await remove(ref(db, `stories/${myUsername}/${entry.key}`));
+                    } else {
+                        // Remove just this slide from entry
+                        const newSlides = slides.filter((_,i)=>i!==si);
+                        await set(ref(db, `stories/${myUsername}/${entry.key}/slides`), newSlides);
+                    }
+                    showNotification('🗑️ Slide gelöscht', 'success');
+                    closeOverlay('story-ctx-overlay');
+                    checkMyActiveStory();
+                    loadContactStories();
+                };
+
+                row.appendChild(thumb);
+                row.appendChild(label);
+                row.appendChild(del);
+                list.appendChild(row);
+            });
+        });
+    }
+    document.getElementById('story-ctx-overlay').style.display = 'flex';
+};
+
+window.deleteAllMyStories = async () => {
+    await remove(ref(db, `stories/${myUsername}`));
+    showNotification('🗑️ Alle Geschichten gelöscht', 'success');
+    closeOverlay('story-ctx-overlay');
+    checkMyActiveStory();
+    loadContactStories();
+};
+
+/* ----- Avatar type picker ----- */
+let currentAvatarType = 'letter';
+let avatarImageData = null;
+
+window.setAvatarType = (type) => {
+    currentAvatarType = type;
+    ['letter','emoji','image'].forEach(t => {
+        document.getElementById(`avs-${t}`).style.display = t === type ? 'block' : 'none';
+        const btn = document.getElementById(`avtype-${t}`);
+        btn.style.background = t === type ? 'var(--primary)' : 'var(--bg)';
+        btn.style.color = t === type ? 'white' : 'var(--text-color)';
+        btn.style.border = t === type ? 'none' : '1px solid var(--border-color)';
+    });
+};
+
+// Bind avatar image input
+document.getElementById('avatar-img-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if(!file) return;
+    avatarImageData = await compressImage(file, 200 * 1024);
+    document.getElementById('avatar-img-preview').style.display = 'block';
+    document.getElementById('avatar-img-preview-img').src = avatarImageData;
+    // Update big preview
+    const preview = document.getElementById('settings-avatar-preview');
+    if(preview) {
+        preview.style.background = '#333';
+        preview.innerHTML = `<img src="${avatarImageData}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    }
+});
+
+// Bind avatar emoji input live preview
+document.getElementById('my-avatar-emoji-input').addEventListener('input', () => {
+    const preview = document.getElementById('settings-avatar-preview');
+    if(preview && currentAvatarType === 'emoji') {
+        preview.textContent = document.getElementById('my-avatar-emoji-input').value || '😎';
+        preview.style.background = document.getElementById('my-avatar-color-picker-emoji').value;
+        preview.style.fontSize = '40px';
+    }
+});
+
+document.getElementById('my-avatar-color-picker-emoji').addEventListener('input', () => {
+    const preview = document.getElementById('settings-avatar-preview');
+    if(preview && currentAvatarType === 'emoji') preview.style.background = document.getElementById('my-avatar-color-picker-emoji').value;
+});
+
+
 /* ------------------------------ */
 function getScheduledMsgs() {
     return JSON.parse(localStorage.getItem('villo_scheduled') || '[]');
