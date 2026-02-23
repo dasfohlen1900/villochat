@@ -1154,6 +1154,24 @@
         .notification-toast.error { border-left: 4px solid #dc3545; }
         .notification-toast.warning { border-left: 4px solid #ffc107; }
         
+        /* Stories */
+        #stories-bar::-webkit-scrollbar { display: none; }
+        .story-bubble { display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; flex-shrink:0; }
+        .story-bubble .story-ring {
+            width:48px; height:48px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:22px; font-weight:bold; color:white;
+            border:3px solid var(--border-color);
+            transition: border-color 0.2s;
+        }
+        .story-bubble.has-story .story-ring {
+            border:3px solid var(--primary);
+            box-shadow: 0 0 0 2px var(--white), 0 0 0 4px var(--primary);
+        }
+        .story-bubble .story-name { font-size:10px; max-width:52px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.7; }
+        #story-viewer-overlay { display:none !important; }
+        #story-viewer-overlay.show { display:flex !important; }
+
         body.dark-mode .notification-toast {
             background: var(--white);
             color: var(--text-color);
@@ -1890,6 +1908,96 @@
         </div>
     </div>
 
+    <!-- STORY CREATE OVERLAY -->
+    <div id="story-create-overlay" class="overlay">
+        <div class="modal" style="max-width:400px; width:95vw;">
+            <div class="modal-header">
+                <h2>📖 Geschichte erstellen</h2>
+                <span style="cursor:pointer;" onclick="closeOverlay('story-create-overlay')">✕</span>
+            </div>
+            <div class="modal-body">
+                <!-- Preview -->
+                <div id="story-preview" style="width:100%; height:180px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; background:#075e54; position:relative; overflow:hidden; transition:background 0.2s;">
+                    <img id="story-preview-img" style="display:none; width:100%; height:100%; object-fit:cover; position:absolute; inset:0;" />
+                    <div id="story-preview-text" style="color:white; font-size:22px; font-weight:700; text-align:center; padding:12px; z-index:1; word-break:break-word; text-shadow:0 1px 4px rgba(0,0,0,0.4);"></div>
+                </div>
+
+                <!-- Type selector -->
+                <div style="display:flex; gap:8px; margin-bottom:12px;">
+                    <button id="story-type-text" onclick="setStoryType('text')" style="flex:1; background:var(--primary); color:white; border:none;">✏️ Text</button>
+                    <button id="story-type-emoji" onclick="setStoryType('emoji')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">😊 Emoji</button>
+                    <button id="story-type-image" onclick="setStoryType('image')" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🖼️ Bild</button>
+                </div>
+
+                <!-- Text input -->
+                <div id="story-text-section">
+                    <textarea id="story-text-input" placeholder="Was möchtest du teilen?" maxlength="120" rows="2" oninput="updateStoryPreview()" style="width:100%; resize:none; margin-bottom:8px;"></textarea>
+                    <div style="margin-bottom:8px;">
+                        <label style="font-size:12px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            ${['#075e54','#1a73e8','#e91e63','#ff6d00','#7b1fa2','#2e7d32','#c62828','#37474f','#f57f17','#000000'].map(c =>
+                                `<div onclick="setStoryBg('${c}')" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;" data-story-color="${c}"></div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emoji input -->
+                <div id="story-emoji-section" style="display:none;">
+                    <input type="text" id="story-emoji-input" placeholder="Emoji eingeben..." maxlength="4" oninput="updateStoryPreview()" style="width:100%; text-align:center; font-size:40px; height:70px; margin-bottom:8px;">
+                    <div style="margin-bottom:8px;">
+                        <label style="font-size:12px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
+                        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                            ${['#075e54','#1a73e8','#e91e63','#ff6d00','#7b1fa2','#2e7d32','#c62828','#37474f','#f57f17','#000000'].map(c =>
+                                `<div onclick="setStoryBg('${c}')" style="width:28px;height:28px;border-radius:50%;background:${c};cursor:pointer;border:2px solid transparent;" data-story-color="${c}"></div>`
+                            ).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Image input -->
+                <div id="story-image-section" style="display:none;">
+                    <button onclick="document.getElementById('story-img-input').click()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:8px;">📁 Bild auswählen (max. 500 KB)</button>
+                    <input type="file" id="story-img-input" accept="image/*" style="display:none;">
+                </div>
+
+                <button onclick="publishStory()" style="width:100%; background:var(--primary); margin-top:4px;">📖 Veröffentlichen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- STORY VIEWER OVERLAY -->
+    <div id="story-viewer-overlay" class="overlay" style="background:rgba(0,0,0,0.92);" onclick="closeStoryViewer()">
+        <div style="position:relative; width:100%; max-width:420px; display:flex; flex-direction:column; align-items:center;" onclick="event.stopPropagation()">
+            <!-- Progress bar -->
+            <div style="display:flex; gap:3px; width:100%; padding:0 12px; box-sizing:border-box; margin-bottom:8px;">
+                <div id="story-progress-bar" style="flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:2px;">
+                    <div id="story-progress-fill" style="height:100%; background:white; width:0%; border-radius:2px; transition:width linear;"></div>
+                </div>
+            </div>
+            <!-- Header -->
+            <div style="display:flex; align-items:center; gap:10px; width:100%; padding:0 12px 10px; box-sizing:border-box;">
+                <div id="viewer-avatar" style="width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:bold; color:white;"></div>
+                <div>
+                    <div id="viewer-username" style="color:white; font-weight:600; font-size:14px;"></div>
+                    <div id="viewer-time" style="color:rgba(255,255,255,0.6); font-size:11px;"></div>
+                </div>
+                <span onclick="closeStoryViewer()" style="margin-left:auto; color:white; font-size:24px; cursor:pointer; opacity:0.7;">✕</span>
+                <span id="viewer-delete-btn" style="display:none; color:#ff6b6b; font-size:20px; cursor:pointer; margin-left:4px;" onclick="deleteMyStory()">🗑️</span>
+            </div>
+            <!-- Story content -->
+            <div id="story-viewer-content" style="width:100%; height:480px; border-radius:16px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                <img id="viewer-img" style="display:none; width:100%; height:100%; object-fit:cover;">
+                <div id="viewer-text" style="color:white; font-size:28px; font-weight:700; text-align:center; padding:20px; word-break:break-word; text-shadow:0 2px 8px rgba(0,0,0,0.5);"></div>
+            </div>
+            <!-- Nav buttons -->
+            <div style="display:flex; gap:12px; margin-top:12px;">
+                <button onclick="navigateStory(-1)" style="background:rgba(255,255,255,0.15); color:white; border:none; padding:10px 24px; border-radius:20px;">‹ Zurück</button>
+                <button onclick="navigateStory(1)" style="background:rgba(255,255,255,0.15); color:white; border:none; padding:10px 24px; border-radius:20px;">Weiter ›</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCHEDULED MESSAGES OVERLAY -->
     <div id="scheduled-overlay" class="overlay">
         <div class="modal" style="max-width:420px; max-height:80vh;">
@@ -1971,6 +2079,19 @@
                 <input type="text" id="search-input" placeholder="User suchen..." style="margin:0;">
                 <button id="btn-search" style="width:50px; margin:0;">+</button>
             </div>
+            <!-- STORIES BAR -->
+            <div id="stories-bar" style="display:flex; align-items:center; gap:10px; padding:8px 12px; overflow-x:auto; background:var(--white); border-bottom:1px solid var(--border-color); scrollbar-width:none; -webkit-overflow-scrolling:touch;">
+                <!-- My story bubble (always first) -->
+                <div id="my-story-bubble" style="display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer; flex-shrink:0;" onclick="openMyStoryOrCreate()">
+                    <div id="my-story-avatar" style="width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:bold; color:white; position:relative; border:3px solid var(--border-color);">
+                        <span id="my-story-plus" style="position:absolute; bottom:-2px; right:-2px; width:18px; height:18px; background:var(--primary); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; color:white; border:2px solid var(--white);">+</span>
+                    </div>
+                    <span style="font-size:10px; max-width:52px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; opacity:0.7;">Deine</span>
+                </div>
+                <!-- Contact stories injected here -->
+                <div id="contact-stories-list" style="display:contents;"></div>
+            </div>
+
             <div id="contacts-list"></div>
             <div id="resize-handle"></div>
         </div>
@@ -2712,6 +2833,10 @@ function showApp() {
 
     // Start scheduled message checker (once)
     if(!window._schedulerStarted) { window._schedulerStarted = true; startSchedulerTick(); }
+
+    // Init stories
+    initMyStoryBubble();
+    loadContactStories();
 
     // Handle invite link (?join=groupId)
     const joinParam = new URLSearchParams(location.search).get('join');
@@ -3568,16 +3693,34 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     };
     menu.appendChild(infoItem);
     
-    // Copy option
-    const copyItem = document.createElement('div');
-    copyItem.className = 'msg-context-item';
-    copyItem.innerHTML = '<span class="icon">📋</span><span>Kopieren</span>';
-    copyItem.onclick = () => {
-        navigator.clipboard.writeText(msgText);
-        menu.classList.remove('show');
-        showNotification('✅ Text kopiert', 'success');
-    };
-    menu.appendChild(copyItem);
+    // Copy option (nur für Text, nicht für Bilder)
+    if(!msgText.startsWith('data:image/')) {
+        const copyItem = document.createElement('div');
+        copyItem.className = 'msg-context-item';
+        copyItem.innerHTML = '<span class="icon">📋</span><span>Kopieren</span>';
+        copyItem.onclick = () => {
+            navigator.clipboard.writeText(msgText);
+            menu.classList.remove('show');
+            showNotification('✅ Text kopiert', 'success');
+        };
+        menu.appendChild(copyItem);
+    }
+
+    // Download option (nur für Bilder)
+    if(msgText.startsWith('data:image/')) {
+        const dlItem = document.createElement('div');
+        dlItem.className = 'msg-context-item';
+        dlItem.innerHTML = '<span class="icon">⬇️</span><span>Herunterladen</span>';
+        dlItem.onclick = () => {
+            menu.classList.remove('show');
+            const a = document.createElement('a');
+            a.href = msgText;
+            const ext = msgText.substring(11, msgText.indexOf(';')) || 'jpg';
+            a.download = `bild_${msgKey}.${ext}`;
+            a.click();
+        };
+        menu.appendChild(dlItem);
+    }
     
     // React option
     const reactItem = document.createElement('div');
@@ -3974,6 +4117,236 @@ function playNotificationSound() {
 }
 
 /* ------------------------------ */
+/* ================================ */
+/* GESCHICHTEN (STORIES)            */
+/* ================================ */
+const STORY_TTL = 48 * 60 * 60 * 1000; // 48h in ms
+let currentStoryUser = null;
+let currentStoryList = [];
+let currentStoryIndex = 0;
+let storyProgressTimer = null;
+let storyBg = '#075e54';
+let storyType = 'text';
+let storyImageData = null;
+
+function initMyStoryBubble() {
+    const av = document.getElementById('my-story-avatar');
+    if(!av) return;
+    const settings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+    const mine = settings[myUsername] || {};
+    av.style.background = mine.color || stringToColor(myUsername);
+    av.style.fontFamily = mine.font || "'Playfair Display', serif";
+    av.textContent = myUsername.charAt(0).toUpperCase();
+    const plus = document.createElement('span');
+    plus.style.cssText = 'position:absolute;bottom:-2px;right:-2px;width:18px;height:18px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;color:white;border:2px solid var(--white);z-index:1;';
+    plus.textContent = '+';
+    av.appendChild(plus);
+    checkMyActiveStory();
+}
+
+async function checkMyActiveStory() {
+    const snap = await get(ref(db, `stories/${myUsername}`));
+    const ring = document.getElementById('my-story-avatar');
+    if(!ring) return;
+    if(snap.exists()) {
+        const active = Object.values(snap.val()).filter(s => Date.now() - s.createdAt < STORY_TTL);
+        if(active.length > 0) {
+            ring.style.border = '3px solid var(--primary)';
+            ring.style.boxShadow = '0 0 0 2px var(--white), 0 0 0 4px var(--primary)';
+            return;
+        }
+    }
+    ring.style.border = '3px solid var(--border-color)';
+    ring.style.boxShadow = 'none';
+}
+
+async function loadContactStories() {
+    const contactsList = document.getElementById('contact-stories-list');
+    if(!contactsList || !myUsername) return;
+    contactsList.innerHTML = '';
+    const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+    if(!snap.exists()) return;
+    const contacts = Object.values(snap.val()).filter(Boolean);
+    const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+    const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+
+    for(const contact of contacts) {
+        const storySnap = await get(ref(db, `stories/${contact}`));
+        if(!storySnap.exists()) continue;
+        const stories = Object.entries(storySnap.val())
+            .map(([k,v]) => ({...v, key:k}))
+            .filter(s => Date.now() - s.createdAt < STORY_TTL);
+        if(stories.length === 0) continue;
+
+        const s = avatarSettings[contact] || {};
+        const bubble = document.createElement('div');
+        bubble.className = 'story-bubble has-story';
+        bubble.onclick = () => openStoryViewer(contact, stories);
+        const ring = document.createElement('div');
+        ring.className = 'story-ring';
+        ring.style.background = s.color || stringToColor(contact);
+        ring.style.fontFamily = s.font || "'Playfair Display', serif";
+        ring.textContent = contact.charAt(0).toUpperCase();
+        const label = document.createElement('span');
+        label.className = 'story-name';
+        label.textContent = aliases[contact] || contact;
+        bubble.appendChild(ring);
+        bubble.appendChild(label);
+        contactsList.appendChild(bubble);
+    }
+}
+
+window.openMyStoryOrCreate = async () => {
+    const snap = await get(ref(db, `stories/${myUsername}`));
+    const active = snap.exists()
+        ? Object.entries(snap.val()).map(([k,v])=>({...v,key:k})).filter(s => Date.now()-s.createdAt < STORY_TTL)
+        : [];
+    if(active.length > 0) openStoryViewer(myUsername, active);
+    else openStoryCreate();
+};
+
+function openStoryCreate() {
+    storyBg = '#075e54';
+    storyType = 'text';
+    storyImageData = null;
+    document.getElementById('story-text-input').value = '';
+    if(document.getElementById('story-emoji-input')) document.getElementById('story-emoji-input').value = '';
+    document.getElementById('story-preview-img').style.display = 'none';
+    document.getElementById('story-preview').style.background = storyBg;
+    document.getElementById('story-preview-text').textContent = '';
+    setStoryType('text');
+    document.getElementById('story-create-overlay').style.display = 'flex';
+}
+
+window.setStoryType = (type) => {
+    storyType = type;
+    storyImageData = null;
+    document.getElementById('story-preview-img').style.display = 'none';
+    document.getElementById('story-preview').style.background = storyBg;
+    ['text','emoji','image'].forEach(t => {
+        document.getElementById(`story-${t}-section`).style.display = t === type ? 'block' : 'none';
+        const btn = document.getElementById(`story-type-${t}`);
+        btn.style.background = t === type ? 'var(--primary)' : 'var(--bg)';
+        btn.style.color = t === type ? 'white' : 'var(--text-color)';
+        btn.style.border = t === type ? 'none' : '1px solid var(--border-color)';
+    });
+    updateStoryPreview();
+};
+
+window.setStoryBg = (color) => {
+    storyBg = color;
+    document.getElementById('story-preview').style.background = color;
+    document.querySelectorAll('[data-story-color]').forEach(el => {
+        el.style.border = el.dataset.storyColor === color ? '2px solid white' : '2px solid transparent';
+    });
+};
+
+window.updateStoryPreview = () => {
+    const previewText = document.getElementById('story-preview-text');
+    if(storyType === 'text') previewText.textContent = document.getElementById('story-text-input').value;
+    else if(storyType === 'emoji') previewText.textContent = document.getElementById('story-emoji-input').value;
+    else previewText.textContent = storyImageData ? '' : '🖼️';
+};
+
+document.getElementById('story-img-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if(!file) return;
+    if(file.size > 500 * 1024) { showNotification('⚠️ Bild zu groß (max. 500 KB)', 'warning'); return; }
+    storyImageData = await compressImage(file, 500 * 1024);
+    const img = document.getElementById('story-preview-img');
+    img.src = storyImageData;
+    img.style.display = 'block';
+    document.getElementById('story-preview-text').textContent = '';
+    document.getElementById('story-preview').style.background = '#000';
+});
+
+window.publishStory = async () => {
+    let content = '';
+    if(storyType === 'text') content = document.getElementById('story-text-input').value.trim();
+    else if(storyType === 'emoji') content = document.getElementById('story-emoji-input').value.trim();
+    else content = storyImageData || '';
+    if(!content) { showNotification('⚠️ Bitte Inhalt hinzufügen', 'warning'); return; }
+
+    await push(ref(db, `stories/${myUsername}`), {
+        type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg,
+        createdAt: Date.now(), author: myUsername
+    });
+    closeOverlay('story-create-overlay');
+    showNotification('✅ Geschichte veröffentlicht!', 'success');
+    checkMyActiveStory();
+    loadContactStories();
+};
+
+function openStoryViewer(username, stories) {
+    currentStoryUser = username;
+    currentStoryList = stories.sort((a,b) => a.createdAt - b.createdAt);
+    currentStoryIndex = 0;
+    document.getElementById('story-viewer-overlay').classList.add('show');
+    renderCurrentStory();
+}
+
+function renderCurrentStory() {
+    const s = currentStoryList[currentStoryIndex];
+    if(!s) { closeStoryViewer(); return; }
+
+    const avatarSettings = JSON.parse(localStorage.getItem('avatar_settings') || '{}');
+    const settings = avatarSettings[currentStoryUser] || {};
+    const avEl = document.getElementById('viewer-avatar');
+    avEl.style.background = settings.color || stringToColor(currentStoryUser);
+    avEl.textContent = currentStoryUser.charAt(0).toUpperCase();
+    document.getElementById('viewer-username').textContent = currentStoryUser;
+    const h = Math.floor((Date.now() - s.createdAt) / 3600000);
+    document.getElementById('viewer-time').textContent = h < 1 ? 'Gerade eben' : `vor ${h}h`;
+
+    const deleteBtn = document.getElementById('viewer-delete-btn');
+    deleteBtn.style.display = currentStoryUser === myUsername ? 'inline' : 'none';
+    deleteBtn.dataset.storyKey = s.key;
+
+    const img = document.getElementById('viewer-img');
+    const txt = document.getElementById('viewer-text');
+    const content = document.getElementById('story-viewer-content');
+    if(s.type === 'image') {
+        img.src = s.content; img.style.display = 'block';
+        txt.textContent = ''; content.style.background = '#000';
+    } else {
+        img.style.display = 'none';
+        txt.textContent = s.content;
+        content.style.background = s.bg || '#075e54';
+        txt.style.fontSize = s.type === 'emoji' ? '80px' : '28px';
+    }
+
+    clearTimeout(storyProgressTimer);
+    const fill = document.getElementById('story-progress-fill');
+    fill.style.transition = 'none'; fill.style.width = '0%';
+    requestAnimationFrame(() => {
+        fill.style.transition = 'width 5s linear'; fill.style.width = '100%';
+    });
+    storyProgressTimer = setTimeout(() => navigateStory(1), 5000);
+}
+
+window.navigateStory = (dir) => {
+    clearTimeout(storyProgressTimer);
+    currentStoryIndex += dir;
+    if(currentStoryIndex < 0) currentStoryIndex = 0;
+    if(currentStoryIndex >= currentStoryList.length) { closeStoryViewer(); return; }
+    renderCurrentStory();
+};
+
+window.closeStoryViewer = () => {
+    clearTimeout(storyProgressTimer);
+    document.getElementById('story-viewer-overlay').classList.remove('show');
+};
+
+window.deleteMyStory = async () => {
+    const key = document.getElementById('viewer-delete-btn').dataset.storyKey;
+    await remove(ref(db, `stories/${myUsername}/${key}`));
+    showNotification('🗑️ Geschichte gelöscht', 'success');
+    closeStoryViewer();
+    checkMyActiveStory();
+    loadContactStories();
+};
+
 /* GEPLANTE NACHRICHTEN           */
 /* ------------------------------ */
 function getScheduledMsgs() {
@@ -5671,7 +6044,7 @@ window.onload = () => {
                               'alias-overlay', 'user-info-overlay', 'emoji-picker', 'poll-overlay', 
                               'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
                               'forward-overlay', 'my-profile-overlay', 'changelog-overlay',
-                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay'];
+                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay', 'story-create-overlay'];
             let anyOpen = false;
             overlays.forEach(id => {
                 const el = document.getElementById(id);
