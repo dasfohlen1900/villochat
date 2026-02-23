@@ -29,6 +29,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { 
             --primary: #075e54; 
@@ -1412,9 +1414,14 @@
                         <p style="font-size:13px; opacity:0.7; margin-bottom:20px;">Verwalte deinen PIN und deine Sitzung.</p>
 
                         <button onclick="openChangePIN()" style="width:100%; margin-bottom:10px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔑 PIN ändern</button>
-                        <button onclick="logout()" style="background:#dc3545; width:100%;">🚪 Abmelden</button>
+                        <button onclick="logout()" style="background:#dc3545; width:100%; margin-bottom:0;">🚪 Abmelden</button>
 
-                        <!-- Group add privacy -->
+                        <!-- QR Login -->
+                        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
+                            <label class="settings-label">📱 Anmelde-QR-Code</label>
+                            <p style="font-size:12px; opacity:0.6; margin:4px 0 10px;">Generiert ein PDF mit deinem QR-Code zum schnellen Einloggen auf einem anderen Gerät.</p>
+                            <button onclick="openQrPinDialog()" style="width:100%; background:var(--primary);">📄 QR-Code als PDF generieren</button>
+                        </div>
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
                             <label class="settings-label">👥 Wer kann mich zu Gruppen hinzufügen?</label>
                             <select id="group-add-privacy-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:8px;">
@@ -1920,7 +1927,24 @@
         </div>
     </div>
 
-    <div id="change-pin-overlay" class="overlay">
+    <!-- QR PIN DIALOG -->
+    <div id="qr-pin-overlay" class="overlay">
+        <div class="modal" style="max-width:360px; width:95vw;">
+            <div class="modal-header">
+                <h2>📄 QR-Code generieren</h2>
+                <span style="cursor:pointer;" onclick="closeOverlay('qr-pin-overlay')">✕</span>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:13px; opacity:0.7; margin-bottom:14px;">Gib deinen PIN ein um das PDF zu generieren. Das PDF enthält deinen Benutzernamen, PIN und einen QR-Code zum direkten Einloggen.</p>
+                <label style="font-size:12px; opacity:0.6; display:block; margin-bottom:4px;">PIN (Format: xxxx-xxxx)</label>
+                <input type="password" id="qr-pin-input" placeholder="xxxx-xxxx" maxlength="9" style="width:100%; margin-bottom:4px;" oninput="this.value=this.value.replace(/[^0-9-]/g,'')">
+                <p id="qr-pin-error" style="color:#dc3545; font-size:12px; min-height:18px; margin:4px 0 10px;"></p>
+                <button onclick="generateLoginQR()" style="width:100%; background:var(--primary);">📄 PDF generieren & herunterladen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- change-pin-overlay -->
         <div class="modal">
             <div class="modal-header">
                 <h2>🔑 PIN ändern</h2>
@@ -4579,7 +4603,11 @@ function renderSlidesStrip() {
             setStoryType(s.type);
             storyBg = s.bg;
             document.getElementById('story-preview').style.background = s.bg;
-            if(s.type === 'text') { document.getElementById('story-text-input').value = s.content; }
+            if(s.type === 'text') {
+                document.getElementById('story-text-input').value = s.content;
+                const fp = document.getElementById('story-font-picker');
+                if(fp && s.font) fp.value = s.font;
+            }
             else if(s.type === 'emoji') { document.getElementById('story-emoji-input').value = s.content; }
             else { storyImageData = s.content; document.getElementById('story-preview-img').src = s.content; document.getElementById('story-preview-img').style.display='block'; }
             updateStoryPreview();
@@ -4597,10 +4625,11 @@ window.publishStory = async () => {
     if(storyType === 'text') content = document.getElementById('story-text-input').value.trim();
     else if(storyType === 'emoji') content = document.getElementById('story-emoji-input').value.trim();
     else content = storyImageData || '';
+    const font = storyType === 'text' ? (document.getElementById('story-font-picker')?.value || '') : '';
     if(content && editingSlideIndex < 0) {
-        storySlides.push({ type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg });
+        storySlides.push({ type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg, font });
     } else if(content && editingSlideIndex >= 0) {
-        storySlides[editingSlideIndex] = { type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg };
+        storySlides[editingSlideIndex] = { type: storyType, content, bg: storyType === 'image' ? '#000' : storyBg, font };
     }
     if(storySlides.length === 0) { showNotification('⚠️ Mindestens 1 Slide hinzufügen', 'warning'); return; }
 
@@ -4863,6 +4892,104 @@ async function canContactSeeMyStories(contact) {
     return true;
 }
 
+
+/* ------------------------------ */
+/* QR LOGIN PDF GENERATOR         */
+/* ------------------------------ */
+window.openQrPinDialog = () => {
+    document.getElementById('qr-pin-input').value = '';
+    document.getElementById('qr-pin-error').textContent = '';
+    document.getElementById('qr-pin-overlay').style.display = 'flex';
+};
+
+window.generateLoginQR = async () => {
+    const pinInput = document.getElementById('qr-pin-input').value.trim();
+    const errEl = document.getElementById('qr-pin-error');
+    errEl.textContent = '';
+    if(!pinInput) { errEl.textContent = 'Bitte PIN eingeben.'; return; }
+
+    // Verify PIN against Firebase
+    const pinSnap = await get(ref(db, `accounts/${myUsername}/pin`));
+    if(!pinSnap.exists() || pinSnap.val() !== pinInput) {
+        errEl.textContent = '❌ Falscher PIN.';
+        return;
+    }
+
+    closeOverlay('qr-pin-overlay');
+    showNotification('⏳ PDF wird erstellt...', 'success');
+
+    // Build login URL
+    const baseUrl = window.location.href.split('?')[0];
+    const loginUrl = `${baseUrl}?login&name=${encodeURIComponent(myUsername)}&pw=${encodeURIComponent(pinInput)}`;
+
+    // Render QR code to canvas off-screen
+    const qrContainer = document.createElement('div');
+    qrContainer.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+    document.body.appendChild(qrContainer);
+    await new Promise(resolve => {
+        new QRCode(qrContainer, { text: loginUrl, width: 256, height: 256, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+        setTimeout(resolve, 350);
+    });
+    const qrCanvas = qrContainer.querySelector('canvas');
+    const qrDataUrl = qrCanvas ? qrCanvas.toDataURL('image/png') : null;
+    document.body.removeChild(qrContainer);
+
+    // Build PDF
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const pageW = 210, pageH = 297, margin = 20;
+
+    // Header
+    doc.setFillColor(7, 94, 84);
+    doc.rect(0, 0, pageW, 34, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24); doc.setFont('helvetica', 'bold');
+    doc.text('VilloChat', margin, 21);
+    doc.setFontSize(11); doc.setFont('helvetica', 'normal');
+    doc.text('Anmelde-QR-Code', margin, 29);
+
+    // Info box
+    doc.setTextColor(30, 30, 30);
+    const boxY = 46;
+    doc.setFillColor(245, 247, 246);
+    doc.roundedRect(margin, boxY, pageW - margin * 2, 46, 4, 4, 'F');
+    const labelX = margin + 6, valX = margin + 50;
+    doc.setFontSize(11);
+    [['Benutzername:', myUsername, 13], ['PIN:', pinInput, 25], ['Erstellt:', new Date().toLocaleString('de-DE'), 37]].forEach(([label, val, dy]) => {
+        doc.setFont('helvetica', 'bold'); doc.text(label, labelX, boxY + dy);
+        doc.setFont('helvetica', 'normal'); doc.text(val, valX, boxY + dy);
+    });
+
+    // QR Code
+    const qrSize = 88, qrX = (pageW - qrSize) / 2, qrY = boxY + 58;
+    doc.setFillColor(255, 255, 255); doc.setDrawColor(220, 220, 220);
+    doc.roundedRect(qrX - 5, qrY - 5, qrSize + 10, qrSize + 10, 4, 4, 'FD');
+    if(qrDataUrl) doc.addImage(qrDataUrl, 'PNG', qrX, qrY, qrSize, qrSize);
+    doc.setFontSize(10); doc.setTextColor(100, 100, 100); doc.setFont('helvetica', 'normal');
+    doc.text('Mit Kamera scannen zum automatischen Einloggen', pageW / 2, qrY + qrSize + 9, { align: 'center' });
+
+    // URL
+    doc.setFontSize(7); doc.setTextColor(160, 160, 160);
+    const urlLines = doc.splitTextToSize(loginUrl, pageW - margin * 2);
+    const urlY = qrY + qrSize + 16;
+    doc.text(urlLines, margin, urlY);
+
+    // Warning
+    const warnY = urlY + urlLines.length * 3.5 + 8;
+    doc.setFillColor(255, 243, 205); doc.setDrawColor(255, 193, 7);
+    doc.roundedRect(margin, warnY, pageW - margin * 2, 20, 3, 3, 'FD');
+    doc.setFontSize(8.5); doc.setTextColor(120, 85, 0);
+    doc.setFont('helvetica', 'bold'); doc.text('⚠  Sicherheitshinweis', margin + 5, warnY + 7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Dieses Dokument enthält deine Zugangsdaten. Bewahre es sicher auf und teile es nicht.', margin + 5, warnY + 14, { maxWidth: pageW - margin * 2 - 10 });
+
+    // Footer
+    doc.setFontSize(8); doc.setTextColor(190, 190, 190);
+    doc.text(`VilloChat v5.6  ·  ${new Date().toLocaleDateString('de-DE')}`, pageW / 2, pageH - 10, { align: 'center' });
+
+    doc.save(`VilloChat_Login_${myUsername}.pdf`);
+    showNotification('✅ PDF heruntergeladen!', 'success');
+};
 
 let _storyCtxEntries = [];
 
@@ -6626,6 +6753,28 @@ window.onload = () => {
     // Initialize swipe back gesture
     initSwipeBack();
     
+    // QR Auto-Login via ?login&name=...&pw=...
+    const qrParams = new URLSearchParams(location.search);
+    if(location.search.includes('login') && qrParams.get('name') && qrParams.get('pw')) {
+        const qrName = qrParams.get('name');
+        const qrPw = qrParams.get('pw');
+        history.replaceState({}, '', location.pathname); // Clean URL
+        (async () => {
+            const snap = await get(ref(db, `accounts/${qrName}`));
+            if(snap.exists() && snap.val().pin === qrPw) {
+                await signInAnonymously(auth);
+                myUsername = qrName;
+                localStorage.setItem('villo_session', qrName);
+                updateOnlineStatus();
+                showApp();
+                showNotification(`✅ Willkommen, ${qrName}!`, 'success');
+            } else {
+                showNotification('❌ QR-Login ungültig', 'error');
+            }
+        })();
+        return; // Skip session restore below
+    }
+
     const s = localStorage.getItem('villo_session');
     if(s){ 
         myUsername = s; 
@@ -6734,7 +6883,7 @@ window.onload = () => {
                               'alias-overlay', 'user-info-overlay', 'emoji-picker', 'poll-overlay', 
                               'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
                               'forward-overlay', 'my-profile-overlay', 'changelog-overlay',
-                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay', 'story-create-overlay'];
+                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay', 'story-create-overlay', 'qr-pin-overlay'];
             let anyOpen = false;
             overlays.forEach(id => {
                 const el = document.getElementById(id);
