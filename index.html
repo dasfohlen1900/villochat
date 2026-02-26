@@ -3582,6 +3582,11 @@ function startChat(n){
 
     activeChatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
     activeContactName = n;
+
+    // Reset group state
+    activeGroupId = null;
+    const groupMenuItem = document.getElementById('menu-group-info');
+    if(groupMenuItem) groupMenuItem.style.display = 'none';
     
     // Pre-fetch contact's avatar from Firebase
     fetchAvatarFromFirebase(n);
