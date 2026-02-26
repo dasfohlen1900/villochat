@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.7</title>
+    <title>VilloChat - Version 5.8</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -29,6 +29,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { 
             --primary: #075e54; 
@@ -464,6 +466,49 @@
         .msg-doc .doc-info { overflow: hidden; }
         .msg-doc .doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
         .msg-doc .doc-meta { font-size: 11px; opacity: 0.5; margin-top: 2px; }
+        .msg-sticker {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: block;
+            transition: transform 0.15s;
+        }
+        .msg-sticker:hover { transform: scale(1.08); }
+        .sticker-tab {
+            padding: 6px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            white-space: nowrap;
+            border: 1px solid var(--border-color);
+            background: var(--bg);
+            color: var(--text-color);
+            transition: all 0.15s;
+            flex-shrink: 0;
+        }
+        .sticker-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .sticker-item {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            background: var(--bg);
+            border: 1px solid var(--border-color);
+            transition: transform 0.12s, background 0.12s;
+            user-select: none;
+        }
+        .sticker-item:hover {
+            transform: scale(1.15);
+            background: var(--border-color);
+        }
         .msg-image {
             max-width: 100%;
             max-height: 300px;
@@ -1388,7 +1433,7 @@
                         <div style="text-align:center; margin-bottom:20px;">
                             <div id="settings-avatar-preview" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
                             <div style="font-size:18px; font-weight:700;" id="set-username"></div>
-                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.7 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
+                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.8 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
                         </div>
 
                         <!-- Avatar type tabs -->
@@ -1508,7 +1553,7 @@
                         <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);" data-i18n="btn_open_help">📖 Hilfe-Center öffnen</button>
                         <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_changelog">📋 Changelog</button>
                         <div style="margin-top:20px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color); font-size:13px; line-height:1.7; opacity:0.8;">
-                            <strong>VilloChat 5.7</strong><br>
+                            <strong>VilloChat 5.8</strong><br>
                             Entwickelt als Single-File Web-App.<br>
                             Firebase Realtime Database · Web Audio API · keine externen Tracker.
                         </div>
@@ -1570,6 +1615,22 @@
         </div>
     </div>
     
+    <!-- STICKER PICKER -->
+    <div id="sticker-overlay" class="overlay" onclick="closeOverlay('sticker-overlay')">
+        <div class="modal" style="max-width:400px; width:95vw; max-height:80vh; padding:0; overflow:hidden; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="padding:12px 16px; flex-shrink:0;">
+                <h2>🎭 Sticker</h2>
+                <span style="cursor:pointer;" onclick="closeOverlay('sticker-overlay')">✕</span>
+            </div>
+            <!-- Category tabs -->
+            <div id="sticker-tabs" style="display:flex; gap:4px; padding:8px 12px; border-bottom:1px solid var(--border-color); flex-shrink:0; overflow-x:auto;">
+            </div>
+            <!-- Sticker grid -->
+            <div id="sticker-grid" style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:12px; overflow-y:auto; flex:1;">
+            </div>
+        </div>
+    </div>
+
     <div id="emoji-overlay" class="overlay">
         <div class="modal" style="max-width:400px; max-height:500px;">
             <div class="modal-header">
@@ -1661,7 +1722,13 @@
                 <ul>
                     <li>🌐 <strong>DE / EN Sprachumschaltung</strong> — Einstellungen → Personalisierung: 🇩🇪 Deutsch / 🇬🇧 English. Alle UI-Texte, Buttons, Labels, Platzhalter, Benachrichtigungen und Kontextmenü-Einträge werden sofort umgestellt. Gespeichert in localStorage</li>
                 </ul>
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.7 📎</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.8 🎭</h3>
+                <ul>
+                    <li>🎭 <strong>Sticker</strong> — Neuer 🎭-Button im Chat öffnet Sticker-Picker mit 7 Kategorien (Gesichter, Gesten, Herzen, Tiere, Essen, Aktivität, Natur) und über 170 Stickern. Sticker werden groß dargestellt, ohne Nachrichtenblase</li>
+                    <li>🔧 <strong>Gruppen-Fix</strong> — Mehrfachanzeige durch doppelte Firebase-Listener behoben; Render-Token-Guard verhindert Race Conditions</li>
+                    <li>🖼️ <strong>Profilbild-Fix</strong> — Avatar-Speichern lädt nicht mehr die ganze App neu</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.7 📎</h3>
                 <ul>
                     <li>📎 <strong>Anhänge</strong> — Neuer 📎-Button ersetzt 🖼️. Auswahl zwischen Bild, Audio (MP3/WAV/OGG, max. 500 KB) und Dokument (PDF/TXT, max. 500 KB). Audiodateien als Player, Dokumente als Download-Card</li>
                     <li>🖼️ <strong>Bildgröße erhöht</strong> — Max. 1 MB (statt 500 KB), wird automatisch komprimiert. Auch Ctrl+V unterstützt 1 MB</li>
@@ -2045,7 +2112,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.7</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.8</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);" data-i18n="login_tab">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;" data-i18n="register_tab">Neu</div>
@@ -2366,6 +2433,7 @@
             </div>
             <div id="input-area">
                 <button id="btn-emoji" onclick="openEmojiPicker()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;">😊</button>
+                <button onclick="openStickerPicker()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Sticker senden">🎭</button>
                 <button onclick="openPollCreator()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Abstimmung erstellen">📊</button>
                 <button onclick="toggleAttachMenu()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Anhang senden">📎</button>
                 <div id="attach-menu" style="display:none; position:absolute; bottom:60px; left:8px; background:var(--white); border:1px solid var(--border-color); border-radius:12px; padding:6px; box-shadow:0 4px 16px rgba(0,0,0,0.15); z-index:100; flex-direction:column; gap:2px;">
@@ -3530,6 +3598,17 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
     const delIcon       = m.sender===myUsername ? `<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${msgKey}')">🗑</span>` : '';
     const safeText      = (m.text||'').replace(/`/g,'\\`');
     const replyIcon     = `<span class="msg-menu" onclick="replyToMsg('${msgKey}','${m.sender}',\`${safeText}\`)">↩️</span>`;
+
+    // Sticker rendering
+    if(m.isSticker && m.stickerEmoji) {
+        d.style.background = 'transparent';
+        d.style.boxShadow = 'none';
+        d.style.padding = '0';
+        d.innerHTML = `${forwardedMark}${replyHTML}
+            <div style="font-size:90px; line-height:1; display:inline-block; cursor:default; user-select:none;" title="${m.stickerEmoji}">${m.stickerEmoji}</div>
+            ${reactionsHTML}<span class="msg-time" style="background:rgba(0,0,0,0.15); border-radius:8px; padding:1px 5px;"><span class="full-date">${fullDate}</span>${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        return;
+    }
 
     // Poll rendering
     if(m.poll) {
@@ -5347,7 +5426,93 @@ async function canContactSeeMyStories(contact) {
 
 
 /* ------------------------------ */
-/* QR LOGIN PDF GENERATOR         */
+/* STICKER SYSTEM                 */
+/* ------------------------------ */
+const STICKER_PACKS = [
+    {
+        name: '😀 Gesichter',
+        stickers: ['😀','😁','😂','🤣','😊','😍','🥰','😘','😎','🤩','😜','🤪','😏','🥳','😴','😭','😤','🤬','😱','🤯','🥺','😇','🤗','🫠','😬','🙃','🫡']
+    },
+    {
+        name: '👋 Gesten',
+        stickers: ['👋','🤚','✋','🖐️','🤙','👍','👎','👌','🤌','🤏','✌️','🤞','🫰','🤟','🤘','👏','🙌','🫶','🤝','🫂','💪','🦾']
+    },
+    {
+        name: '❤️ Herzen',
+        stickers: ['❤️','🧡','💛','💚','💙','💜','🖤','🤍','🤎','💕','💞','💓','💗','💖','💘','💝','💔','❣️','🫀','♥️','💟']
+    },
+    {
+        name: '🐶 Tiere',
+        stickers: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐧','🐦','🦆','🦅','🦉','🐺','🦝','🐗','🐴','🦄','🐝','🦋','🐢','🦖','🦕','🐬','🦈']
+    },
+    {
+        name: '🍕 Essen',
+        stickers: ['🍕','🍔','🌮','🌯','🍜','🍣','🍱','🍦','🎂','🍩','🍪','🧁','🍫','🍬','🍭','☕','🧃','🥤','🍺','🥂','🍾']
+    },
+    {
+        name: '⚡ Aktivität',
+        stickers: ['⚽','🏀','🏈','⚾','🎾','🏐','🏉','🎱','🏓','🏸','⛳','🎯','🎮','🕹️','🎲','🧩','🎨','🎭','🎪','🏆','🥇','🎉','🎊','🎈','✨','💥','🔥','⭐','🌈','🎆']
+    },
+    {
+        name: '🌍 Natur',
+        stickers: ['🌸','🌺','🌹','🌻','🌼','💐','🍀','🌿','🍃','🌾','🍂','🍁','🌳','🌲','🌴','🌵','🌙','⭐','🌟','☀️','🌤️','⛅','🌈','❄️','☃️','⛄','🌊','🌋','🏔️']
+    }
+];
+
+let _activeStickerPack = 0;
+
+window.openStickerPicker = () => {
+    if(!activeChatId) { showNotification('⚠️ Bitte erst einen Chat öffnen', 'warning'); return; }
+    renderStickerPicker(_activeStickerPack);
+    document.getElementById('sticker-overlay').style.display = 'flex';
+    const modal = document.getElementById('sticker-overlay').querySelector('.modal');
+    if(modal) modal.style.display = 'flex';
+};
+
+function renderStickerPicker(packIndex) {
+    _activeStickerPack = packIndex;
+    // Tabs
+    const tabsEl = document.getElementById('sticker-tabs');
+    tabsEl.innerHTML = '';
+    STICKER_PACKS.forEach((pack, i) => {
+        const tab = document.createElement('div');
+        tab.className = 'sticker-tab' + (i === packIndex ? ' active' : '');
+        tab.textContent = pack.name;
+        tab.onclick = () => renderStickerPicker(i);
+        tabsEl.appendChild(tab);
+    });
+    // Grid
+    const grid = document.getElementById('sticker-grid');
+    grid.innerHTML = '';
+    STICKER_PACKS[packIndex].stickers.forEach(emoji => {
+        const item = document.createElement('div');
+        item.className = 'sticker-item';
+        item.textContent = emoji;
+        item.title = emoji;
+        item.onclick = () => sendSticker(emoji);
+        grid.appendChild(item);
+    });
+}
+
+window.sendSticker = (emoji) => {
+    if(!activeChatId) return;
+    closeOverlay('sticker-overlay');
+    const msgData = {
+        sender: myUsername,
+        timestamp: Date.now(),
+        read: false,
+        isSticker: true,
+        stickerEmoji: emoji
+    };
+    if(replyingTo) {
+        msgData.replyTo = { msgId: replyingTo.msgId, sender: replyingTo.sender, text: replyingTo.text };
+        cancelReply();
+    }
+    push(ref(db, 'chats/' + activeChatId), msgData);
+    playSendSound();
+};
+
+
 /* ------------------------------ */
 window.openQrPinDialog = () => {
     document.getElementById('qr-pin-input').value = '';
@@ -5375,17 +5540,15 @@ window.generateLoginQR = async () => {
     const baseUrl = window.location.href.split('?')[0];
     const loginUrl = `${baseUrl}?login&name=${encodeURIComponent(myUsername)}&pw=${encodeURIComponent(pinInput)}`;
 
-    // Render QR code to canvas off-screen
-    const qrContainer = document.createElement('div');
-    qrContainer.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
-    document.body.appendChild(qrContainer);
-    await new Promise(resolve => {
-        new QRCode(qrContainer, { text: loginUrl, width: 256, height: 256, colorDark: '#000000', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
-        setTimeout(resolve, 350);
-    });
-    const qrCanvas = qrContainer.querySelector('canvas');
-    const qrDataUrl = qrCanvas ? qrCanvas.toDataURL('image/png') : null;
-    document.body.removeChild(qrContainer);
+    // Generate QR code via QRCode.toCanvas (qrcode npm package)
+    const qrCanvas = document.createElement('canvas');
+    let qrDataUrl = null;
+    try {
+        await QRCode.toCanvas(qrCanvas, loginUrl, { width: 256, margin: 1, color: { dark: '#000000', light: '#ffffff' } });
+        qrDataUrl = qrCanvas.toDataURL('image/png');
+    } catch(e) {
+        console.warn('QR generation failed:', e);
+    }
 
     // Build PDF
     const { jsPDF } = window.jspdf;
@@ -5438,7 +5601,7 @@ window.generateLoginQR = async () => {
 
     // Footer
     doc.setFontSize(8); doc.setTextColor(190, 190, 190);
-    doc.text(`VilloChat v5.7  ·  ${new Date().toLocaleDateString('de-DE')}`, pageW / 2, pageH - 10, { align: 'center' });
+    doc.text(`VilloChat v5.8  ·  ${new Date().toLocaleDateString('de-DE')}`, pageW / 2, pageH - 10, { align: 'center' });
 
     doc.save(`VilloChat_Login_${myUsername}.pdf`);
     showNotification(t('notif_pdf_done'), 'success');
@@ -7342,7 +7505,7 @@ window.onload = () => {
                               'alias-overlay', 'user-info-overlay', 'emoji-picker', 'poll-overlay', 
                               'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
                               'forward-overlay', 'my-profile-overlay', 'changelog-overlay',
-                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay', 'story-create-overlay', 'qr-pin-overlay'];
+                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay', 'story-create-overlay', 'qr-pin-overlay', 'sticker-overlay'];
             let anyOpen = false;
             overlays.forEach(id => {
                 const el = document.getElementById(id);
