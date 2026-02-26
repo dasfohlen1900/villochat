@@ -425,6 +425,45 @@
         body.bubble-minimal .received { border-bottom-left-radius: 0 !important; }
         
         /* Image preview in messages */
+        .msg-audio {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 220px;
+            max-width: 100%;
+        }
+        .msg-audio audio {
+            width: 100%;
+            height: 36px;
+            border-radius: 8px;
+            outline: none;
+        }
+        .msg-audio .audio-label {
+            font-size: 12px;
+            opacity: 0.6;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .msg-doc {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            background: var(--bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            min-width: 200px;
+            max-width: 300px;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-color);
+        }
+        .msg-doc:hover { opacity: 0.85; }
+        .msg-doc .doc-icon { font-size: 28px; flex-shrink: 0; }
+        .msg-doc .doc-info { overflow: hidden; }
+        .msg-doc .doc-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .msg-doc .doc-meta { font-size: 11px; opacity: 0.5; margin-top: 2px; }
         .msg-image {
             max-width: 100%;
             max-height: 300px;
@@ -1622,6 +1661,12 @@
                 <ul>
                     <li>🌐 <strong>DE / EN Sprachumschaltung</strong> — Einstellungen → Personalisierung: 🇩🇪 Deutsch / 🇬🇧 English. Alle UI-Texte, Buttons, Labels, Platzhalter, Benachrichtigungen und Kontextmenü-Einträge werden sofort umgestellt. Gespeichert in localStorage</li>
                 </ul>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.7 📎</h3>
+                <ul>
+                    <li>📎 <strong>Anhänge</strong> — Neuer 📎-Button ersetzt 🖼️. Auswahl zwischen Bild, Audio (MP3/WAV/OGG, max. 500 KB) und Dokument (PDF/TXT, max. 500 KB). Audiodateien als Player, Dokumente als Download-Card</li>
+                    <li>🖼️ <strong>Bildgröße erhöht</strong> — Max. 1 MB (statt 500 KB), wird automatisch komprimiert. Auch Ctrl+V unterstützt 1 MB</li>
+                    <li>🔧 <strong>Gruppen-Fix</strong> — Gruppenmenü wird beim Wechsel zu 1:1-Chat korrekt ausgeblendet</li>
+                </ul>
                 <h3 style="color:var(--primary);">Version 5.6 🔍</h3>
                 <ul>
                     <li>🔍 <strong>Teilstring-Suche</strong> — Kontaktfelder in Gruppe erstellen, Gruppeninfo und Story-Sichtbarkeit zeigen bereits bei Teileingabe passende Kontakte — live beim Tippen. "Kontakt hinzufügen" bleibt weiterhin exact-match</li>
@@ -2322,8 +2367,15 @@
             <div id="input-area">
                 <button id="btn-emoji" onclick="openEmojiPicker()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;">😊</button>
                 <button onclick="openPollCreator()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Abstimmung erstellen">📊</button>
-                <button onclick="document.getElementById('img-upload-input').click()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Bild senden">🖼️</button>
+                <button onclick="toggleAttachMenu()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Anhang senden">📎</button>
+                <div id="attach-menu" style="display:none; position:absolute; bottom:60px; left:8px; background:var(--white); border:1px solid var(--border-color); border-radius:12px; padding:6px; box-shadow:0 4px 16px rgba(0,0,0,0.15); z-index:100; flex-direction:column; gap:2px;">
+                    <div onclick="document.getElementById('img-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">🖼️ <span>Bild</span></div>
+                    <div onclick="document.getElementById('audio-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">🎵 <span>Audio</span></div>
+                    <div onclick="document.getElementById('doc-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">📄 <span>Dokument</span></div>
+                </div>
                 <input type="file" id="img-upload-input" accept="image/*" style="display:none;">
+                <input type="file" id="audio-upload-input" accept="audio/mp3,audio/wav,audio/ogg,audio/mpeg,.mp3,.wav,.ogg" style="display:none;">
+                <input type="file" id="doc-upload-input" accept=".pdf,.txt,application/pdf,text/plain" style="display:none;">
                 <textarea id="msg-input" placeholder="Nachricht..." rows="1" style="resize:none; overflow:hidden; min-height:44px; max-height:120px; line-height:1.4; padding:12px 20px;"></textarea>
                 <button id="btn-send" style="width:60px;">➤</button>
             </div>
@@ -2952,8 +3004,8 @@ window.saveMyAvatar = async () => {
     const preview = document.getElementById('settings-avatar-preview');
     if(preview) _applyAvatarToEl(preview, myUsername, avatarData);
 
-    // Refresh contact list to re-render all avatars
-    showApp();
+    // Update all avatar elements for own username in contact list
+    document.querySelectorAll(`[data-avatar-name="${myUsername}"]`).forEach(el => _applyAvatarToEl(el, myUsername, avatarData));
 };
 window.closeOverlay = (id) => {
     const el = document.getElementById(id);
@@ -3214,8 +3266,14 @@ function showApp() {
     const theme = localStorage.getItem('villo_theme') || 'system';
     applyTheme(theme);
 
-    // Preload own avatar from Firebase
-    fetchAvatarFromFirebase(myUsername);
+    // Preload own avatar from Firebase and update story bubble when ready
+    fetchAvatarFromFirebase(myUsername).then(data => {
+        if(!data) return;
+        const av = document.getElementById('my-story-avatar');
+        if(av) _applyAvatarToEl(av, myUsername, data);
+        const preview = document.getElementById('settings-avatar-preview');
+        if(preview) _applyAvatarToEl(preview, myUsername, data);
+    });
 
     // Remove old listener
     if(contactsListener) off(contactsListener);
@@ -3479,6 +3537,36 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
         return;
     }
 
+    // Audio rendering
+    if(m.isAudio && m.text) {
+        const fname = m.fileName || 'Audio';
+        d.innerHTML = `${forwardedMark}${replyHTML}
+            <div class="msg-audio">
+                <div class="audio-label">🎵 <span>${fname}</span></div>
+                <audio controls src="${m.text}" preload="none"></audio>
+            </div>
+            ${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        return;
+    }
+
+    // Document rendering
+    if(m.isDoc && m.text) {
+        const fname = m.fileName || 'Dokument';
+        const ext = fname.split('.').pop().toLowerCase();
+        const icon = ext === 'pdf' ? '📕' : '📄';
+        const sizeKB = m.fileSize ? Math.round(m.fileSize / 1024) + ' KB' : '';
+        d.innerHTML = `${forwardedMark}${replyHTML}
+            <a class="msg-doc" href="${m.text}" download="${fname}" title="${fname}">
+                <span class="doc-icon">${icon}</span>
+                <div class="doc-info">
+                    <div class="doc-name">${fname}</div>
+                    <div class="doc-meta">${ext.toUpperCase()}${sizeKB ? ' · ' + sizeKB : ''} · Klicken zum Herunterladen</div>
+                </div>
+            </a>
+            ${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        return;
+    }
+
     d.innerHTML = `${forwardedMark}${replyHTML}${renderMessageContent(m.text||'')}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
 }
 
@@ -3486,14 +3574,19 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
 /* LOAD GROUPS */
 /* ------------------------------ */
 function loadGroups() {
-    if(groupsListener) off(groupsListener);
+    // Tear down previous listener completely
+    if(groupsListener) { off(groupsListener); groupsListener = null; }
     groupsListener = ref(db, `accounts/${myUsername}/groups`);
+    let _renderToken = 0; // Guard: ignore stale async renders
+
     onValue(groupsListener, async (snap) => {
+        const token = ++_renderToken;
         const list = document.getElementById('contacts-list');
         list.querySelectorAll('.group-item').forEach(el => el.remove());
 
         if(!snap.exists()) return;
-        const groupIds = Object.values(snap.val());
+        // Deduplicate group IDs (Firebase push() can store duplicates)
+        const groupIds = [...new Set(Object.values(snap.val()).filter(Boolean))];
         const archived = getArchivedChats();
         const muted = getMutedChats();
 
@@ -3503,6 +3596,7 @@ function loadGroups() {
         for(const gid of groupIds) {
             const gSnap = await get(ref(db, `groups/${gid}`));
             if(!gSnap.exists()) continue;
+            if(token !== _renderToken) return; // Stale — newer render in progress
             const g = gSnap.val();
 
             // Ensure creator is always admin (fix for existing groups)
@@ -3513,6 +3607,11 @@ function loadGroups() {
             if(archived.includes(gid)) archivedGroups.push({ gid, g });
             else activeGroups.push({ gid, g });
         }
+
+        if(token !== _renderToken) return; // Stale check after all awaits
+
+        // Clear again in case contacts re-rendered while we were fetching
+        list.querySelectorAll('.group-item').forEach(el => el.remove());
 
         // Render active groups at top of list
         for(const { gid, g } of activeGroups) {
@@ -3550,7 +3649,7 @@ function loadGroups() {
             }
         }
 
-        // Render archived groups in archive section (append after contacts archive section)
+        // Render archived groups
         if(archivedGroups.length > 0) {
             let archiveSection = list.querySelector('.archive-header');
             for(const { gid, g } of archivedGroups) {
@@ -3897,34 +3996,90 @@ document.getElementById('btn-send').onclick = () => {
 /* ------------------------------ */
 /* BILD-UPLOAD (Base64)           */
 /* ------------------------------ */
+/* ------------------------------ */
+/* ATTACHMENT MENU                */
+/* ------------------------------ */
+window.toggleAttachMenu = () => {
+    const m = document.getElementById('attach-menu');
+    m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+};
+window.closeAttachMenu = () => {
+    document.getElementById('attach-menu').style.display = 'none';
+};
+// Close on outside click
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('attach-menu');
+    if(menu && menu.style.display === 'flex' && !e.target.closest('#attach-menu') && !e.target.closest('[onclick*="toggleAttachMenu"]')) {
+        menu.style.display = 'none';
+    }
+});
+
+// Image upload
 document.getElementById('img-upload-input').addEventListener('change', async (e) => {
     const file = e.target.files[0];
-    e.target.value = ''; // Reset so same file can be selected again
+    e.target.value = '';
     if(!file || !activeChatId) return;
-
-    const MAX_BYTES = 500 * 1024; // 500 KB
-    if(file.size > MAX_BYTES) {
-        showNotification('⚠️ Bild zu groß (max. 500 KB)', 'warning');
-        return;
-    }
-
-    // Compress/resize via canvas to stay under limit
+    const MAX_BYTES = 1024 * 1024; // 1 MB
     const dataUrl = await compressImage(file, MAX_BYTES);
     if(!dataUrl) { showNotification('❌ Bild konnte nicht geladen werden', 'error'); return; }
-
-    const msgData = {
-        sender: myUsername,
-        text: dataUrl,
-        timestamp: Date.now(),
-        read: false,
-        isImage: true
-    };
-    if(replyingTo) {
-        msgData.replyTo = { msgId: replyingTo.msgId, sender: replyingTo.sender, text: replyingTo.text };
-    }
+    const msgData = { sender: myUsername, text: dataUrl, timestamp: Date.now(), read: false, isImage: true };
+    if(replyingTo) msgData.replyTo = { msgId: replyingTo.msgId, sender: replyingTo.sender, text: replyingTo.text };
     push(ref(db, 'chats/' + activeChatId), msgData);
     playSendSound();
     cancelReply();
+});
+
+// Audio upload
+document.getElementById('audio-upload-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if(!file || !activeChatId) return;
+    const MAX_BYTES = 500 * 1024; // 500 KB
+    if(file.size > MAX_BYTES) { showNotification('⚠️ Audio zu groß (max. 500 KB)', 'warning'); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+        const dataUrl = reader.result;
+        const msgData = {
+            sender: myUsername,
+            text: dataUrl,
+            timestamp: Date.now(),
+            read: false,
+            isAudio: true,
+            fileName: file.name
+        };
+        if(replyingTo) msgData.replyTo = { msgId: replyingTo.msgId, sender: replyingTo.sender, text: replyingTo.text };
+        push(ref(db, 'chats/' + activeChatId), msgData);
+        playSendSound();
+        cancelReply();
+    };
+    reader.readAsDataURL(file);
+});
+
+// Document upload
+document.getElementById('doc-upload-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if(!file || !activeChatId) return;
+    const MAX_BYTES = 500 * 1024; // 500 KB
+    if(file.size > MAX_BYTES) { showNotification('⚠️ Dokument zu groß (max. 500 KB)', 'warning'); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+        const dataUrl = reader.result;
+        const msgData = {
+            sender: myUsername,
+            text: dataUrl,
+            timestamp: Date.now(),
+            read: false,
+            isDoc: true,
+            fileName: file.name,
+            fileSize: file.size
+        };
+        if(replyingTo) msgData.replyTo = { msgId: replyingTo.msgId, sender: replyingTo.sender, text: replyingTo.text };
+        push(ref(db, 'chats/' + activeChatId), msgData);
+        playSendSound();
+        cancelReply();
+    };
+    reader.readAsDataURL(file);
 });
 
 function compressImage(file, maxBytes) {
@@ -3968,8 +4123,7 @@ document.getElementById('msg-input').addEventListener('paste', async (e) => {
         if(item.type.startsWith('image/')) {
             e.preventDefault();
             const file = item.getAsFile();
-            if(file.size > 500 * 1024) { showNotification('⚠️ Bild zu groß (max. 500 KB)', 'warning'); return; }
-            const dataUrl = await compressImage(file, 500 * 1024);
+            const dataUrl = await compressImage(file, 1024 * 1024);
             if(!dataUrl) return;
             push(ref(db, 'chats/' + activeChatId), {
                 sender: myUsername, text: dataUrl, timestamp: Date.now(), read: false, isImage: true
@@ -5284,7 +5438,7 @@ window.generateLoginQR = async () => {
 
     // Footer
     doc.setFontSize(8); doc.setTextColor(190, 190, 190);
-    doc.text(`VilloChat v5.6  ·  ${new Date().toLocaleDateString('de-DE')}`, pageW / 2, pageH - 10, { align: 'center' });
+    doc.text(`VilloChat v5.7  ·  ${new Date().toLocaleDateString('de-DE')}`, pageW / 2, pageH - 10, { align: 'center' });
 
     doc.save(`VilloChat_Login_${myUsername}.pdf`);
     showNotification(t('notif_pdf_done'), 'success');
@@ -6448,6 +6602,9 @@ function isTwitterUrl(url) {
 
 function renderMessageContent(text) {
     if(!text) return '';
+    // Audio or doc base64 — handled by renderMessageEl, show fallback
+    if(text.startsWith('data:audio/')) return '<em style="opacity:0.5; font-size:12px;">🎵 Audiodatei</em>';
+    if(text.startsWith('data:application/') || text.startsWith('data:text/plain')) return '<em style="opacity:0.5; font-size:12px;">📄 Dokument</em>';
     // Base64 image (from upload)
     if(text.startsWith('data:image/')) {
         return `<img class="msg-image" src="${text}" alt="Bild" onclick="openLightbox(this.src)" style="max-width:100%; max-height:300px; border-radius:8px; cursor:pointer; display:block;">`;
