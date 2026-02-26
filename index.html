@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.6</title>
+    <title>VilloChat - Version 5.7</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -29,8 +29,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root { 
             --primary: #075e54; 
@@ -1264,26 +1262,32 @@
             <div style="display:flex; flex:1; overflow:hidden; min-height:0;">
                 <!-- Sidebar (desktop) / Tab-bar (mobile) -->
                 <div id="settings-sidebar" style="width:180px; flex-shrink:0; border-right:1px solid var(--border-color); display:flex; flex-direction:column; padding:12px 0; background:var(--bg); overflow-y:auto;">
-                    <div class="settings-tab active" data-tab="personalization" onclick="switchSettingsTab('personalization')">🎨 <span class="tab-label">Personalisierung</span></div>
-                    <div class="settings-tab" data-tab="profile" onclick="switchSettingsTab('profile')">👤 <span class="tab-label">Profil</span></div>
-                    <div class="settings-tab" data-tab="security" onclick="switchSettingsTab('security')">🔒 <span class="tab-label">Sicherheit</span></div>
-                    <div class="settings-tab" data-tab="help" onclick="switchSettingsTab('help')">❓ <span class="tab-label">Hilfe</span></div>
+                    <div class="settings-tab active" data-tab="personalization" onclick="switchSettingsTab('personalization')">🎨 <span class="tab-label" data-i18n="tab_personalization">Personalisierung</span></div>
+                    <div class="settings-tab" data-tab="profile" onclick="switchSettingsTab('profile')">👤 <span class="tab-label" data-i18n="tab_profile">Profil</span></div>
+                    <div class="settings-tab" data-tab="security" onclick="switchSettingsTab('security')">🔒 <span class="tab-label" data-i18n="tab_security">Sicherheit</span></div>
+                    <div class="settings-tab" data-tab="help" onclick="switchSettingsTab('help')">❓ <span class="tab-label" data-i18n="tab_help">Hilfe</span></div>
                 </div>
                 <!-- Content -->
                 <div id="settings-content" style="flex:1; overflow-y:auto; padding:20px;">
 
                     <!-- PERSONALIZATION -->
                     <div id="stab-personalization" class="settings-panel">
-                        <h3 style="margin-top:0; color:var(--primary);">🎨 Personalisierung</h3>
+                        <h3 style="margin-top:0; color:var(--primary);">🎨 <span data-i18n="tab_personalization">Personalisierung</span></h3>
 
-                        <label class="settings-label">Design:</label>
+                        <label class="settings-label" data-i18n="lbl_language">Sprache / Language:</label>
+                        <div style="display:flex; gap:8px; margin-bottom:16px;">
+                            <button id="lang-de" onclick="setLanguage('de')" style="flex:1;">🇩🇪 Deutsch</button>
+                            <button id="lang-en" onclick="setLanguage('en')" style="flex:1;">🇬🇧 English</button>
+                        </div>
+
+                        <label class="settings-label" data-i18n="lbl_design">Design:</label>
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
                             <button id="theme-system" class="theme-btn" onclick="setTheme('system')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px;">🌓 System</button>
                             <button id="theme-light" class="theme-btn" onclick="setTheme('light')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px;">☀️ Hell</button>
                             <button id="theme-dark" class="theme-btn" onclick="setTheme('dark')" style="flex:1; padding:10px; border:2px solid var(--border-color); background:var(--white); color:var(--text-color); border-radius:8px;">🌙 Dunkel</button>
                         </div>
 
-                        <label class="settings-label">Akzentfarbe:</label>
+                        <label class="settings-label" data-i18n="lbl_accent">Akzentfarbe:</label>
                         <div id="accent-color-grid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; margin-bottom:16px;">
                             <div class="accent-color-option" data-color="#dc3545" data-name="Rot" style="background:#dc3545;" title="Rot"></div>
                             <div class="accent-color-option" data-color="#fd7e14" data-name="Orange" style="background:#fd7e14;" title="Orange"></div>
@@ -1300,7 +1304,7 @@
                             <div class="accent-color-option" data-color="#424242" data-name="Schwarz" style="background:#424242;" title="Schwarz"></div>
                         </div>
 
-                        <label class="settings-label">Schriftgröße:</label>
+                        <label class="settings-label" data-i18n="lbl_fontsize">Schriftgröße:</label>
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
                             <div class="font-size-option" data-size="13px" data-name="Klein">Klein</div>
                             <div class="font-size-option" data-size="15px" data-name="Normal">Normal</div>
@@ -1308,20 +1312,20 @@
                             <div class="font-size-option" data-size="20px" data-name="Sehr Groß">XL</div>
                         </div>
 
-                        <label class="settings-label">Bubble-Stil:</label>
+                        <label class="settings-label" data-i18n="lbl_bubble_style">Bubble-Stil:</label>
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
                             <div class="font-size-option" data-style="rounded" onclick="setBubbleStyle('rounded')" style="font-size:12px;">● Rund</div>
                             <div class="font-size-option" data-style="square" onclick="setBubbleStyle('square')" style="font-size:12px;">■ Eckig</div>
                             <div class="font-size-option" data-style="minimal" onclick="setBubbleStyle('minimal')" style="font-size:12px;">– Minimal</div>
                         </div>
 
-                        <label class="settings-label">Meine Bubble-Farbe:</label>
+                        <label class="settings-label" data-i18n="lbl_my_bubble">Meine Bubble-Farbe:</label>
                         <input type="color" id="my-bubble-color-picker" value="#dcf8c6" style="width:100%; height:40px; margin-bottom:16px; cursor:pointer;">
 
-                        <label class="settings-label">Chat-Hintergrund:</label>
+                        <label class="settings-label" data-i18n="lbl_chat_bg">Chat-Hintergrund:</label>
                         <input type="color" id="bg-color-picker" value="#e5ddd5" style="width:100%; height:40px; margin-bottom:16px;">
 
-                        <label class="settings-label">Schnellreaktionen:</label>
+                        <label class="settings-label" data-i18n="lbl_quick_reactions">Schnellreaktionen:</label>
                         <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-bottom:8px;">
                             <input type="text" id="quick-reaction-1" maxlength="2" placeholder="❤️" style="width:100%; text-align:center; font-size:20px; padding:8px;">
                             <input type="text" id="quick-reaction-2" maxlength="2" placeholder="👍" style="width:100%; text-align:center; font-size:20px; padding:8px;">
@@ -1341,11 +1345,11 @@
 
                     <!-- PROFILE -->
                     <div id="stab-profile" class="settings-panel" style="display:none;">
-                        <h3 style="margin-top:0; color:var(--primary);">👤 Profil</h3>
+                        <h3 style="margin-top:0; color:var(--primary);">👤 <span data-i18n="tab_profile">Profil</span></h3>
                         <div style="text-align:center; margin-bottom:20px;">
                             <div id="settings-avatar-preview" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
                             <div style="font-size:18px; font-weight:700;" id="set-username"></div>
-                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.6 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
+                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.7 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
                         </div>
 
                         <!-- Avatar type tabs -->
@@ -1394,11 +1398,11 @@
                             <div id="avatar-img-preview" style="display:none; width:80px; height:80px; border-radius:50%; overflow:hidden; margin:0 auto 8px;"><img id="avatar-img-preview-img" style="width:100%; height:100%; object-fit:cover;"></div>
                         </div>
 
-                        <button onclick="saveMyAvatar()" style="width:100%; background:var(--primary); margin-bottom:16px;">Avatar speichern</button>
+                        <button onclick="saveMyAvatar()" style="width:100%; background:var(--primary); margin-bottom:16px;" data-i18n="btn_save_avatar">Avatar speichern</button>
 
-                        <label class="settings-label">Mein Status:</label>
+                        <label class="settings-label" data-i18n="lbl_my_status">Mein Status:</label>
                         <input type="text" id="status-text-input" placeholder="z.B. Verfügbar, Beschäftigt..." maxlength="60" style="width:100%; margin-bottom:8px;">
-                        <button onclick="saveStatusText()" style="width:100%;">Status speichern</button>
+                        <button onclick="saveStatusText()" style="width:100%;" data-i18n="btn_save_status">Status speichern</button>
 
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
                             <a href="https://sites.google.com/view/villochat/download#h.pxu4uk2i7gl8" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none;">
@@ -1410,36 +1414,36 @@
 
                     <!-- SECURITY -->
                     <div id="stab-security" class="settings-panel" style="display:none;">
-                        <h3 style="margin-top:0; color:var(--primary);">🔒 Sicherheit</h3>
-                        <p style="font-size:13px; opacity:0.7; margin-bottom:20px;">Verwalte deinen PIN und deine Sitzung.</p>
+                        <h3 style="margin-top:0; color:var(--primary);">🔒 <span data-i18n="tab_security">Sicherheit</span></h3>
+                        <p style="font-size:13px; opacity:0.7; margin-bottom:20px;" data-i18n="sec_subtitle">Verwalte deinen PIN und deine Sitzung.</p>
 
-                        <button onclick="openChangePIN()" style="width:100%; margin-bottom:10px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔑 PIN ändern</button>
-                        <button onclick="logout()" style="background:#dc3545; width:100%; margin-bottom:0;">🚪 Abmelden</button>
+                        <button onclick="openChangePIN()" style="width:100%; margin-bottom:10px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_change_pin">🔑 PIN ändern</button>
+                        <button onclick="logout()" style="background:#dc3545; width:100%; margin-bottom:0;" data-i18n="btn_logout">🚪 Abmelden</button>
 
                         <!-- QR Login -->
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
-                            <label class="settings-label">📱 Anmelde-QR-Code</label>
-                            <p style="font-size:12px; opacity:0.6; margin:4px 0 10px;">Generiert ein PDF mit deinem QR-Code zum schnellen Einloggen auf einem anderen Gerät.</p>
-                            <button onclick="openQrPinDialog()" style="width:100%; background:var(--primary);">📄 QR-Code als PDF generieren</button>
+                            <label class="settings-label">📱 <span data-i18n="lbl_qr">Anmelde-QR-Code</span></label>
+                            <p style="font-size:12px; opacity:0.6; margin:4px 0 10px;" data-i18n="qr_desc">Generiert ein PDF mit deinem QR-Code zum schnellen Einloggen auf einem anderen Gerät.</p>
+                            <button onclick="openQrPinDialog()" style="width:100%; background:var(--primary);" data-i18n="btn_gen_qr">📄 QR-Code als PDF generieren</button>
                         </div>
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
-                            <label class="settings-label">👥 Wer kann mich zu Gruppen hinzufügen?</label>
+                            <label class="settings-label">👥 <span data-i18n="lbl_group_privacy">Wer kann mich zu Gruppen hinzufügen?</span></label>
                             <select id="group-add-privacy-select" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:8px;">
-                                <option value="all">Alle</option>
-                                <option value="contacts">Nur Kontakte</option>
-                                <option value="none">Niemand</option>
+                                <option value="all" data-i18n="opt_all">Alle</option>
+                                <option value="contacts" data-i18n="opt_contacts_only">Nur Kontakte</option>
+                                <option value="none" data-i18n="opt_nobody">Niemand</option>
                             </select>
-                            <button onclick="saveGroupAddPrivacy()" style="width:100%; background:var(--primary);">Einstellung speichern</button>
+                            <button onclick="saveGroupAddPrivacy()" style="width:100%; background:var(--primary);" data-i18n="btn_save_setting">Einstellung speichern</button>
                         </div>
 
                         <!-- Story visibility -->
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
-                            <label class="settings-label">👁️ Wer sieht meine Geschichten?</label>
+                            <label class="settings-label">👁️ <span data-i18n="lbl_story_visibility">Wer sieht meine Geschichten?</span></label>
                             <select id="story-visibility-select" onchange="onStoryVisibilityChange()" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:10px;">
-                                <option value="all">Alle Kontakte</option>
-                                <option value="except">Kontakte außer...</option>
-                                <option value="only">Nur teilen für...</option>
-                                <option value="none">Niemand</option>
+                                <option value="all" data-i18n="opt_all_contacts">Alle Kontakte</option>
+                                <option value="except" data-i18n="opt_except">Kontakte außer...</option>
+                                <option value="only" data-i18n="opt_only_for">Nur teilen für...</option>
+                                <option value="none" data-i18n="opt_nobody">Niemand</option>
                             </select>
                             <!-- Contact picker for except/only modes -->
                             <div id="story-visibility-picker" style="display:none;">
@@ -1449,7 +1453,7 @@
                                 <input type="text" id="story-visibility-search" placeholder="Kontakt suchen..." oninput="searchStoryVisibilityContact()" style="width:100%; margin-top:4px; margin-bottom:4px;">
                                 <div id="story-visibility-results" style="display:flex; flex-wrap:wrap; gap:4px;"></div>
                             </div>
-                            <button onclick="saveStoryVisibility()" style="width:100%; background:var(--primary); margin-top:4px;">Sichtbarkeit speichern</button>
+                            <button onclick="saveStoryVisibility()" style="width:100%; background:var(--primary); margin-top:4px;" data-i18n="btn_save_visibility">Sichtbarkeit speichern</button>
                             <p style="font-size:11px; opacity:0.5; margin-top:6px; line-height:1.5;">Bestehende Geschichten bleiben bis zu 48h sichtbar. Die Einstellung gilt für neue Aufrufe.</p>
                         </div>
 
@@ -1461,11 +1465,11 @@
 
                     <!-- HELP -->
                     <div id="stab-help" class="settings-panel" style="display:none;">
-                        <h3 style="margin-top:0; color:var(--primary);">❓ Hilfe & Info</h3>
-                        <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);">📖 Hilfe-Center öffnen</button>
-                        <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">📋 Changelog</button>
+                        <h3 style="margin-top:0; color:var(--primary);">❓ <span data-i18n="tab_help_title">Hilfe & Info</span></h3>
+                        <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);" data-i18n="btn_open_help">📖 Hilfe-Center öffnen</button>
+                        <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_changelog">📋 Changelog</button>
                         <div style="margin-top:20px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color); font-size:13px; line-height:1.7; opacity:0.8;">
-                            <strong>VilloChat 5.6</strong><br>
+                            <strong>VilloChat 5.7</strong><br>
                             Entwickelt als Single-File Web-App.<br>
                             Firebase Realtime Database · Web Audio API · keine externen Tracker.
                         </div>
@@ -1614,7 +1618,11 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.6 🔍</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.7 🌐</h3>
+                <ul>
+                    <li>🌐 <strong>DE / EN Sprachumschaltung</strong> — Einstellungen → Personalisierung: 🇩🇪 Deutsch / 🇬🇧 English. Alle UI-Texte, Buttons, Labels, Platzhalter, Benachrichtigungen und Kontextmenü-Einträge werden sofort umgestellt. Gespeichert in localStorage</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.6 🔍</h3>
                 <ul>
                     <li>🔍 <strong>Teilstring-Suche</strong> — Kontaktfelder in Gruppe erstellen, Gruppeninfo und Story-Sichtbarkeit zeigen bereits bei Teileingabe passende Kontakte — live beim Tippen. "Kontakt hinzufügen" bleibt weiterhin exact-match</li>
                     <li>👥 <strong>Gruppeneinladungs-Datenschutz</strong> — Einstellungen → Sicherheit: Wer kann mich zu Gruppen hinzufügen? (Alle / Nur Kontakte / Niemand). Wird bei jedem Hinzufügen geprüft</li>
@@ -1992,19 +2000,19 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.6</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.7</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
-                <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);">Login</div>
-                <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;">Neu</div>
+                <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);" data-i18n="login_tab">Login</div>
+                <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;" data-i18n="register_tab">Neu</div>
             </div>
             <form id="auth-form" onsubmit="event.preventDefault(); document.getElementById('btn-auth').click();">
-                <input type="text" id="v-username" placeholder="Name" autocomplete="username" name="username">
+                <input type="text" id="v-username" placeholder="Name" data-i18n-placeholder="ph_name" autocomplete="username" name="username">
                 <input type="password" id="v-pin" placeholder="PIN (xxxx-xxxx)" maxlength="9" autocomplete="current-password" name="password">
                 <input type="text" id="v-pin-hint" placeholder="PIN-Hinweis (optional, sichtbar beim Login)" maxlength="80" autocomplete="off" style="display:none; font-size:13px;">
                 <div id="pin-hint-display" style="display:none; font-size:12px; color:#888; background:var(--bg); border-radius:8px; padding:8px 12px; margin:4px 0; border-left:3px solid var(--primary);">
                     💡 <span id="pin-hint-text"></span>
                 </div>
-                <button id="btn-auth" type="submit" style="width:100%;">Starten</button>
+                <button id="btn-auth" type="submit" style="width:100%;" data-i18n="btn_start">Starten</button>
             </form>
             <button onclick="if(window.openHelp) window.openHelp(); else document.getElementById('help-overlay').style.display='flex';" style="width:100%; margin-top:10px; background:transparent; color:#999; border:1px solid #ddd; font-size:13px;">❓ Brauchst du Hilfe?</button>
         </div>
@@ -2243,7 +2251,7 @@
                 </div>
             </div>
             <div style="padding:10px; display:flex; gap:5px; background:var(--bg);">
-                <input type="text" id="search-input" placeholder="User suchen..." style="margin:0;">
+                <input type="text" id="search-input" placeholder="User suchen..." data-i18n-placeholder="ph_search_user" style="margin:0;">
                 <button id="btn-search" style="width:50px; margin:0;">+</button>
             </div>
             <!-- STORIES BAR -->
@@ -2292,8 +2300,8 @@
             <div id="messages-container" style="position:relative;">
                 <div class="empty-state" id="empty-chat-state">
                     <div class="empty-state-icon">💬</div>
-                    <div class="empty-state-title">Kein Chat ausgewählt</div>
-                    <div class="empty-state-subtitle">Wähle einen Kontakt aus der Liste, um zu chatten</div>
+                    <div class="empty-state-title" data-i18n="empty_chat_title">Kein Chat ausgewählt</div>
+                    <div class="empty-state-subtitle" data-i18n="empty_chat_sub">Wähle einen Kontakt aus der Liste, um zu chatten</div>
                 </div>
                 <button id="scroll-to-bottom" onclick="scrollToBottom()">↓</button>
             </div>
@@ -2359,8 +2367,294 @@ let selectedGroupMembers = [];
 marked.setOptions({ breaks: true });
 
 /* ------------------------------ */
-/* ------------------------------ */
-/* PARTIAL CONTACT SEARCH HELPER  */
+/* ============================== */
+/* i18n — DE / EN                 */
+/* ============================== */
+const LANGS = {
+    de: {
+        // Tabs
+        tab_personalization: 'Personalisierung',
+        tab_profile: 'Profil',
+        tab_security: 'Sicherheit',
+        tab_help: 'Hilfe',
+        tab_help_title: 'Hilfe & Info',
+        // Language
+        lbl_language: 'Sprache / Language:',
+        // Personalization
+        lbl_design: 'Design:',
+        lbl_accent: 'Akzentfarbe:',
+        lbl_fontsize: 'Schriftgröße:',
+        lbl_bubble_style: 'Bubble-Stil:',
+        lbl_my_bubble: 'Meine Bubble-Farbe:',
+        lbl_chat_bg: 'Chat-Hintergrund:',
+        lbl_quick_reactions: 'Schnellreaktionen:',
+        // Profile
+        lbl_my_status: 'Mein Status:',
+        btn_save_avatar: 'Avatar speichern',
+        btn_save_status: 'Status speichern',
+        // Security
+        sec_subtitle: 'Verwalte deinen PIN und deine Sitzung.',
+        btn_change_pin: '🔑 PIN ändern',
+        btn_logout: '🚪 Abmelden',
+        lbl_qr: 'Anmelde-QR-Code',
+        qr_desc: 'Generiert ein PDF mit deinem QR-Code zum schnellen Einloggen auf einem anderen Gerät.',
+        btn_gen_qr: '📄 QR-Code als PDF generieren',
+        lbl_group_privacy: 'Wer kann mich zu Gruppen hinzufügen?',
+        opt_all: 'Alle',
+        opt_contacts_only: 'Nur Kontakte',
+        opt_nobody: 'Niemand',
+        btn_save_setting: 'Einstellung speichern',
+        lbl_story_visibility: 'Wer sieht meine Geschichten?',
+        opt_all_contacts: 'Alle Kontakte',
+        opt_except: 'Kontakte außer...',
+        opt_only_for: 'Nur teilen für...',
+        btn_save_visibility: 'Sichtbarkeit speichern',
+        // Help
+        btn_open_help: '📖 Hilfe-Center öffnen',
+        btn_changelog: '📋 Changelog',
+        // Login
+        login_tab: 'Login',
+        register_tab: 'Neu',
+        btn_start: 'Starten',
+        btn_register: 'Registrieren',
+        ph_name: 'Name',
+        ph_pin: 'PIN (xxxx-xxxx)',
+        ph_search_user: 'User suchen...',
+        ph_search_msg: 'Nachricht suchen...',
+        ph_search_all: 'In allen Chats suchen...',
+        ph_status: 'z.B. Verfügbar, Beschäftigt...',
+        ph_contact_note: 'Notizen zu diesem Kontakt...',
+        ph_group_search: 'Username suchen...',
+        // Empty state
+        empty_chat_title: 'Kein Chat ausgewählt',
+        empty_chat_sub: 'Wähle einen Kontakt aus der Liste, um zu chatten',
+        empty_contacts: 'Keine Kontakte',
+        empty_contacts_sub: 'Suche nach Nutzern, um Kontakte hinzuzufügen',
+        // Context menu
+        ctx_copy: 'Kopieren',
+        ctx_react: 'Reagieren',
+        ctx_reply: 'Antworten',
+        ctx_forward: 'Weiterleiten',
+        ctx_edit: 'Bearbeiten',
+        ctx_pin: 'Anpinnen',
+        ctx_unpin: 'Loslösen',
+        ctx_delete: 'Löschen',
+        ctx_delete_all: 'Für alle löschen',
+        ctx_info: 'Nachrichteninfo',
+        // Notifications
+        notif_accent_changed: '✅ Akzentfarbe geändert',
+        notif_registered: '✅ Erfolgreich registriert!',
+        notif_name_taken: '⛔ Name bereits vergeben!',
+        notif_wrong_credentials: '⛔ Falscher Name oder PIN!',
+        notif_fill_all: '⚠️ Bitte Name und PIN eingeben!',
+        notif_msg_edited: '✅ Nachricht bearbeitet',
+        notif_msg_deleted: '✅ Nachricht gelöscht',
+        notif_contact_removed: '✅ Kontakt entfernt',
+        notif_alias_saved: '✅ Alias gespeichert',
+        notif_chat_cleared: '✅ Chat geleert',
+        notif_no_chat: '⚠️ Kein Chat geöffnet!',
+        notif_img_too_big: '⚠️ Bild zu groß (max. 500 KB)',
+        notif_img_error: '❌ Bild konnte nicht geladen werden',
+        notif_new_msg: '💬 Neue Nachricht von',
+        notif_group_not_found: '❌ Gruppe nicht gefunden',
+        notif_no_user: 'Kein Nutzer gefunden',
+        notif_avatar_saved: '✅ Avatar gespeichert & synchronisiert',
+        notif_avatar_local: '✅ Avatar lokal gespeichert',
+        notif_status_saved: '✅ Status gespeichert',
+        notif_setting_saved: '✅ Einstellung gespeichert',
+        notif_visibility_saved: '✅ Sichtbarkeit gespeichert',
+        notif_story_published: '✅ Geschichte mit',
+        notif_story_published2: 'Slide(s) veröffentlicht!',
+        notif_slide_saved: '✅ Slide gespeichert',
+        notif_slide_deleted: '🗑️ Slide gelöscht',
+        notif_stories_deleted: '🗑️ Alle Geschichten gelöscht',
+        notif_wrong_pin: '❌ Falscher PIN.',
+        notif_pdf_creating: '⏳ PDF wird erstellt...',
+        notif_pdf_done: '✅ PDF heruntergeladen!',
+        notif_pin_changed: '✅ PIN erfolgreich geändert',
+        notif_min_slide: '⚠️ Mindestens 1 Slide hinzufügen',
+        notif_slide_content: '⚠️ Bitte Inhalt hinzufügen',
+        // Group info dynamic
+        mute: '🔇 Stumm',
+        unmute: '🔊 Laut',
+        archive: '🗂️ Archivieren',
+        unarchive: '📤 Aus Archiv',
+        archived_label: '🗂️ Archiviert',
+        forward_btn: 'Weiterleiten',
+        forward_selected: 'Weiterleiten',
+    },
+    en: {
+        // Tabs
+        tab_personalization: 'Personalization',
+        tab_profile: 'Profile',
+        tab_security: 'Security',
+        tab_help: 'Help',
+        tab_help_title: 'Help & Info',
+        // Language
+        lbl_language: 'Language:',
+        // Personalization
+        lbl_design: 'Theme:',
+        lbl_accent: 'Accent color:',
+        lbl_fontsize: 'Font size:',
+        lbl_bubble_style: 'Bubble style:',
+        lbl_my_bubble: 'My bubble color:',
+        lbl_chat_bg: 'Chat background:',
+        lbl_quick_reactions: 'Quick reactions:',
+        // Profile
+        lbl_my_status: 'My status:',
+        btn_save_avatar: 'Save avatar',
+        btn_save_status: 'Save status',
+        // Security
+        sec_subtitle: 'Manage your PIN and session.',
+        btn_change_pin: '🔑 Change PIN',
+        btn_logout: '🚪 Log out',
+        lbl_qr: 'Login QR Code',
+        qr_desc: 'Generate a PDF with your QR code for quick login on another device.',
+        btn_gen_qr: '📄 Generate QR code as PDF',
+        lbl_group_privacy: 'Who can add me to groups?',
+        opt_all: 'Everyone',
+        opt_contacts_only: 'Contacts only',
+        opt_nobody: 'Nobody',
+        btn_save_setting: 'Save setting',
+        lbl_story_visibility: 'Who can see my stories?',
+        opt_all_contacts: 'All contacts',
+        opt_except: 'Contacts except...',
+        opt_only_for: 'Only share with...',
+        btn_save_visibility: 'Save visibility',
+        // Help
+        btn_open_help: '📖 Open help center',
+        btn_changelog: '📋 Changelog',
+        // Login
+        login_tab: 'Login',
+        register_tab: 'New',
+        btn_start: 'Start',
+        btn_register: 'Register',
+        ph_name: 'Username',
+        ph_pin: 'PIN (xxxx-xxxx)',
+        ph_search_user: 'Search user...',
+        ph_search_msg: 'Search messages...',
+        ph_search_all: 'Search all chats...',
+        ph_status: 'e.g. Available, Busy...',
+        ph_contact_note: 'Notes about this contact...',
+        ph_group_search: 'Search username...',
+        // Empty state
+        empty_chat_title: 'No chat selected',
+        empty_chat_sub: 'Choose a contact from the list to start chatting',
+        empty_contacts: 'No contacts',
+        empty_contacts_sub: 'Search for users to add contacts',
+        // Context menu
+        ctx_copy: 'Copy',
+        ctx_react: 'React',
+        ctx_reply: 'Reply',
+        ctx_forward: 'Forward',
+        ctx_edit: 'Edit',
+        ctx_pin: 'Pin',
+        ctx_unpin: 'Unpin',
+        ctx_delete: 'Delete',
+        ctx_delete_all: 'Delete for everyone',
+        ctx_info: 'Message info',
+        // Notifications
+        notif_accent_changed: '✅ Accent color changed',
+        notif_registered: '✅ Successfully registered!',
+        notif_name_taken: '⛔ Username already taken!',
+        notif_wrong_credentials: '⛔ Wrong username or PIN!',
+        notif_fill_all: '⚠️ Please enter username and PIN!',
+        notif_msg_edited: '✅ Message edited',
+        notif_msg_deleted: '✅ Message deleted',
+        notif_contact_removed: '✅ Contact removed',
+        notif_alias_saved: '✅ Alias saved',
+        notif_chat_cleared: '✅ Chat cleared',
+        notif_no_chat: '⚠️ No chat open!',
+        notif_img_too_big: '⚠️ Image too large (max. 500 KB)',
+        notif_img_error: '❌ Could not load image',
+        notif_new_msg: '💬 New message from',
+        notif_group_not_found: '❌ Group not found',
+        notif_no_user: 'No user found',
+        notif_avatar_saved: '✅ Avatar saved & synced',
+        notif_avatar_local: '✅ Avatar saved locally',
+        notif_status_saved: '✅ Status saved',
+        notif_setting_saved: '✅ Setting saved',
+        notif_visibility_saved: '✅ Visibility saved',
+        notif_story_published: '✅ Story with',
+        notif_story_published2: 'slide(s) published!',
+        notif_slide_saved: '✅ Slide saved',
+        notif_slide_deleted: '🗑️ Slide deleted',
+        notif_stories_deleted: '🗑️ All stories deleted',
+        notif_wrong_pin: '❌ Wrong PIN.',
+        notif_pdf_creating: '⏳ Creating PDF...',
+        notif_pdf_done: '✅ PDF downloaded!',
+        notif_pin_changed: '✅ PIN changed successfully',
+        notif_min_slide: '⚠️ Add at least 1 slide',
+        notif_slide_content: '⚠️ Please add content',
+        // Group info dynamic
+        mute: '🔇 Mute',
+        unmute: '🔊 Unmute',
+        archive: '🗂️ Archive',
+        unarchive: '📤 Unarchive',
+        archived_label: '🗂️ Archived',
+        forward_btn: 'Forward',
+        forward_selected: 'Forward',
+    }
+};
+
+let currentLang = localStorage.getItem('villo_lang') || 'de';
+
+function t(key) {
+    return (LANGS[currentLang] && LANGS[currentLang][key]) || LANGS.de[key] || key;
+}
+
+function applyLanguage() {
+    // Update html lang attribute
+    document.documentElement.lang = currentLang;
+
+    // Static text nodes via data-i18n
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        const val = t(key);
+        if(val) el.textContent = val;
+    });
+
+    // Placeholders
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        const val = t(key);
+        if(val) el.placeholder = val;
+    });
+
+    // <option> elements with data-i18n inside selects
+    document.querySelectorAll('option[data-i18n]').forEach(el => {
+        const val = t(el.dataset.i18n);
+        if(val) el.textContent = val;
+    });
+
+    // Language buttons highlight
+    const de = document.getElementById('lang-de');
+    const en = document.getElementById('lang-en');
+    if(de && en) {
+        de.style.background = currentLang === 'de' ? 'var(--primary)' : 'var(--bg)';
+        de.style.color = currentLang === 'de' ? 'white' : 'var(--text-color)';
+        de.style.border = currentLang === 'de' ? 'none' : '1px solid var(--border-color)';
+        en.style.background = currentLang === 'en' ? 'var(--primary)' : 'var(--bg)';
+        en.style.color = currentLang === 'en' ? 'white' : 'var(--text-color)';
+        en.style.border = currentLang === 'en' ? 'none' : '1px solid var(--border-color)';
+    }
+
+    // Auth button
+    const btnAuth = document.getElementById('btn-auth');
+    if(btnAuth) {
+        const mode = document.getElementById('t-reg')?.style.borderBottom?.includes('primary') ? 'register' : 'login';
+        btnAuth.textContent = mode === 'register' ? t('btn_register') : t('btn_start');
+    }
+}
+
+window.setLanguage = (lang) => {
+    currentLang = lang;
+    localStorage.setItem('villo_lang', lang);
+    applyLanguage();
+    showNotification(lang === 'en' ? '🇬🇧 English activated' : '🇩🇪 Deutsch aktiviert', 'success');
+};
+
+
 /* ------------------------------ */
 async function searchContactsPartial(query, excludeList = []) {
     const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
@@ -2645,9 +2939,9 @@ window.saveMyAvatar = async () => {
     // Save to Firebase so others can see it
     try {
         await set(ref(db, `accounts/${myUsername}/avatar`), avatarData);
-        showNotification('✅ Avatar gespeichert & synchronisiert', 'success');
+        showNotification(t('notif_avatar_saved'), 'success');
     } catch(e) {
-        showNotification('✅ Avatar lokal gespeichert', 'success');
+        showNotification(t('notif_avatar_local'), 'success');
     }
 
     // Update story bubble avatar immediately
@@ -2839,7 +3133,7 @@ function setAuth(m) {
     }
 
     // Btn label
-    document.getElementById('btn-auth').textContent = m === 'register' ? 'Registrieren' : 'Starten';
+    document.getElementById('btn-auth').textContent = m === 'register' ? t('btn_register') : t('btn_start');
 
     // Update autocomplete for password managers
     const pinInput = document.getElementById('v-pin');
@@ -2875,23 +3169,23 @@ document.getElementById('btn-auth').onclick = async () => {
     const u = document.getElementById('v-username').value.trim();
     const p = document.getElementById('v-pin').value;
     if(!u || p.length<9) {
-        showNotification("⚠️ Bitte Name und PIN eingeben!", "warning");
+        showNotification(t('notif_fill_all'), "warning");
         return;
     }
 
     const s = await get(ref(db, 'accounts/' + u));
     if(currentMode === 'register'){
         if(s.exists()) {
-            showNotification("⛔ Name bereits vergeben!", "error");
+            showNotification(t('notif_name_taken'), "error");
             return;
         }
         const hint = document.getElementById('v-pin-hint').value.trim();
         await set(ref(db, 'accounts/' + u), { username: u, pin: p, id: u.toLowerCase(), ...(hint ? { pinHint: hint } : {}) });
-        showNotification("✅ Erfolgreich registriert!", "success");
+        showNotification(t('notif_registered'), "success");
         return;
     } else {
         if(!s.exists() || s.val().pin !== p) {
-            showNotification("⛔ Falscher Name oder PIN!", "error");
+            showNotification(t('notif_wrong_credentials'), "error");
             return;
         }
         await signInAnonymously(auth);
@@ -3008,7 +3302,7 @@ function showApp() {
                         updateUnreadCount(n, getUnreadCount(n) + 1);
                         if(!isContactMuted(n)) {
                             playNotificationSound();
-                            showNotification(`💬 Neue Nachricht von ${displayName}`, 'success');
+                            showNotification(`${t('notif_new_msg')} ${displayName}`, 'success');
                         }
                         // Only update this contact's badge, not the whole list
                         refreshContactBadge(n);
@@ -3918,7 +4212,7 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     if(!msgText.startsWith('data:image/')) {
         const copyItem = document.createElement('div');
         copyItem.className = 'msg-context-item';
-        copyItem.innerHTML = '<span class="icon">📋</span><span>Kopieren</span>';
+        copyItem.innerHTML = `<span class="icon">📋</span><span>${t('ctx_copy')}</span>`;
         copyItem.onclick = () => {
             navigator.clipboard.writeText(msgText);
             menu.classList.remove('show');
@@ -3946,7 +4240,7 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     // React option
     const reactItem = document.createElement('div');
     reactItem.className = 'msg-context-item';
-    reactItem.innerHTML = '<span class="icon">😊</span><span>Reagieren</span>';
+    reactItem.innerHTML = `<span class="icon">😊</span><span>${t('ctx_react')}</span>`;
     reactItem.onclick = () => {
         menu.classList.remove('show');
         showReactionPicker(e, msgKey);
@@ -3956,7 +4250,7 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     // Reply option
     const replyItem = document.createElement('div');
     replyItem.className = 'msg-context-item';
-    replyItem.innerHTML = '<span class="icon">↩️</span><span>Antworten</span>';
+    replyItem.innerHTML = `<span class="icon">↩️</span><span>${t('ctx_reply')}</span>`;
     replyItem.onclick = () => {
         menu.classList.remove('show');
         replyToMsg(msgKey, sender, msgText);
@@ -3966,7 +4260,7 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     // Forward option
     const fwdItem = document.createElement('div');
     fwdItem.className = 'msg-context-item';
-    fwdItem.innerHTML = '<span class="icon">📤</span><span>Weiterleiten</span>';
+    fwdItem.innerHTML = `<span class="icon">📤</span><span>${t('ctx_forward')}</span>`;
     fwdItem.onclick = () => {
         menu.classList.remove('show');
         openForwardDialog(msgText);
@@ -3977,7 +4271,7 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     if(sender === myUsername) {
         const editItem = document.createElement('div');
         editItem.className = 'msg-context-item';
-        editItem.innerHTML = '<span class="icon">✏️</span><span>Bearbeiten</span>';
+        editItem.innerHTML = `<span class="icon">✏️</span><span>${t('ctx_edit')}</span>`;
         editItem.onclick = () => {
             menu.classList.remove('show');
             startEditingMessage(msgKey, msgText);
@@ -3991,7 +4285,7 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     const isPinned = currentPinned === msgKey;
     const pinItem = document.createElement('div');
     pinItem.className = 'msg-context-item';
-    pinItem.innerHTML = `<span class="icon">${isPinned ? '📌' : '📌'}</span><span>${isPinned ? 'Loslösen' : 'Anpinnen'}</span>`;
+    pinItem.innerHTML = `<span class="icon">📌</span><span>${isPinned ? t('ctx_unpin') : t('ctx_pin')}</span>`;
     pinItem.onclick = () => {
         menu.classList.remove('show');
         if(isPinned) {
@@ -4006,7 +4300,7 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     if(sender === myUsername) {
         const delItem = document.createElement('div');
         delItem.className = 'msg-context-item';
-        delItem.innerHTML = '<span class="icon">🗑️</span><span>Löschen</span>';
+        delItem.innerHTML = `<span class="icon">🗑️</span><span>${t('ctx_delete')}</span>`;
         delItem.onclick = () => {
             menu.classList.remove('show');
             deleteMsg(msgKey);
@@ -4016,7 +4310,7 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
         const delAllItem = document.createElement('div');
         delAllItem.className = 'msg-context-item';
         delAllItem.style.color = '#dc3545';
-        delAllItem.innerHTML = '<span class="icon">🗑️</span><span>Für alle löschen</span>';
+        delAllItem.innerHTML = `<span class="icon">🗑️</span><span>${t('ctx_delete_all')}</span>`;
         delAllItem.onclick = () => {
             menu.classList.remove('show');
             deleteMsgForAll(msgKey);
@@ -4549,7 +4843,7 @@ window.saveCurrentSlide = () => {
     document.getElementById('story-preview-text').textContent = '';
     document.getElementById('story-preview').style.background = storyBg;
     renderSlidesStrip();
-    showNotification(`✅ Slide ${storySlides.length} gespeichert`, 'success');
+    showNotification(`${t('notif_slide_saved')} ${storySlides.length}`, 'success');
 };
 
 window.addStorySlide = () => {
@@ -4639,7 +4933,7 @@ window.publishStory = async () => {
         author: myUsername
     });
     closeOverlay('story-create-overlay');
-    showNotification(`✅ Geschichte mit ${storySlides.length} Slide(s) veröffentlicht!`, 'success');
+    showNotification(`${t('notif_story_published')} ${storySlides.length} ${t('notif_story_published2')}`, 'success');
     checkMyActiveStory();
     loadContactStories();
 };
@@ -4916,7 +5210,7 @@ window.generateLoginQR = async () => {
     }
 
     closeOverlay('qr-pin-overlay');
-    showNotification('⏳ PDF wird erstellt...', 'success');
+    showNotification(t('notif_pdf_creating'), 'success');
 
     // Build login URL
     const baseUrl = window.location.href.split('?')[0];
@@ -4988,7 +5282,7 @@ window.generateLoginQR = async () => {
     doc.text(`VilloChat v5.6  ·  ${new Date().toLocaleDateString('de-DE')}`, pageW / 2, pageH - 10, { align: 'center' });
 
     doc.save(`VilloChat_Login_${myUsername}.pdf`);
-    showNotification('✅ PDF heruntergeladen!', 'success');
+    showNotification(t('notif_pdf_done'), 'success');
 };
 
 let _storyCtxEntries = [];
@@ -5921,7 +6215,7 @@ const symbols = [
     '½','⅓','¼','⅕','⅙','⅐','⅛','⅑','⅒','¾','⅖','⅗','⅘','⅚','⅜','⅝','⅞',
     '←','→','↑','↓','↖','↗','↘','↙','⟵','⟶','⟷','⟸','⟹','⟺',
     '∞','≈','≠','≡','≤','≥','±','×','÷','∓','√','∛','∜','∝','∟','∠','∡','∢',
-    'α','β','γ','δ','ε','ζ','η','θ','λ','μ','π','σ','φ','ψ','ω','Ω',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' '
+    'α','β','γ','δ','ε','ζ','η','θ','λ','μ','π','σ','φ','ψ','ω','Ω'
 ];
 
 window.switchEmojiTab = (tab) => {
@@ -6015,7 +6309,7 @@ window.openForwardDialog = async (text) => {
     forwardSelectedContacts.clear();
     
     document.getElementById('forward-preview').textContent = text.substring(0, 150) + (text.length > 150 ? '...' : '');
-    document.getElementById('forward-send-btn').textContent = 'Weiterleiten (0 ausgewählt)';
+    document.getElementById('forward-send-btn').textContent = `${t('forward_btn')} (0 ${currentLang==='en'?'selected':'ausgewählt'})`;
     document.getElementById('forward-send-btn').disabled = true;
     
     const list = document.getElementById('forward-contacts-list');
@@ -6312,13 +6606,13 @@ function updateUserInfoButtons(name) {
     const archiveBtn = document.getElementById('btn-archive-contact');
     if(muteBtn) {
         const isMuted = isContactMuted(name);
-        muteBtn.textContent = isMuted ? '🔊 Laut' : '🔇 Stumm';
+        muteBtn.textContent = isMuted ? t('unmute') : t('mute');
         muteBtn.style.background = isMuted ? 'var(--primary)' : 'var(--bg)';
         muteBtn.style.color = isMuted ? 'white' : 'var(--text-color)';
     }
     if(archiveBtn) {
         const isArc = isContactArchived(name);
-        archiveBtn.textContent = isArc ? '📤 Aus Archiv' : '🗂️ Archivieren';
+        archiveBtn.textContent = isArc ? t('unarchive') : t('archive');
         archiveBtn.style.background = isArc ? 'var(--primary)' : 'var(--bg)';
         archiveBtn.style.color = isArc ? 'white' : 'var(--text-color)';
     }
@@ -6752,6 +7046,9 @@ window.onload = () => {
     
     // Initialize swipe back gesture
     initSwipeBack();
+
+    // Apply saved language
+    applyLanguage();
     
     // QR Auto-Login via ?login&name=...&pw=...
     const qrParams = new URLSearchParams(location.search);
