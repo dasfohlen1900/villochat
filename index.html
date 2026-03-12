@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.8</title>
+    <title>VilloChat - Version 5.9</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1433,7 +1433,7 @@
                         <div style="text-align:center; margin-bottom:20px;">
                             <div id="settings-avatar-preview" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
                             <div style="font-size:18px; font-weight:700;" id="set-username"></div>
-                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.8 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
+                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.9 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
                         </div>
 
                         <!-- Avatar type tabs -->
@@ -1545,6 +1545,21 @@
                             <div style="font-weight:600; margin-bottom:8px; font-size:14px;">🔐 Datenschutz</div>
                             <p style="font-size:13px; opacity:0.7; margin:0; line-height:1.6;">Nachrichten werden in Firebase Realtime Database gespeichert. Dein PIN wird als Klartext gespeichert — wähle ihn sorgfältig. VilloChat nutzt keine Werbung und gibt keine Daten weiter.</p>
                         </div>
+
+                        <!-- Word filter -->
+                        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
+                            <label class="settings-label">🚫 Wortfilter</label>
+                            <p style="font-size:12px; opacity:0.6; margin:4px 0 8px;">Nachrichten die diese Wörter enthalten werden ausgeblendet. Kommagetrennt.</p>
+                            <textarea id="word-filter-input" placeholder="z.B. spam, werbung, hass" rows="3" style="width:100%; resize:vertical; margin-bottom:8px;"></textarea>
+                            <button onclick="saveWordFilter()" style="width:100%; background:var(--primary);">💾 Wortfilter speichern</button>
+                        </div>
+
+                        <!-- Blocked users -->
+                        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
+                            <label class="settings-label">🚷 Blockierte Nutzer</label>
+                            <div id="blocked-users-list" style="margin-bottom:8px; display:flex; flex-wrap:wrap; gap:6px; min-height:28px;"></div>
+                            <p id="blocked-empty" style="font-size:12px; opacity:0.5; margin:0;">Keine blockierten Nutzer.</p>
+                        </div>
                     </div>
 
                     <!-- HELP -->
@@ -1553,7 +1568,7 @@
                         <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);" data-i18n="btn_open_help">📖 Hilfe-Center öffnen</button>
                         <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_changelog">📋 Changelog</button>
                         <div style="margin-top:20px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color); font-size:13px; line-height:1.7; opacity:0.8;">
-                            <strong>VilloChat 5.8</strong><br>
+                            <strong>VilloChat 5.9</strong><br>
                             Entwickelt als Single-File Web-App.<br>
                             Firebase Realtime Database · Web Audio API · keine externen Tracker.
                         </div>
@@ -1615,6 +1630,28 @@
         </div>
     </div>
     
+    <!-- BOOKMARKS OVERLAY -->
+    <div id="bookmarks-overlay" class="overlay" onclick="closeOverlay('bookmarks-overlay')">
+        <div class="modal" style="max-width:420px; width:95vw; max-height:80vh; padding:0; overflow:hidden; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="flex-shrink:0;">
+                <h2>🔖 Lesezeichen</h2>
+                <span style="cursor:pointer;" onclick="closeOverlay('bookmarks-overlay')">✕</span>
+            </div>
+            <div id="bookmarks-list" style="flex:1; overflow-y:auto; padding:12px;"></div>
+        </div>
+    </div>
+
+    <!-- REPORTED MESSAGES OVERLAY -->
+    <div id="reports-overlay" class="overlay" onclick="closeOverlay('reports-overlay')">
+        <div class="modal" style="max-width:420px; width:95vw; max-height:80vh; padding:0; overflow:hidden; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="flex-shrink:0;">
+                <h2>🚨 Gemeldete Nachrichten</h2>
+                <span style="cursor:pointer;" onclick="closeOverlay('reports-overlay')">✕</span>
+            </div>
+            <div id="reports-list" style="flex:1; overflow-y:auto; padding:12px;"></div>
+        </div>
+    </div>
+
     <!-- STICKER PICKER -->
     <div id="sticker-overlay" class="overlay" onclick="closeOverlay('sticker-overlay')">
         <div class="modal" style="max-width:400px; width:95vw; max-height:80vh; padding:0; overflow:hidden; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
@@ -1722,7 +1759,14 @@
                 <ul>
                     <li>🌐 <strong>DE / EN Sprachumschaltung</strong> — Einstellungen → Personalisierung: 🇩🇪 Deutsch / 🇬🇧 English. Alle UI-Texte, Buttons, Labels, Platzhalter, Benachrichtigungen und Kontextmenü-Einträge werden sofort umgestellt. Gespeichert in localStorage</li>
                 </ul>
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.8 🎭</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.9 🛡️</h3>
+                <ul>
+                    <li>🔖 <strong>Lesezeichen</strong> — Nachrichten per Rechtsklick speichern, über 🔖-Button in der Toolbar abrufen. Springt direkt zur Nachricht im Chat</li>
+                    <li>🔍 <strong>Globale Suche verbessert</strong> — Sucht jetzt auch in Gruppen, zeigt Absender, Ergebnisse bis 60 Treffer</li>
+                    <li>🎭 <strong>Eigene Sticker</strong> — Tab „⭐ Meine" im Sticker-Picker: Bilder hochladen (max. 200 KB), bis 30 eigene Sticker</li>
+                    <li>🛡️ <strong>Moderation</strong> — Wortfilter (Einstellungen → Sicherheit), Nachrichten melden (🚨), Nutzer blockieren (🚷) per Rechtsklick. Gemeldete Nachrichten über 🚨 in der Toolbar einsehbar</li>
+                </ul>
+                <h3 style="color:var(--primary);">Version 5.8 🎭</h3>
                 <ul>
                     <li>🎭 <strong>Sticker</strong> — Neuer 🎭-Button im Chat öffnet Sticker-Picker mit 7 Kategorien (Gesichter, Gesten, Herzen, Tiere, Essen, Aktivität, Natur) und über 170 Stickern. Sticker werden groß dargestellt, ohne Nachrichtenblase</li>
                     <li>🔧 <strong>Gruppen-Fix</strong> — Mehrfachanzeige durch doppelte Firebase-Listener behoben; Render-Token-Guard verhindert Race Conditions</li>
@@ -2112,7 +2156,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.8</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.9</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);" data-i18n="login_tab">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;" data-i18n="register_tab">Neu</div>
@@ -2359,6 +2403,8 @@
                 <div style="display:flex; gap:8px; align-items:center;">
                     <span style="cursor:pointer; font-size:18px;" title="Gruppe erstellen" onclick="openGroupCreate()">👥</span>
                     <span style="cursor:pointer; font-size:18px;" onclick="openGlobalSearch()" title="Globale Suche">🔍</span>
+                    <span style="cursor:pointer; font-size:18px;" onclick="openBookmarks()" title="Lesezeichen">🔖</span>
+                    <span style="cursor:pointer; font-size:18px;" onclick="openReports()" title="Gemeldete Nachrichten">🚨</span>
                     <span class="settings-btn" onclick="openSettings()">⚙️</span>
                 </div>
             </div>
@@ -2443,7 +2489,7 @@
                 </div>
                 <input type="file" id="img-upload-input" accept="image/*" style="display:none;">
                 <input type="file" id="audio-upload-input" accept="audio/mp3,audio/wav,audio/ogg,audio/mpeg,.mp3,.wav,.ogg" style="display:none;">
-                <input type="file" id="doc-upload-input" accept=".pdf,.txt,application/pdf,text/plain" style="display:none;">
+                <input type="file" id="doc-upload-input" accept=".pdf,.txt,.html,application/pdf,text/plain,text/html" style="display:none;">
                 <textarea id="msg-input" placeholder="Nachricht..." rows="1" style="resize:none; overflow:hidden; min-height:44px; max-height:120px; line-height:1.4; padding:12px 20px;"></textarea>
                 <button id="btn-send" style="width:60px;">➤</button>
             </div>
@@ -3029,7 +3075,7 @@ window.switchSettingsTab = (tab) => {
     document.querySelectorAll('.settings-panel').forEach(p => {
         p.style.display = p.id === `stab-${tab}` ? 'block' : 'none';
     });
-    if(tab === 'security' && myUsername) { loadStoryVisibilitySettings(); loadGroupAddPrivacySetting(); }
+    if(tab === 'security' && myUsername) { loadStoryVisibilitySettings(); loadGroupAddPrivacySetting(); loadWordFilterSettings(); renderBlockedUsersList(); }
 };
 
 window.saveMyAvatar = async () => {
@@ -3510,25 +3556,53 @@ function showApp() {
 
 /* ------------------------------ */
 document.getElementById('btn-search').onclick = async () => {
-    const s = document.getElementById('search-input').value.trim();
+    const s = document.getElementById('search-input').value.trim().toLowerCase();
     if(!s) return;
     const resDiv = document.getElementById('search-results');
-    resDiv.innerHTML = '';
+    resDiv.innerHTML = '<p style="padding:10px; opacity:0.5;">Suche...</p>';
+    document.getElementById('search-overlay').style.display = 'flex';
 
-    // Direkter Lookup via Username (statt Range-Query)
-    const snap = await get(ref(db, `accounts/${s}`));
-    if(snap.exists() && snap.val().username !== myUsername) {
-        document.getElementById('search-overlay').style.display = 'flex';
-        const name = snap.val().username;
+    const results = new Map(); // username → data
+
+    // 1) Exakter Lookup
+    const exactSnap = await get(ref(db, `accounts/${s}`));
+    if(exactSnap.exists() && exactSnap.val().username !== myUsername) {
+        results.set(exactSnap.val().username, exactSnap.val());
+    }
+
+    // Auch mit erstem Großbuchstaben versuchen
+    const capitalized = s.charAt(0).toUpperCase() + s.slice(1);
+    if(capitalized !== s) {
+        const capSnap = await get(ref(db, `accounts/${capitalized}`));
+        if(capSnap.exists() && capSnap.val().username !== myUsername) {
+            results.set(capSnap.val().username, capSnap.val());
+        }
+    }
+
+    // 2) Eigene Kontakte nach Teilstring durchsuchen
+    const contactsSnap = await get(ref(db, `accounts/${myUsername}/contacts`));
+    if(contactsSnap.exists()) {
+        const contactNames = [...new Set(Object.values(contactsSnap.val()).filter(Boolean))];
+        for(const name of contactNames) {
+            if(name.toLowerCase().includes(s) && name !== myUsername && !results.has(name)) {
+                const accSnap = await get(ref(db, `accounts/${name}`));
+                if(accSnap.exists()) results.set(name, accSnap.val());
+            }
+        }
+    }
+
+    resDiv.innerHTML = '';
+    if(results.size === 0) {
+        resDiv.innerHTML = '<p style="padding:10px; opacity:0.5;">Kein Nutzer gefunden</p>';
+        return;
+    }
+    results.forEach((data, name) => {
         const item = document.createElement('div');
         item.className = 'contact-item';
         item.innerHTML = `${getAvatarHTML(name)} <span>${name}</span> <span style="margin-left:auto;">+</span>`;
         item.onclick = () => { addGegenseitig(name); closeOverlay('search-overlay'); };
         resDiv.appendChild(item);
-    } else {
-        document.getElementById('search-overlay').style.display = 'flex';
-        resDiv.innerHTML = '<p style="padding:10px; opacity:0.5;">Kein Nutzer gefunden</p>';
-    }
+    });
 };
 
 async function addGegenseitig(target) {
@@ -3574,6 +3648,20 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
         d.style.boxShadow = 'none';
         return;
     }
+    // Word filter — hide messages from others that match
+    if(m.sender !== myUsername && isMessageFiltered(m.text)) {
+        d.innerHTML = `<em style="opacity:0.4; font-size:12px;">🚫 Nachricht gefiltert</em>`;
+        d.style.background = 'transparent';
+        d.style.boxShadow = 'none';
+        return;
+    }
+    // Block filter — hide messages from blocked users
+    if(m.sender !== myUsername && getBlockedUsers().includes(m.sender)) {
+        d.innerHTML = `<em style="opacity:0.4; font-size:12px;">🚷 Blockierter Nutzer</em>`;
+        d.style.background = 'transparent';
+        d.style.boxShadow = 'none';
+        return;
+    }
     d.style.background = '';
     d.style.boxShadow = '';
     const customColor = contactColors[m.sender];
@@ -3600,12 +3688,18 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
     const replyIcon     = `<span class="msg-menu" onclick="replyToMsg('${msgKey}','${m.sender}',\`${safeText}\`)">↩️</span>`;
 
     // Sticker rendering
-    if(m.isSticker && m.stickerEmoji) {
+    if(m.isSticker) {
         d.style.background = 'transparent';
         d.style.boxShadow = 'none';
         d.style.padding = '0';
+        let stickerContent;
+        if(m.stickerImage) {
+            stickerContent = `<img src="${m.stickerImage}" style="width:120px; height:120px; object-fit:contain; border-radius:16px; display:block; cursor:default;">`;
+        } else {
+            stickerContent = `<div style="font-size:90px; line-height:1; display:inline-block; cursor:default; user-select:none;">${m.stickerEmoji || '🎭'}</div>`;
+        }
         d.innerHTML = `${forwardedMark}${replyHTML}
-            <div style="font-size:90px; line-height:1; display:inline-block; cursor:default; user-select:none;" title="${m.stickerEmoji}">${m.stickerEmoji}</div>
+            ${stickerContent}
             ${reactionsHTML}<span class="msg-time" style="background:rgba(0,0,0,0.15); border-radius:8px; padding:1px 5px;"><span class="full-date">${fullDate}</span>${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
         return;
     }
@@ -3632,7 +3726,7 @@ function renderMessageEl(d, m, msgKey, time, fullDate, _unused, contactColors) {
     if(m.isDoc && m.text) {
         const fname = m.fileName || 'Dokument';
         const ext = fname.split('.').pop().toLowerCase();
-        const icon = ext === 'pdf' ? '📕' : '📄';
+        const icon = ext === 'pdf' ? '📕' : ext === 'html' ? '🌐' : '📄';
         const sizeKB = m.fileSize ? Math.round(m.fileSize / 1024) + ' KB' : '';
         d.innerHTML = `${forwardedMark}${replyHTML}
             <a class="msg-doc" href="${m.text}" download="${fname}" title="${fname}">
@@ -4534,6 +4628,39 @@ function showMessageContextMenu(e, msgKey, msgText, sender) {
     };
     menu.appendChild(pinItem);
     
+    // Bookmark option
+    const bmItem = document.createElement('div');
+    bmItem.className = 'msg-context-item';
+    const alreadyBm = getBookmarks().find(b => b.msgKey === msgKey);
+    bmItem.innerHTML = `<span class="icon">🔖</span><span>${alreadyBm ? 'Lesezeichen entfernen' : 'Lesezeichen'}</span>`;
+    bmItem.onclick = () => {
+        menu.classList.remove('show');
+        if(alreadyBm) { removeBookmark(msgKey); showNotification('🔖 Entfernt', 'success'); }
+        else addBookmark(msgKey, msgText, sender, activeChatId);
+    };
+    menu.appendChild(bmItem);
+
+    // Report option (only for others' messages)
+    if(sender !== myUsername) {
+        const reportItem = document.createElement('div');
+        reportItem.className = 'msg-context-item';
+        reportItem.style.color = '#e67e22';
+        reportItem.innerHTML = '<span class="icon">🚨</span><span>Melden</span>';
+        reportItem.onclick = () => { menu.classList.remove('show'); reportMessage(msgKey, msgText, sender); };
+        menu.appendChild(reportItem);
+
+        const blockItem = document.createElement('div');
+        blockItem.className = 'msg-context-item';
+        blockItem.style.color = '#dc3545';
+        blockItem.innerHTML = `<span class="icon">🚷</span><span>${getBlockedUsers().includes(sender) ? 'Entsperren' : 'Blockieren'}</span>`;
+        blockItem.onclick = () => {
+            menu.classList.remove('show');
+            if(getBlockedUsers().includes(sender)) unblockUser(sender);
+            else blockUser(sender);
+        };
+        menu.appendChild(blockItem);
+    }
+
     // Delete option
     if(sender === myUsername) {
         const delItem = document.createElement('div');
@@ -5428,6 +5555,207 @@ async function canContactSeeMyStories(contact) {
 /* ------------------------------ */
 /* STICKER SYSTEM                 */
 /* ------------------------------ */
+/* ================================ */
+/* v5.9 FEATURES                    */
+/* ================================ */
+
+/* ----- 🔖 LESEZEICHEN ----- */
+function getBookmarks() { return JSON.parse(localStorage.getItem('villo_bookmarks') || '[]'); }
+function saveBookmarks(bm) { localStorage.setItem('villo_bookmarks', JSON.stringify(bm)); }
+
+window.addBookmark = (msgKey, msgText, sender, chatId) => {
+    const bm = getBookmarks();
+    if(bm.find(b => b.msgKey === msgKey)) { showNotification('⚠️ Bereits gespeichert', 'warning'); return; }
+    bm.unshift({ msgKey, msgText: (msgText||'').substring(0,200), sender, chatId, savedAt: Date.now() });
+    saveBookmarks(bm);
+    showNotification('🔖 Lesezeichen gesetzt', 'success');
+};
+
+window.removeBookmark = (msgKey) => {
+    saveBookmarks(getBookmarks().filter(b => b.msgKey !== msgKey));
+    openBookmarks();
+};
+
+window.openBookmarks = () => {
+    const bm = getBookmarks();
+    const list = document.getElementById('bookmarks-list');
+    list.innerHTML = '';
+    if(bm.length === 0) {
+        list.innerHTML = '<p style="opacity:0.5; text-align:center; padding:20px;">Keine Lesezeichen</p>';
+    } else {
+        bm.forEach(b => {
+            const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
+            const isGroup = !b.chatId.includes('_');
+            const displayName = isGroup ? (b.chatId) : (aliases[b.sender] || b.sender);
+            const div = document.createElement('div');
+            div.style.cssText = 'padding:10px 12px; border-radius:10px; background:var(--bg); margin-bottom:8px; cursor:pointer; border:1px solid var(--border-color);';
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:12px; font-weight:600; color:var(--primary);">${displayName}</span>
+                    <span onclick="event.stopPropagation(); removeBookmark('${b.msgKey}')" style="font-size:11px; opacity:0.5; cursor:pointer; padding:2px 6px; border-radius:4px; background:var(--border-color);">✕ entfernen</span>
+                </div>
+                <div style="font-size:13px; word-break:break-word; opacity:0.85;">${(b.msgText||'').substring(0,120)}${(b.msgText||'').length>120?'...':''}</div>
+                <div style="font-size:10px; opacity:0.4; margin-top:4px;">${new Date(b.savedAt).toLocaleString('de-DE')}</div>
+            `;
+            div.onclick = () => {
+                closeOverlay('bookmarks-overlay');
+                // Navigate to chat
+                if(b.chatId && b.chatId.includes('_')) {
+                    const other = b.chatId.replace(myUsername+'_','').replace('_'+myUsername,'');
+                    startChat(other);
+                } else if(b.chatId) {
+                    get(ref(db, `groups/${b.chatId}`)).then(s => { if(s.exists()) window.startGroupChat(b.chatId, s.val().name); });
+                }
+                setTimeout(() => {
+                    const el = document.getElementById(`m-${b.msgKey}`);
+                    if(el) { el.scrollIntoView({behavior:'smooth',block:'center'}); el.style.outline='2px solid var(--primary)'; setTimeout(()=>el.style.outline='',2000); }
+                }, 1200);
+            };
+            list.appendChild(div);
+        });
+    }
+    document.getElementById('bookmarks-overlay').style.display = 'flex';
+    document.getElementById('bookmarks-overlay').querySelector('.modal').style.display = 'flex';
+};
+
+/* ----- 🚫 WORTFILTER ----- */
+function getWordFilter() {
+    const raw = localStorage.getItem('villo_wordfilter') || '';
+    return raw ? raw.split(',').map(w=>w.trim().toLowerCase()).filter(Boolean) : [];
+}
+
+window.saveWordFilter = () => {
+    const val = document.getElementById('word-filter-input').value.trim();
+    localStorage.setItem('villo_wordfilter', val);
+    showNotification('✅ Wortfilter gespeichert', 'success');
+};
+
+window.loadWordFilterSettings = () => {
+    const val = localStorage.getItem('villo_wordfilter') || '';
+    const el = document.getElementById('word-filter-input');
+    if(el) el.value = val;
+};
+
+function isMessageFiltered(text) {
+    if(!text) return false;
+    const words = getWordFilter();
+    if(words.length === 0) return false;
+    const lower = text.toLowerCase();
+    return words.some(w => lower.includes(w));
+}
+
+/* ----- 🚷 BLOCKIEREN ----- */
+function getBlockedUsers() { return JSON.parse(localStorage.getItem('villo_blocked') || '[]'); }
+function saveBlockedUsers(list) { localStorage.setItem('villo_blocked', JSON.stringify(list)); }
+
+window.blockUser = (username) => {
+    if(!username || username === myUsername) return;
+    const bl = getBlockedUsers();
+    if(!bl.includes(username)) bl.push(username);
+    saveBlockedUsers(bl);
+    showNotification(`🚷 ${username} blockiert`, 'success');
+    renderBlockedUsersList();
+};
+
+window.unblockUser = (username) => {
+    saveBlockedUsers(getBlockedUsers().filter(u => u !== username));
+    showNotification(`✅ ${username} entsperrt`, 'success');
+    renderBlockedUsersList();
+};
+
+function renderBlockedUsersList() {
+    const container = document.getElementById('blocked-users-list');
+    const emptyEl = document.getElementById('blocked-empty');
+    if(!container) return;
+    const bl = getBlockedUsers();
+    container.innerHTML = '';
+    if(bl.length === 0) {
+        if(emptyEl) emptyEl.style.display = '';
+    } else {
+        if(emptyEl) emptyEl.style.display = 'none';
+        bl.forEach(u => {
+            const chip = document.createElement('div');
+            chip.style.cssText = 'display:inline-flex; align-items:center; gap:6px; background:var(--bg); border:1px solid var(--border-color); border-radius:20px; padding:4px 10px; font-size:13px;';
+            chip.innerHTML = `${u} <span onclick="unblockUser('${u}')" style="cursor:pointer; opacity:0.6; font-size:11px;">✕</span>`;
+            container.appendChild(chip);
+        });
+    }
+}
+
+/* ----- 🚨 MELDEN ----- */
+function getReports() { return JSON.parse(localStorage.getItem('villo_reports') || '[]'); }
+
+window.reportMessage = (msgKey, msgText, sender) => {
+    const reports = getReports();
+    if(reports.find(r => r.msgKey === msgKey)) { showNotification('⚠️ Bereits gemeldet', 'warning'); return; }
+    reports.unshift({ msgKey, msgText: (msgText||'').substring(0,200), sender, chatId: activeChatId, reportedAt: Date.now() });
+    localStorage.setItem('villo_reports', JSON.stringify(reports));
+    showNotification('🚨 Nachricht gemeldet', 'success');
+};
+
+window.openReports = () => {
+    const reports = getReports();
+    const list = document.getElementById('reports-list');
+    list.innerHTML = '';
+    if(reports.length === 0) {
+        list.innerHTML = '<p style="opacity:0.5; text-align:center; padding:20px;">Keine gemeldeten Nachrichten</p>';
+    } else {
+        reports.forEach((r, i) => {
+            const div = document.createElement('div');
+            div.style.cssText = 'padding:10px 12px; border-radius:10px; background:var(--bg); margin-bottom:8px; border:1px solid #dc354540;';
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                    <span style="font-size:12px; font-weight:600; color:#dc3545;">Von: ${r.sender}</span>
+                    <div style="display:flex; gap:6px;">
+                        <span onclick="blockUser('${r.sender}')" style="font-size:11px; cursor:pointer; padding:2px 8px; border-radius:4px; background:#dc354520; color:#dc3545;">🚷 Blockieren</span>
+                        <span onclick="dismissReport(${i})" style="font-size:11px; cursor:pointer; padding:2px 8px; border-radius:4px; background:var(--border-color); opacity:0.6;">✕</span>
+                    </div>
+                </div>
+                <div style="font-size:13px; word-break:break-word; opacity:0.85;">${(r.msgText||'').substring(0,150)}</div>
+                <div style="font-size:10px; opacity:0.4; margin-top:4px;">${new Date(r.reportedAt).toLocaleString('de-DE')}</div>
+            `;
+            list.appendChild(div);
+        });
+    }
+    document.getElementById('reports-overlay').style.display = 'flex';
+    document.getElementById('reports-overlay').querySelector('.modal').style.display = 'flex';
+};
+
+window.dismissReport = (index) => {
+    const reports = getReports();
+    reports.splice(index, 1);
+    localStorage.setItem('villo_reports', JSON.stringify(reports));
+    openReports();
+};
+
+/* ----- 🎭 EIGENE STICKER ----- */
+const CUSTOM_STICKER_KEY = 'villo_custom_stickers';
+
+function getCustomStickers() { return JSON.parse(localStorage.getItem(CUSTOM_STICKER_KEY) || '[]'); }
+function saveCustomStickers(list) { localStorage.setItem(CUSTOM_STICKER_KEY, JSON.stringify(list)); }
+
+window.addCustomSticker = async (file) => {
+    if(!file) return;
+    if(file.size > 200 * 1024) { showNotification('⚠️ Max. 200 KB', 'warning'); return; }
+    const dataUrl = await compressImage(file, 200 * 1024);
+    if(!dataUrl) return;
+    const stickers = getCustomStickers();
+    stickers.unshift({ id: Date.now().toString(), dataUrl });
+    if(stickers.length > 30) stickers.length = 30; // max 30 eigene
+    saveCustomStickers(stickers);
+    renderStickerPicker(-1); // -1 = eigene Sticker
+    showNotification('✅ Sticker hinzugefügt', 'success');
+};
+
+window.removeCustomSticker = (id) => {
+    saveCustomStickers(getCustomStickers().filter(s => s.id !== id));
+    renderStickerPicker(-1);
+};
+
+/* ================================ */
+/* v5.9 END                         */
+/* ================================ */
+
 const STICKER_PACKS = [
     {
         name: '😀 Gesichter',
@@ -5443,7 +5771,7 @@ const STICKER_PACKS = [
     },
     {
         name: '🐶 Tiere',
-        stickers: ['🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐧','🐦','🦆','🦅','🦉','🐺','🦝','🐗','🐴','🦄','🐝','🦋','🐢','🦖','🦕','🐬','🦈']
+        stickers: ['🐙','🐶','🐱','🐭','🐹','🐰','🦊','🐻','🐼','🐨','🐯','🦁','🐸','🐧','🐦','🦆','🦅','🦉','🐺','🦝','🐗','🐴','🦄','🐝','🦋','🐢','🦖','🦕','🐬','🦈']
     },
     {
         name: '🍕 Essen',
@@ -5471,9 +5799,16 @@ window.openStickerPicker = () => {
 
 function renderStickerPicker(packIndex) {
     _activeStickerPack = packIndex;
-    // Tabs
     const tabsEl = document.getElementById('sticker-tabs');
     tabsEl.innerHTML = '';
+
+    // "Meine Sticker" tab first
+    const myTab = document.createElement('div');
+    myTab.className = 'sticker-tab' + (packIndex === -1 ? ' active' : '');
+    myTab.textContent = '⭐ Meine';
+    myTab.onclick = () => renderStickerPicker(-1);
+    tabsEl.appendChild(myTab);
+
     STICKER_PACKS.forEach((pack, i) => {
         const tab = document.createElement('div');
         tab.className = 'sticker-tab' + (i === packIndex ? ' active' : '');
@@ -5481,24 +5816,80 @@ function renderStickerPicker(packIndex) {
         tab.onclick = () => renderStickerPicker(i);
         tabsEl.appendChild(tab);
     });
-    // Grid
+
     const grid = document.getElementById('sticker-grid');
     grid.innerHTML = '';
-    STICKER_PACKS[packIndex].stickers.forEach(emoji => {
-        const item = document.createElement('div');
-        item.className = 'sticker-item';
-        item.textContent = emoji;
-        item.title = emoji;
-        item.onclick = () => sendSticker(emoji);
-        grid.appendChild(item);
-    });
+
+    if(packIndex === -1) {
+        // Custom stickers
+        // Upload button
+        const uploadBtn = document.createElement('div');
+        uploadBtn.style.cssText = 'aspect-ratio:1; border-radius:12px; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:26px; background:var(--bg); border:2px dashed var(--border-color); color:var(--primary);';
+        uploadBtn.innerHTML = '📁<div style="font-size:9px; margin-top:4px; opacity:0.6;">Hochladen</div>';
+        uploadBtn.onclick = () => {
+            const inp = document.createElement('input');
+            inp.type = 'file'; inp.accept = 'image/*';
+            inp.onchange = e => addCustomSticker(e.target.files[0]);
+            inp.click();
+        };
+        grid.appendChild(uploadBtn);
+
+        const customs = getCustomStickers();
+        if(customs.length === 0) {
+            const hint = document.createElement('div');
+            hint.style.cssText = 'grid-column:1/-1; text-align:center; opacity:0.4; font-size:13px; padding:20px 0;';
+            hint.textContent = 'Noch keine eigenen Sticker';
+            grid.appendChild(hint);
+        } else {
+            customs.forEach(s => {
+                const wrap = document.createElement('div');
+                wrap.style.cssText = 'position:relative; aspect-ratio:1;';
+                const img = document.createElement('img');
+                img.src = s.dataUrl;
+                img.style.cssText = 'width:100%; height:100%; object-fit:contain; border-radius:12px; cursor:pointer; background:var(--bg); border:1px solid var(--border-color);';
+                img.onclick = () => sendImageSticker(s.dataUrl);
+                const del = document.createElement('div');
+                del.style.cssText = 'position:absolute; top:2px; right:2px; background:rgba(220,53,69,0.85); color:white; font-size:9px; border-radius:50%; width:14px; height:14px; display:flex; align-items:center; justify-content:center; cursor:pointer;';
+                del.textContent = '✕';
+                del.onclick = (e) => { e.stopPropagation(); removeCustomSticker(s.id); };
+                wrap.appendChild(img); wrap.appendChild(del);
+                grid.appendChild(wrap);
+            });
+        }
+    } else {
+        STICKER_PACKS[packIndex].stickers.forEach(emoji => {
+            const item = document.createElement('div');
+            item.className = 'sticker-item';
+            item.textContent = emoji;
+            item.title = emoji;
+            item.onclick = () => sendSticker(emoji);
+            grid.appendChild(item);
+        });
+    }
 }
+
+window.sendImageSticker = (dataUrl) => {
+    if(!activeChatId) return;
+    closeOverlay('sticker-overlay');
+    const msgData = {
+        sender: myUsername,
+        text: '',
+        timestamp: Date.now(),
+        read: false,
+        isSticker: true,
+        stickerImage: dataUrl
+    };
+    if(replyingTo) { msgData.replyTo = { msgId: replyingTo.msgId, sender: replyingTo.sender, text: replyingTo.text }; cancelReply(); }
+    push(ref(db, 'chats/' + activeChatId), msgData);
+    playSendSound();
+};
 
 window.sendSticker = (emoji) => {
     if(!activeChatId) return;
     closeOverlay('sticker-overlay');
     const msgData = {
         sender: myUsername,
+        text: '',
         timestamp: Date.now(),
         read: false,
         isSticker: true,
@@ -5601,7 +5992,7 @@ window.generateLoginQR = async () => {
 
     // Footer
     doc.setFontSize(8); doc.setTextColor(190, 190, 190);
-    doc.text(`VilloChat v5.8  ·  ${new Date().toLocaleDateString('de-DE')}`, pageW / 2, pageH - 10, { align: 'center' });
+    doc.text(`VilloChat v5.9  ·  ${new Date().toLocaleDateString('de-DE')}`, pageW / 2, pageH - 10, { align: 'center' });
 
     doc.save(`VilloChat_Login_${myUsername}.pdf`);
     showNotification(t('notif_pdf_done'), 'success');
@@ -6997,68 +7388,82 @@ async function globalSearch(query) {
     const results = document.getElementById('global-search-results');
     results.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Suche läuft<span class="loading-spinner"></span></p>';
     
-    // Load contacts from Firebase
-    let contacts = [];
-    try {
-        const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
-        if(snap.exists()) {
-            contacts = Object.values(snap.val()).filter(Boolean);
-        }
-    } catch(e) {
-        contacts = window._contactsCache || [];
-    }
-    
     const aliases = JSON.parse(localStorage.getItem('contact_aliases') || '{}');
     const found = [];
     const queryLower = query.toLowerCase();
-    
-    const searchPromises = contacts.map(async (contact) => {
+
+    // Search 1:1 chats
+    let contacts = [];
+    try {
+        const snap = await get(ref(db, `accounts/${myUsername}/contacts`));
+        if(snap.exists()) contacts = [...new Set(Object.values(snap.val()).filter(Boolean))];
+    } catch(e) { contacts = window._contactsCache || []; }
+
+    await Promise.all(contacts.map(async (contact) => {
         const chatId = myUsername < contact ? `${myUsername}_${contact}` : `${contact}_${myUsername}`;
         try {
             const snap = await get(ref(db, `chats/${chatId}`));
-            if(snap.exists()) {
-                snap.forEach(child => {
-                    const m = child.val();
-                    if(m.text && m.text.toLowerCase().includes(queryLower)) {
-                        found.push({ contact, chatId, msgKey: child.key, text: m.text, sender: m.sender, timestamp: m.timestamp });
-                    }
-                });
-            }
+            if(snap.exists()) snap.forEach(child => {
+                const m = child.val();
+                if(m.text && m.text.toLowerCase().includes(queryLower) && !m.deletedForAll)
+                    found.push({ displayName: aliases[contact]||contact, contact, chatId, msgKey: child.key, text: m.text, sender: m.sender, timestamp: m.timestamp, isGroup: false });
+            });
         } catch(e) {}
-    });
-    
-    await Promise.all(searchPromises);
-    
+    }));
+
+    // Search group chats
+    try {
+        const gSnap = await get(ref(db, `accounts/${myUsername}/groups`));
+        if(gSnap.exists()) {
+            const groupIds = [...new Set(Object.values(gSnap.val()).filter(Boolean))];
+            await Promise.all(groupIds.map(async gid => {
+                try {
+                    const [msgSnap, gInfoSnap] = await Promise.all([
+                        get(ref(db, `chats/${gid}`)),
+                        get(ref(db, `groups/${gid}`))
+                    ]);
+                    const gName = gInfoSnap.exists() ? gInfoSnap.val().name : gid;
+                    if(msgSnap.exists()) msgSnap.forEach(child => {
+                        const m = child.val();
+                        if(m.text && m.text.toLowerCase().includes(queryLower) && !m.deletedForAll)
+                            found.push({ displayName: gName, contact: null, chatId: gid, groupId: gid, msgKey: child.key, text: m.text, sender: m.sender, timestamp: m.timestamp, isGroup: true });
+                    });
+                } catch(e) {}
+            }));
+        }
+    } catch(e) {}
+
     if(found.length === 0) {
         results.innerHTML = '<p style="padding:15px; text-align:center; opacity:0.5;">Keine Ergebnisse für "' + query + '"</p>';
         return;
     }
-    
+
+    found.sort((a,b) => b.timestamp - a.timestamp);
     results.innerHTML = `<p style="padding:8px 15px; font-size:12px; opacity:0.5;">${found.length} Ergebnis${found.length !== 1 ? 'se' : ''}</p>`;
-    
-    found.sort((a,b) => b.timestamp - a.timestamp).slice(0, 50).forEach(item => {
-        const displayName = aliases[item.contact] || item.contact;
+
+    found.slice(0, 60).forEach(item => {
         const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const hl = item.text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark style="background:#ffeb3b; border-radius:2px;">$1</mark>');
         const preview = hl.length > 120 ? hl.substring(0, 120) + '...' : hl;
+        const groupBadge = item.isGroup ? '<span style="font-size:10px; opacity:0.5; margin-left:4px;">Gruppe</span>' : '';
         const div = document.createElement('div');
         div.className = 'search-result-item';
         div.innerHTML = `
-            <div class="search-result-chat">${getAvatarHTML(displayName, false)} <span style="font-weight:500;">${displayName}</span></div>
+            <div class="search-result-chat">${getAvatarHTML(item.displayName, false)} <span style="font-weight:500;">${item.displayName}</span>${groupBadge}</div>
+            <div style="font-size:11px; opacity:0.5; margin-top:2px;">Von: ${item.sender}</div>
             <div class="search-result-text" style="margin-top:4px;">${preview}</div>
             <div style="font-size:10px; opacity:0.4; margin-top:3px;">${new Date(item.timestamp).toLocaleString('de-DE')}</div>
         `;
         div.onclick = () => {
             closeOverlay('global-search-overlay');
-            startChat(item.contact);
+            if(item.isGroup) {
+                get(ref(db, `groups/${item.groupId}`)).then(s => { if(s.exists()) window.startGroupChat(item.groupId, s.val().name); });
+            } else {
+                startChat(item.contact);
+            }
             setTimeout(() => {
                 const el = document.getElementById(`m-${item.msgKey}`);
-                if(el) {
-                    el.scrollIntoView({ behavior:'smooth', block:'center' });
-                    el.style.outline = '2px solid var(--primary)';
-                    el.style.transition = 'outline 0.5s';
-                    setTimeout(() => el.style.outline = '', 2000);
-                }
+                if(el) { el.scrollIntoView({behavior:'smooth',block:'center'}); el.style.outline='2px solid var(--primary)'; setTimeout(()=>el.style.outline='',2000); }
             }, 1200);
         };
         results.appendChild(div);
@@ -7505,7 +7910,7 @@ window.onload = () => {
                               'alias-overlay', 'user-info-overlay', 'emoji-picker', 'poll-overlay', 
                               'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
                               'forward-overlay', 'my-profile-overlay', 'changelog-overlay',
-                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay', 'story-create-overlay', 'qr-pin-overlay', 'sticker-overlay'];
+                              'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay', 'story-create-overlay', 'qr-pin-overlay', 'sticker-overlay', 'bookmarks-overlay', 'reports-overlay'];
             let anyOpen = false;
             overlays.forEach(id => {
                 const el = document.getElementById(id);
