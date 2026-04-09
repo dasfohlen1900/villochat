@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -1398,6 +1399,458 @@
                 align-items: flex-end !important;
             }
         }
+
+        /* === Burger Menu === */
+        .burger-menu {
+            position: relative;
+        }
+        
+        .burger-icon {
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 4px;
+            background: transparent;
+            border: none;
+            z-index: 10;
+        }
+        
+        .burger-icon span {
+            width: 100%;
+            height: 2px;
+            background: #555;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .burger-icon.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        
+        .burger-icon.active span:nth-child(2) {
+            opacity: 0;
+        }
+        
+        .burger-icon.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+        
+        .burger-dropdown {
+            display: none;
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            min-width: 200px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .burger-dropdown.active {
+            display: block;
+        }
+        
+        .burger-dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .burger-dropdown-item:last-child {
+            border-bottom: none;
+        }
+        
+        .burger-dropdown-item:hover {
+            background: #f5f5f5;
+        }
+        
+        .burger-dropdown-item span:first-child {
+            font-size: 18px;
+        }
+
+        /* === Admin Panel === */
+        .admin-panel-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .admin-panel {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .admin-panel-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .admin-panel-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .admin-panel-tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .admin-tab {
+            flex: 1;
+            padding: 12px 16px;
+            text-align: center;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .admin-tab.active {
+            background: white;
+            border-bottom-color: #667eea;
+            color: #667eea;
+        }
+        
+        .admin-panel-content {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .admin-tab-content {
+            display: none;
+        }
+        
+        .admin-tab-content.active {
+            display: block;
+        }
+        
+        .user-list-item {
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .admin-badge {
+            background: #ffd700;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .banned-badge {
+            background: #ff4444;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .warn-btn, .ban-btn, .admin-btn, .unban-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .warn-btn {
+            background: #ff9800;
+            color: white;
+        }
+        
+        .ban-btn {
+            background: #f44336;
+            color: white;
+        }
+        
+        .unban-btn {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .admin-btn {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .announcement-form, .warn-form, .ban-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .announcement-form input,
+        .announcement-form textarea,
+        .warn-form input,
+        .warn-form textarea,
+        .ban-form input,
+        .ban-form textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+        
+        .announcement-form textarea,
+        .warn-form textarea,
+        .ban-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .send-announcement-btn, .send-warn-btn, .send-ban-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .send-announcement-btn:hover,
+        .send-warn-btn:hover,
+        .send-ban-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* === Fullscreen Warning & Ban === */
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .warning-modal, .ban-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .warning-modal h2, .ban-modal h2 {
+            color: #ff9800;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .ban-modal h2 {
+            color: #f44336;
+        }
+        
+        .warning-modal p, .ban-modal p {
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .warning-ok-btn, .ban-action-btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .warning-ok-btn:hover, .ban-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .ban-info {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #ff9800;
+            text-align: left;
+        }
+        
+        .ban-info strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #856404;
+        }
+        
+        .ban-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        
+        .ban-action-btn.secondary {
+            background: #6c757d;
+        }
+        
+        .ban-action-btn.danger {
+            background: #dc3545;
+        }
+
+        /* === Warning History === */
+        .warning-history-item {
+            padding: 12px;
+            background: #fff3cd;
+            border-left: 4px solid #ff9800;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .warning-history-item .date {
+            font-size: 12px;
+            color: #856404;
+            margin-bottom: 5px;
+        }
+        
+        .warning-history-item .reason {
+            font-weight: 500;
+        }
+        
+        .ban-history-item {
+            padding: 12px;
+            background: #f8d7da;
+            border-left: 4px solid #f44336;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .ban-history-item .date {
+            font-size: 12px;
+            color: #721c24;
+            margin-bottom: 5px;
+        }
+
+        /* === Terms of Service === */
+        .tos-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 99998;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .tos-modal {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .tos-modal h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .tos-content {
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .tos-content h3 {
+            margin-top: 20px;
+            color: #333;
+        }
+        
+        .tos-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        .tos-accept-btn, .tos-decline-btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tos-accept-btn {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .tos-decline-btn {
+            background: #f44336;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -1418,6 +1871,7 @@
                     <div class="settings-tab" data-tab="profile" onclick="switchSettingsTab('profile')">👤 <span class="tab-label" data-i18n="tab_profile">Profil</span></div>
                     <div class="settings-tab" data-tab="security" onclick="switchSettingsTab('security')">🔒 <span class="tab-label" data-i18n="tab_security">Sicherheit</span></div>
                     <div class="settings-tab" data-tab="help" onclick="switchSettingsTab('help')">❓ <span class="tab-label" data-i18n="tab_help">Hilfe</span></div>
+                    <div class="settings-tab" id="warnings-settings-tab" data-tab="warnings" onclick="switchSettingsTab('warnings')">⚠️ <span class="tab-label">Warnungen</span></div>
                 </div>
                 <!-- Content -->
                 <div id="settings-content" style="flex:1; overflow-y:auto; padding:20px;">
@@ -1430,6 +1884,7 @@
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
                             <button id="lang-de" onclick="setLanguage('de')" style="flex:1;">🇩🇪 Deutsch</button>
                             <button id="lang-en" onclick="setLanguage('en')" style="flex:1;">🇬🇧 English</button>
+                            <button id="lang-lx" onclick="setLanguage('lx')" style="flex:1;">LÜ Lükvián</button>
                         </div>
 
                         <label class="settings-label" data-i18n="lbl_design">Design:</label>
@@ -1643,6 +2098,15 @@
                             <div id="blocked-users-list" style="margin-bottom:8px; display:flex; flex-wrap:wrap; gap:6px; min-height:28px;"></div>
                             <p id="blocked-empty" style="font-size:12px; opacity:0.5; margin:0;">Keine blockierten Nutzer.</p>
                         </div>
+
+                        <!-- Warnings/Admin Panel -->
+                        <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
+                            <label class="settings-label">⚠️ Warnungen & Sperren</label>
+                            <button id="warnings-admin-btn" onclick="openWarningsOrAdmin()" style="width:100%; background:var(--primary); margin-bottom:8px;">
+                                📋 Warnungen anzeigen
+                            </button>
+                            <p style="font-size:12px; opacity:0.6; margin:0;">Zeigt deine Warn- und Banhistorie. Admins können hier das Admin Panel öffnen.</p>
+                        </div>
                     </div>
 
                     <!-- HELP -->
@@ -1654,6 +2118,14 @@
                             <strong>VilloChat 5.10</strong><br>
                             Entwickelt als Single-File Web-App.<br>
                             Firebase Realtime Database · Web Audio API · keine externen Tracker.
+                        </div>
+                    </div>
+
+                    <!-- WARNINGS (Admin opens panel; Users see history) -->
+                    <div id="stab-warnings" class="settings-panel" style="display:none;">
+                        <h3 style="margin-top:0; color:var(--primary);">⚠️ Warnungen & Sperren</h3>
+                        <div id="warnings-panel-content">
+                            <!-- filled by switchSettingsTab -->
                         </div>
                     </div>
 
@@ -2552,12 +3024,33 @@
         <div id="sidebar">
             <div class="header">
                 <h2 id="my-name-display" style="cursor:pointer;" onclick="openMyProfile()" title="Mein Profil">Profil</h2>
-                <div style="display:flex; gap:8px; align-items:center;">
-                    <span style="cursor:pointer; font-size:18px;" title="Gruppe erstellen" onclick="openGroupCreate()">👥</span>
+                <div style="display:flex; gap:12px; align-items:center;">
                     <span style="cursor:pointer; font-size:18px;" onclick="openGlobalSearch()" title="Globale Suche">🔍</span>
-                    <span style="cursor:pointer; font-size:18px;" onclick="openBookmarks()" title="Lesezeichen">🔖</span>
-                    <span style="cursor:pointer; font-size:18px;" onclick="openReports()" title="Gemeldete Nachrichten">🚨</span>
-                    <span class="settings-btn" onclick="openSettings()">⚙️</span>
+                    <div class="burger-menu">
+                        <button class="burger-icon" onclick="toggleBurgerMenu()" id="burger-icon">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                        <div class="burger-dropdown" id="burger-dropdown">
+                            <div class="burger-dropdown-item" onclick="openGroupCreate()">
+                                <span>👥</span>
+                                <span>Gruppe erstellen</span>
+                            </div>
+                            <div class="burger-dropdown-item" onclick="openBookmarks()">
+                                <span>🔖</span>
+                                <span>Lesezeichen</span>
+                            </div>
+                            <div class="burger-dropdown-item" onclick="openReports()">
+                                <span>🚨</span>
+                                <span>Gemeldete Nachrichten</span>
+                            </div>
+                            <div class="burger-dropdown-item" onclick="openSettings()">
+                                <span>⚙️</span>
+                                <span>Einstellungen</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div style="padding:10px; display:flex; gap:5px; background:var(--bg);">
@@ -2924,6 +3417,118 @@ const LANGS = {
         archived_label: '🗂️ Archived',
         forward_btn: 'Forward',
         forward_selected: 'Forward',
+    },
+      lx: {
+        // Tabs
+        tab_personalization: 'Personalisáćio',
+        tab_profile: 'Profilâ',
+        tab_security: 'Sijúrita',
+        tab_help: 'Hölf',
+        tab_help_title: 'Hölf û Informaćio',
+        // Language
+        lbl_language: 'Línjua:',
+        // Personalization
+        lbl_design: 'Design:',
+        lbl_accent: 'Ževrö kolora aksenta:',
+        lbl_fontsize: 'Siza font:',
+        lbl_bubble_style: 'Bubbla Style:',
+        lbl_my_bubble: 'Mïn bubbla Kolora:',
+        lbl_chat_bg: 'Chat Wallpâper:',
+        lbl_quick_reactions: 'Réaćios',
+        // Profile
+        lbl_my_status: 'Mïn Zänverinjito:',
+        btn_save_avatar: 'Sávi avatário',
+        btn_save_status: 'Sávi zänverinjito,
+        // Security
+        sec_subtitle: 'Manage your PIN and session.',
+        btn_change_pin: '🔑 Ževrö tí PIN',
+        btn_logout: '🚪 Eçita sesío',
+        lbl_qr: 'Iníca Code tül QR',
+        qr_desc: 'Generavri Code tül QR dên PDF dên login sijura û simpla',
+        btn_gen_qr: '📄 Generavri code',
+        lbl_group_privacy: '¿Kê kána collektica mïn ina grupö?',
+        opt_all: 'Allja',
+        opt_contacts_only: 'Nja kontakta',
+        opt_nobody: 'Nödel',
+        btn_save_setting: 'Sáva',
+        lbl_story_visibility: '¿Kê kána vište storaja?',
+        opt_all_contacts: 'Kontakta',
+        opt_except: 'Kontakta untül...',
+        opt_only_for: 'Kêne savira...',
+        btn_save_visibility: 'Sáva',
+        // Help
+        btn_open_help: '📖 Açesa Hölfe',
+        btn_changelog: '📋 Livracećangean viva',
+        // Login
+        login_tab: 'Ínića',
+        register_tab: 'Nü',
+        btn_start: 'Starta',
+        btn_register: 'Registra',
+        ph_name: 'PH nóm',
+        ph_pin: 'PIN (xxxx-xxxx)',
+        ph_search_user: 'ćerći benúsva...',
+        ph_search_msg: 'ćerći mesajes...',
+        ph_search_all: 'ćerći allân chats...',
+        ph_status: 'dê ejemplo busja...',
+        ph_contact_note: 'Notá',
+        ph_group_search: 'ćerći grupa',
+        // Empty state
+        empty_chat_title: 'Nödel chat selektave',
+        empty_chat_sub: 'Chúse kontakte tüllev vi gríd starta villo-chattja',
+        empty_contacts: 'Nödel kontakta',
+        empty_contacts_sub: 'Ćerće kontakta lista ô adda cod qr.',
+        // Context menu
+        ctx_copy: 'Dupli',
+        ctx_react: 'Reaćio',
+        ctx_reply: 'Revla',
+        ctx_forward: 'Sendia mesájaân tül',
+        ctx_edit: 'Edíta',
+        ctx_pin: 'Pinva',
+        ctx_unpin: 'Dêpinva',
+        ctx_delete: 'Clêra',
+        ctx_delete_all: 'Delêta',
+        ctx_info: 'Mesáje info',
+        // Notifications
+        notif_accent_changed: '✅ Kolora carvave',
+        notif_registered: '✅ Registra suçinfulla!',
+        notif_name_taken: '⛔ Nóm nödel avallavila sini!',
+        notif_wrong_credentials: '⛔ Nóm ô PIN inkorrekta!',
+        notif_fill_all: '⚠️ Ínserta Nóm û PIN!',
+        notif_msg_edited: '✅ Edítave mesáje',
+        notif_msg_deleted: '✅ Clêrave ô deleta mesáje',
+        notif_contact_removed: '✅ Delêtave mesaje',
+        notif_alias_saved: '✅ Saváve Alias',
+        notif_chat_cleared: '✅ Cleváve chat',
+        notif_no_chat: '⚠️ Nödel chat!',
+        notif_img_too_big: '⚠️ Piktća larjja vê max (max. 500 KB)',
+        notif_img_error: '❌ Nödel create piktća',
+        notif_new_msg: '💬 Nü mesaja de: ',
+        notif_group_not_found: '❌ Nödel ćercarevi grupa',
+        notif_no_user: 'Errôre 11: Nödel benusnâ',
+        notif_avatar_saved: '✅ Avatário sávave',
+        notif_avatar_local: '✅ Avatario sávave',
+        notif_status_saved: '✅ zänverinjito saváve',
+        notif_setting_saved: '✅ Setûp ževri',
+        notif_visibility_saved: '✅ Vište sava',
+        notif_story_published: '✅ Sorija cúm',
+        notif_story_published2: 'creatan sildan',
+        notif_slide_saved: '✅ Sildan sâvan',
+        notif_slide_deleted: '🗑️ Sildan delêta',
+        notif_stories_deleted: '🗑️ Pövels storija',
+        notif_wrong_pin: '❌ PIN inkorekta (adda - verintül 4-5).',
+        notif_pdf_creating: '⏳ Creata PDF...',
+        notif_pdf_done: '✅ PDF creata!',
+        notif_pin_changed: '✅ PIN ževri',
+        notif_min_slide: '⚠️ Min. 1 silda',
+        notif_slide_content: '⚠️ Aadda kontenta fáv.',
+        // Group info dynamic
+        mute: '🔇 Volúmý nö',
+        unmute: '🔊 Volúmý sï',
+        archive: '🗂️ Archiva renç',
+        unarchive: '📤dearciva',
+        archived_label: '🗂️ Arve',
+        forward_btn: 'Sendjave',
+        forward_selected: 'Sendjavea',
     }
 };
 
@@ -2960,13 +3565,17 @@ function applyLanguage() {
     // Language buttons highlight
     const de = document.getElementById('lang-de');
     const en = document.getElementById('lang-en');
-    if(de && en) {
+    const lx = document.getElementById('lang-lx');
+    if(de && en && lx) {
         de.style.background = currentLang === 'de' ? 'var(--primary)' : 'var(--bg)';
         de.style.color = currentLang === 'de' ? 'white' : 'var(--text-color)';
         de.style.border = currentLang === 'de' ? 'none' : '1px solid var(--border-color)';
         en.style.background = currentLang === 'en' ? 'var(--primary)' : 'var(--bg)';
         en.style.color = currentLang === 'en' ? 'white' : 'var(--text-color)';
         en.style.border = currentLang === 'en' ? 'none' : '1px solid var(--border-color)';
+        lx.style.background = currentLang === 'lx' ? 'var(--primary)' : 'var(--bg)';
+        lx.style.color = currentLang === 'lx' ? 'white' : 'var(--text-color)';
+        lx.style.border = currentLang === 'lx' ? 'none' : '1px solid var(--border-color)';
     }
 
     // Auth button
@@ -9346,5 +9955,572 @@ window.onload = () => {
             }
         }
     </script>
+
+    <!-- Admin Panel Overlay -->
+    <div id="admin-panel-overlay" class="admin-panel-overlay">
+        <div class="admin-panel">
+            <div class="admin-panel-header">
+                <h2>👑 Admin Panel</h2>
+                <span style="cursor:pointer; font-size:24px;" onclick="closeAdminPanel()">✕</span>
+            </div>
+            <div class="admin-panel-tabs">
+                <button class="admin-tab active" onclick="switchAdminTab('users')">👥 Nutzer</button>
+                <button class="admin-tab" onclick="switchAdminTab('announcements')">📢 Announcements</button>
+                <button class="admin-tab" onclick="switchAdminTab('moderation')">⚠️ Moderation</button>
+            </div>
+            <div class="admin-panel-content">
+                <!-- Users Tab -->
+                <div id="admin-tab-users" class="admin-tab-content active">
+                    <h3>Nutzer-Verwaltung</h3>
+                    <div id="users-list"></div>
+                </div>
+                
+                <!-- Announcements Tab -->
+                <div id="admin-tab-announcements" class="admin-tab-content">
+                    <h3>Announcement senden</h3>
+                    <div class="announcement-form">
+                        <input type="text" id="announcement-title" placeholder="Titel (optional)">
+                        <textarea id="announcement-text" placeholder="Nachricht an alle Nutzer..."></textarea>
+                        <button class="send-announcement-btn" onclick="sendAnnouncement()">📢 Announcement senden</button>
+                    </div>
+                </div>
+                
+                <!-- Moderation Tab -->
+                <div id="admin-tab-moderation" class="admin-tab-content">
+                    <h3>Warn- und Ban-Übersicht</h3>
+                    <div id="moderation-overview"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Overlay (Fullscreen) -->
+    <div id="warning-overlay" class="fullscreen-overlay">
+        <div class="warning-modal">
+            <h2 id="warning-title">⚠️ Warnung</h2>
+            <p id="warning-text"></p>
+            <button class="warning-ok-btn" onclick="closeWarning()">OK</button>
+        </div>
+    </div>
+
+    <!-- Ban Overlay (Fullscreen) -->
+    <div id="ban-overlay" class="fullscreen-overlay">
+        <div class="ban-modal">
+            <h2>🚫 Account gesperrt</h2>
+            <p id="ban-message"></p>
+            <div class="ban-info">
+                <strong>Grund:</strong>
+                <div id="ban-reason"></div>
+                <br>
+                <strong>Verstoßender Inhalt:</strong>
+                <div id="ban-content"></div>
+                <br>
+                <strong>Sperrung bis:</strong>
+                <div id="ban-until"></div>
+            </div>
+            <div class="ban-actions">
+                <button class="ban-action-btn danger" onclick="logout()">Abmelden</button>
+                <button class="ban-action-btn secondary" onclick="checkBanStatus()">Konto prüfen</button>
+                <button class="ban-action-btn" id="reactivate-btn" onclick="reactivateAccount()" style="display:none;">Reaktivieren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Overlay -->
+    <div id="tos-overlay" class="tos-overlay">
+        <div class="tos-modal">
+            <h2>📜 Nutzungsbedingungen</h2>
+            <div class="tos-content">
+                <h3>Willkommen bei VilloChat!</h3>
+                <p>Bitte lies und akzeptiere unsere Nutzungsbedingungen, um VilloChat zu nutzen.</p>
+                
+                <h3>1. Verhaltensregeln</h3>
+                <p>Du verpflichtest dich:</p>
+                <ul>
+                    <li>Respektvoll mit anderen Nutzern umzugehen</li>
+                    <li>Keine beleidigenden, diskriminierenden oder illegalen Inhalte zu teilen</li>
+                    <li>Die Privatsphäre anderer zu respektieren</li>
+                    <li>Keine Spam-Nachrichten zu versenden</li>
+                </ul>
+                
+                <h3>2. Konsequenzen bei Verstößen</h3>
+                <p>Bei Verstößen gegen diese Regeln können wir:</p>
+                <ul>
+                    <li>Warnungen aussprechen</li>
+                    <li>Deinen Account temporär oder dauerhaft sperren</li>
+                    <li>Gemeldete Inhalte überprüfen und entfernen</li>
+                </ul>
+                
+                <h3>3. Datenschutz</h3>
+                <p>Wir verwenden Firebase Realtime Database zur Speicherung deiner Chat-Daten. Deine Daten werden nur für den Betrieb des Dienstes verwendet.</p>
+                
+                <h3>4. Änderungen</h3>
+                <p>Wir behalten uns das Recht vor, diese Nutzungsbedingungen jederzeit zu ändern. Wichtige Änderungen werden per Announcement kommuniziert.</p>
+            </div>
+            <div class="tos-actions">
+                <button class="tos-decline-btn" onclick="declineTOS()">Ablehnen</button>
+                <button class="tos-accept-btn" onclick="acceptTOS()">Akzeptieren</button>
+            </div>
+        </div>
+    </div>
+
+
+<script type="module">
+// =============================================
+// ADMIN / WARN / BAN / TOS  –  VilloChat
+// =============================================
+import { getDatabase, ref, set, get, push, update, onValue, remove }
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
+// Re-use existing app (already initialized in main script)
+const _app  = getApps()[0];
+const _db   = getDatabase(_app);
+
+// ---- constants ----
+const USER_ADMIN = "USER"; // change this to the actual admin username
+
+// ---- helpers ----
+function fmtDate(ts) {
+    if (!ts) return "–";
+    const d = new Date(ts);
+    return `${String(d.getDate()).padStart(2,"0")}. ${String(d.getMonth()+1).padStart(2,"0")}. ${d.getFullYear()}`;
+}
+function isoDate(ts) {
+    if (!ts) return "–";
+    const d = new Date(ts);
+    return `${String(d.getDate()).padStart(2,"0")}.${String(d.getMonth()+1).padStart(2,"0")}.${d.getFullYear()}`;
+}
+
+// =============================================
+// BURGER MENU
+// =============================================
+window.toggleBurgerMenu = () => {
+    const icon = document.getElementById("burger-icon");
+    const drop = document.getElementById("burger-dropdown");
+    if (!icon || !drop) return;
+    const active = drop.classList.toggle("active");
+    icon.classList.toggle("active", active);
+    if (active) {
+        setTimeout(() => {
+            document.addEventListener("click", function handler(e) {
+                if (!drop.contains(e.target) && e.target !== icon) {
+                    drop.classList.remove("active");
+                    icon.classList.remove("active");
+                }
+                document.removeEventListener("click", handler);
+            });
+        }, 10);
+    }
+};
+
+// =============================================
+// TOS
+// =============================================
+window.acceptTOS = () => {
+    const u = window.myUsername || localStorage.getItem("villo_session");
+    if (u) {
+        set(ref(_db, `accounts/${u}/tosAccepted`), true);
+        localStorage.setItem("villo_tos_accepted", "1");
+    }
+    const ov = document.getElementById("tos-overlay");
+    if (ov) ov.style.display = "none";
+};
+
+window.declineTOS = () => {
+    alert("Du musst die Nutzungsbedingungen akzeptieren, um VilloChat zu nutzen.");
+};
+
+window.checkAndShowTOS = async (username) => {
+    if (localStorage.getItem("villo_tos_accepted") === "1") return;
+    const snap = await get(ref(_db, `accounts/${username}/tosAccepted`));
+    if (!snap.exists() || !snap.val()) {
+        const ov = document.getElementById("tos-overlay");
+        if (ov) { ov.style.display = "flex"; }
+    }
+};
+
+// =============================================
+// BAN CHECK (called on login)
+// =============================================
+window.checkAndShowBan = async (username) => {
+    const snap = await get(ref(_db, `bans/${username}`));
+    if (!snap.exists()) return false;
+    const ban = snap.val();
+    if (!ban.active) return false;
+    // Check if ban expired
+    if (ban.until && ban.until < Date.now()) {
+        // Ban expired – auto-clear active flag but keep record
+        await update(ref(_db, `bans/${username}`), { active: false });
+        return false;
+    }
+    // Show ban overlay
+    showBanOverlay(ban);
+    return true;
+};
+
+window.showBanOverlay = (ban) => {
+    const ov = document.getElementById("ban-overlay");
+    if (!ov) return;
+    const until = ban.permanent ? "dauerhaft" : fmtDate(ban.until);
+    const reactivate = document.getElementById("reactivate-btn");
+    const expired = ban.until && ban.until < Date.now();
+
+    document.getElementById("ban-message").textContent =
+        `Du wurdest vom VilloChat-Team bis zum ${until} gesperrt.`;
+    document.getElementById("ban-reason").textContent = ban.reason || "–";
+    document.getElementById("ban-content").textContent = ban.content || "–";
+    document.getElementById("ban-until").textContent =
+        ban.permanent ? "Dauerhaft gesperrt" : `Du kannst deinen Account am ${fmtDate(ban.until)} wieder aktivieren.`;
+    if (reactivate) {
+        reactivate.style.display = (expired && !ban.permanent) ? "inline-block" : "none";
+    }
+    ov.style.display = "flex";
+};
+
+window.checkBanStatus = async () => {
+    const u = window.myUsername || localStorage.getItem("villo_session");
+    if (!u) return;
+    const snap = await get(ref(_db, `bans/${u}`));
+    if (!snap.exists() || !snap.val().active) {
+        alert("Dein Konto ist aktuell nicht gesperrt.");
+    } else {
+        const ban = snap.val();
+        if (ban.until && ban.until < Date.now()) {
+            await update(ref(_db, `bans/${u}`), { active: false });
+            alert("Deine Sperre ist abgelaufen. Du kannst dein Konto reaktivieren.");
+            const rb = document.getElementById("reactivate-btn");
+            if (rb) rb.style.display = "inline-block";
+        } else {
+            alert(`Dein Konto ist noch gesperrt${ban.permanent ? " (dauerhaft)" : " bis " + fmtDate(ban.until)}.`);
+        }
+    }
+};
+
+window.reactivateAccount = async () => {
+    const u = window.myUsername || localStorage.getItem("villo_session");
+    if (!u) return;
+    const snap = await get(ref(_db, `bans/${u}`));
+    if (!snap.exists()) return;
+    const ban = snap.val();
+    if (ban.permanent) { alert("Dauerhafte Sperren können nicht selbst aufgehoben werden."); return; }
+    if (ban.until && ban.until > Date.now()) { alert("Deine Sperre ist noch nicht abgelaufen."); return; }
+    await update(ref(_db, `bans/${u}`), { active: false });
+    const ov = document.getElementById("ban-overlay");
+    if (ov) ov.style.display = "none";
+    alert("Dein Konto wurde reaktiviert. Willkommen zurück!");
+};
+
+// =============================================
+// WARNING OVERLAY
+// =============================================
+window.showWarningOverlay = (title, text) => {
+    document.getElementById("warning-title").textContent = "⚠️ " + (title || "Warnung");
+    document.getElementById("warning-text").textContent = text || "";
+    const ov = document.getElementById("warning-overlay");
+    if (ov) ov.style.display = "flex";
+};
+
+window.closeWarning = () => {
+    const ov = document.getElementById("warning-overlay");
+    if (ov) ov.style.display = "none";
+};
+
+// =============================================
+// ADMIN PANEL
+// =============================================
+window.openAdminPanel = async () => {
+    const u = window.myUsername || localStorage.getItem("villo_session");
+    // Check Firebase admin status
+    const adminSnap = await get(ref(_db, `admins/${u}`));
+    if (u !== USER_ADMIN && (!adminSnap.exists() || !adminSnap.val())) {
+        alert("Kein Zugriff.");
+        return;
+    }
+    const ov = document.getElementById("admin-panel-overlay");
+    if (ov) ov.style.display = "flex";
+    loadAdminUsers();
+};
+
+window.closeAdminPanel = () => {
+    const ov = document.getElementById("admin-panel-overlay");
+    if (ov) ov.style.display = "none";
+};
+
+window.switchAdminTab = (tab) => {
+    document.querySelectorAll(".admin-tab").forEach(t => {
+        t.classList.toggle("active", t.getAttribute("onclick").includes(`'${tab}'`));
+    });
+    document.querySelectorAll(".admin-tab-content").forEach(c => {
+        c.classList.toggle("active", c.id === `admin-tab-${tab}`);
+    });
+    if (tab === "users") loadAdminUsers();
+    if (tab === "moderation") loadModerationOverview();
+};
+
+// Load all users
+window.loadAdminUsers = async () => {
+    const list = document.getElementById("users-list");
+    if (!list) return;
+    list.innerHTML = "<p style='opacity:.5'>Lade Nutzer…</p>";
+    const snap = await get(ref(_db, "accounts"));
+    if (!snap.exists()) { list.innerHTML = "<p>Keine Nutzer gefunden.</p>"; return; }
+    const accounts = snap.val();
+    const adminSnap = await get(ref(_db, "admins"));
+    const admins = adminSnap.exists() ? adminSnap.val() : {};
+    const banSnap = await get(ref(_db, "bans"));
+    const bans = banSnap.exists() ? banSnap.val() : {};
+
+    list.innerHTML = "";
+    Object.keys(accounts).forEach(name => {
+        const isAdm = (name === USER_ADMIN) || (admins[name] === true);
+        const ban = bans[name];
+        const isBanned = ban && ban.active;
+        const div = document.createElement("div");
+        div.className = "admin-user-row";
+        div.innerHTML = `
+            <div style="display:flex;align-items:center;gap:8px;flex:1;">
+                <span style="font-weight:600;">${name}</span>
+                ${isAdm ? `<span class="admin-badge">Admin</span>` : ""}
+                ${isBanned ? `<span class="banned-badge">Gesperrt</span>` : ""}
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                ${name !== USER_ADMIN ? `<button class="warn-btn" onclick="adminWarnUser('${name}')">⚠️ Warnen</button>` : ""}
+                ${name !== USER_ADMIN && !isBanned ? `<button class="ban-btn" onclick="adminBanUser('${name}')">🚫 Sperren</button>` : ""}
+                ${isBanned ? `<button class="unban-btn" onclick="adminUnbanUser('${name}')">✅ Entsperren</button>` : ""}
+                ${name !== USER_ADMIN ? `<button class="admin-btn" onclick="adminToggleAdmin('${name}', ${isAdm})">${isAdm ? "❌ Admin entziehen" : "👑 Admin machen"}</button>` : ""}
+            </div>
+        `;
+        list.appendChild(div);
+    });
+};
+
+window.adminToggleAdmin = async (username, currentlyAdmin) => {
+    if (!confirm(`Admin-Status für "${username}" ${currentlyAdmin ? "entziehen" : "vergeben"}?`)) return;
+    if (currentlyAdmin) {
+        await set(ref(_db, `admins/${username}`), false);
+    } else {
+        await set(ref(_db, `admins/${username}`), true);
+    }
+    loadAdminUsers();
+};
+
+window.adminWarnUser = async (username) => {
+    const title = prompt("Warnungs-Titel:", "Regelverstoß");
+    if (title === null) return;
+    const reason = prompt("Warnungstext (Begründung):", "");
+    if (reason === null) return;
+    const warnData = {
+        title,
+        reason,
+        timestamp: Date.now(),
+        by: window.myUsername || USER_ADMIN
+    };
+    await push(ref(_db, `warnings/${username}`), warnData);
+    // Send Firebase notification to user
+    await set(ref(_db, `notifications/${username}/pendingWarning`), warnData);
+    alert(`Warnung an "${username}" gesendet.`);
+    loadAdminUsers();
+};
+
+window.adminBanUser = async (username) => {
+    const reason = prompt("Sperrgrund:", "Verstoß gegen Nutzungsbedingungen");
+    if (!reason) return;
+    const content = prompt("Verstoßender Inhalt (optional):", "");
+    const days = prompt("Sperrdauer in Tagen (0 = dauerhaft):", "7");
+    if (days === null) return;
+    const daysNum = parseInt(days);
+    const permanent = daysNum === 0;
+    const until = permanent ? null : Date.now() + daysNum * 86400000;
+    const banData = {
+        active: true, reason, content: content || "",
+        until: until || null, permanent,
+        since: Date.now(),
+        by: window.myUsername || USER_ADMIN
+    };
+    await set(ref(_db, `bans/${username}`), banData);
+    // Notify the user
+    await set(ref(_db, `notifications/${username}/pendingBan`), banData);
+    alert(`"${username}" wurde gesperrt.`);
+    loadAdminUsers();
+};
+
+window.adminUnbanUser = async (username) => {
+    if (!confirm(`Sperre für "${username}" aufheben?`)) return;
+    await update(ref(_db, `bans/${username}`), { active: false });
+    loadAdminUsers();
+};
+
+window.loadModerationOverview = async () => {
+    const ov = document.getElementById("moderation-overview");
+    if (!ov) return;
+    ov.innerHTML = "<p style='opacity:.5'>Lade…</p>";
+    const [warnSnap, banSnap] = await Promise.all([
+        get(ref(_db, "warnings")), get(ref(_db, "bans"))
+    ]);
+    const warns = warnSnap.exists() ? warnSnap.val() : {};
+    const bans = banSnap.exists() ? banSnap.val() : {};
+    let html = "<h4 style='margin-top:0'>Warnungen</h4>";
+    const warnUsers = Object.keys(warns);
+    if (!warnUsers.length) html += "<p style='opacity:.5'>Keine Warnungen.</p>";
+    warnUsers.forEach(u => {
+        const entries = Object.values(warns[u]);
+        html += `<div style="margin-bottom:10px"><strong>${u}</strong> (${entries.length}x)<br>`;
+        entries.forEach(w => {
+            html += `<div class="warning-history-item"><span class="date">${fmtDate(w.timestamp)}</span><span class="reason">${w.title}: ${w.reason}</span></div>`;
+        });
+        html += `</div>`;
+    });
+    html += "<h4 style='margin-top:16px'>Sperren</h4>";
+    const banUsers = Object.keys(bans);
+    if (!banUsers.length) html += "<p style='opacity:.5'>Keine Sperren.</p>";
+    banUsers.forEach(u => {
+        const b = bans[u];
+        const statusColor = b.active ? "#cc0000" : "#888";
+        html += `<div class="ban-history-item">
+            <span style="font-weight:600">${u}</span>
+            <span class="date" style="color:${statusColor}">${b.active ? "Aktiv" : "Inaktiv"}</span>
+            <div style="font-size:12px;opacity:.7">Grund: ${b.reason || "–"} | Bis: ${b.permanent ? "Dauerhaft" : fmtDate(b.until)}</div>
+        </div>`;
+    });
+    ov.innerHTML = html;
+};
+
+window.sendAnnouncement = async () => {
+    const title = document.getElementById("announcement-title")?.value.trim() || "";
+    const text  = document.getElementById("announcement-text")?.value.trim() || "";
+    if (!text) { alert("Bitte einen Text eingeben."); return; }
+    await push(ref(_db, "announcements"), {
+        title, text, timestamp: Date.now(),
+        by: window.myUsername || USER_ADMIN
+    });
+    document.getElementById("announcement-title").value = "";
+    document.getElementById("announcement-text").value = "";
+    alert("Announcement gesendet!");
+};
+
+// =============================================
+// SETTINGS TAB: WARNUNGEN (users see history)
+// =============================================
+window._loadWarningsSettingsTab = async () => {
+    const u = window.myUsername || localStorage.getItem("villo_session");
+    const container = document.getElementById("warnings-panel-content");
+    if (!container || !u) return;
+
+    // Check if user is admin
+    const adminSnap = await get(ref(_db, `admins/${u}`));
+    const isAdmin = (u === USER_ADMIN) || (adminSnap.exists() && adminSnap.val());
+
+    if (isAdmin) {
+        container.innerHTML = `
+            <p style="margin-bottom:12px;">Du bist Administrator. Hier kannst du das Admin Panel öffnen.</p>
+            <button onclick="closeOverlay('settings-overlay'); openAdminPanel();" style="background:var(--primary);color:white;width:100%;padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:14px;">👑 Admin Panel öffnen</button>
+        `;
+        return;
+    }
+
+    // Regular user: show their own warn and ban history
+    const [warnSnap, banSnap] = await Promise.all([
+        get(ref(_db, `warnings/${u}`)),
+        get(ref(_db, `bans/${u}`))
+    ]);
+    let html = "<h4 style='margin-top:0;color:var(--primary)'>⚠️ Deine Warnungen</h4>";
+    if (!warnSnap.exists()) {
+        html += "<p style='opacity:.5'>Keine Warnungen vorhanden.</p>";
+    } else {
+        Object.values(warnSnap.val()).forEach(w => {
+            html += `<div class="warning-history-item">
+                <span class="date">${fmtDate(w.timestamp)}</span>
+                <span class="reason"><strong>${w.title || "Warnung"}</strong>: ${w.reason}</span>
+            </div>`;
+        });
+    }
+    html += "<h4 style='margin-top:16px;color:var(--primary)'>🚫 Deine Sperren</h4>";
+    if (!banSnap.exists()) {
+        html += "<p style='opacity:.5'>Keine Sperren vorhanden.</p>";
+    } else {
+        const b = banSnap.val();
+        const statusColor = b.active ? "#cc0000" : "#4caf50";
+        html += `<div class="ban-history-item">
+            <span style="color:${statusColor};font-weight:600;">${b.active ? "🔴 Aktiv" : "🟢 Abgelaufen"}</span>
+            <div style="font-size:13px;margin-top:4px">Grund: ${b.reason || "–"}</div>
+            <div style="font-size:12px;opacity:.7">Seit: ${fmtDate(b.since)} | Bis: ${b.permanent ? "Dauerhaft" : fmtDate(b.until)}</div>
+        </div>`;
+    }
+    container.innerHTML = html;
+};
+
+// =============================================
+// PATCH switchSettingsTab to handle warnings
+// =============================================
+const _origSwitchSettingsTab = window.switchSettingsTab;
+window.switchSettingsTab = (tab) => {
+    _origSwitchSettingsTab(tab);
+    if (tab === "warnings") {
+        // make panel visible (orig function may skip it since it doesn't know about it)
+        document.querySelectorAll(".settings-panel").forEach(p => {
+            p.style.display = p.id === "stab-warnings" ? "block" : "none";
+        });
+        window._loadWarningsSettingsTab();
+    }
+};
+
+// =============================================
+// PATCH showApp to check TOS, ban, warnings on login
+// =============================================
+const _origShowApp = window.showApp;
+window.showApp = function() {
+    if (_origShowApp) _origShowApp.call(this);
+    const u = window.myUsername || localStorage.getItem("villo_session");
+    if (!u) return;
+    // Check TOS first
+    setTimeout(() => {
+        checkAndShowTOS(u).then(() => {
+            // Then check ban
+            checkAndShowBan(u).then(isBanned => {
+                if (isBanned) return;
+                // Check for pending warnings
+                get(ref(_db, `notifications/${u}/pendingWarning`)).then(snap => {
+                    if (!snap.exists()) return;
+                    const w = snap.val();
+                    showWarningOverlay(w.title || "Warnung", w.reason || "");
+                    // Clear notification after showing
+                    remove(ref(_db, `notifications/${u}/pendingWarning`));
+                });
+            });
+        });
+    }, 800);
+    // Listen for live ban/warn push while user is online
+    onValue(ref(_db, `notifications/${u}/pendingBan`), async (snap) => {
+        if (!snap.exists()) return;
+        const ban = snap.val();
+        if (ban.active) {
+            showBanOverlay(ban);
+        }
+    });
+};
+
+// Expose to global if needed from inline html onclick
+window._db_admin = _db;
+window.USER_ADMIN = USER_ADMIN;
+window.fmtDate = fmtDate;
+</script>
+
+<style>
+/* Admin user row */
+.admin-user-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.admin-user-row:last-child { border-bottom: none; }
+/* Make fullscreen overlays flex */
+#warning-overlay[style*="flex"], #ban-overlay[style*="flex"] { display: flex !important; }
+</style>
+
 </body>
 </html>
