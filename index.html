@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -1871,7 +1869,7 @@
                     <div class="settings-tab" data-tab="profile" onclick="switchSettingsTab('profile')">👤 <span class="tab-label" data-i18n="tab_profile">Profil</span></div>
                     <div class="settings-tab" data-tab="security" onclick="switchSettingsTab('security')">🔒 <span class="tab-label" data-i18n="tab_security">Sicherheit</span></div>
                     <div class="settings-tab" data-tab="help" onclick="switchSettingsTab('help')">❓ <span class="tab-label" data-i18n="tab_help">Hilfe</span></div>
-                    <div class="settings-tab" id="warnings-settings-tab" data-tab="warnings" onclick="switchSettingsTab('warnings')">⚠️ <span class="tab-label">Warnungen</span></div>
+                    <div class="settings-tab" id="warnings-settings-tab" data-tab="warnings" onclick="(window._switchSettingsTabSafe||window.switchSettingsTab||function(){})('warnings')">⚠️ <span class="tab-label">Warnungen</span></div>
                 </div>
                 <!-- Content -->
                 <div id="settings-content" style="flex:1; overflow-y:auto; padding:20px;">
@@ -3201,6 +3199,7 @@ const LANGS = {
         tab_security: 'Sicherheit',
         tab_help: 'Hilfe',
         tab_help_title: 'Hilfe & Info',
+        tab_warnings: 'Warnungen',
         // Language
         lbl_language: 'Sprache / Language:',
         // Personalization
@@ -3305,6 +3304,115 @@ const LANGS = {
         archived_label: '🗂️ Archiviert',
         forward_btn: 'Weiterleiten',
         forward_selected: 'Weiterleiten',
+        // Security extras
+        lbl_blocked_users: 'Blockierte Nutzer',
+        btn_save_word_filter: 'Filter speichern',
+        lbl_word_filter: 'Wortfilter',
+        // Placeholders
+        ph_announcement: 'Nachricht an alle Nutzer...',
+        ph_announcement_title: 'Titel (optional)',
+        ph_report_reason: 'Begründung...',
+        ph_pin_hint: 'PIN-Hinweis (optional)',
+        ph_new_pin: 'Neuer PIN (xxxx-xxxx)',
+        ph_current_pin: 'Aktueller PIN',
+        ph_group_name: 'Gruppenname...',
+        ph_message: 'Nachricht...',
+        ph_edit_message: 'Nachricht bearbeiten...',
+        // Empty states
+        empty_bookmarks: 'Keine Lesezeichen',
+        empty_stories: 'Keine Geschichten',
+        // Context menu extras
+        ctx_bookmark: 'Lesezeichen',
+        ctx_report: 'Melden',
+        ctx_save_image: 'Bild speichern',
+        // Buttons
+        btn_send: 'Senden',
+        btn_cancel: 'Abbrechen',
+        btn_save: 'Speichern',
+        btn_delete: 'Löschen',
+        btn_close: 'Schließen',
+        btn_confirm: 'Bestätigen',
+        btn_create_group: 'Gruppe erstellen',
+        btn_invite: 'Einladen',
+        btn_leave_group: 'Gruppe verlassen',
+        btn_report: 'Melden',
+        btn_block: 'Blockieren',
+        btn_unblock: 'Entsperren',
+        btn_add_contact: 'Kontakt hinzufügen',
+        btn_remove_contact: 'Kontakt entfernen',
+        btn_clear_chat: 'Chat leeren',
+        btn_export_chat: 'Chat exportieren',
+        btn_share_qr: 'QR teilen',
+        btn_publish_story: '✅ Geschichte veröffentlichen',
+        btn_add_slide: '+ Slide hinzufügen',
+        btn_create_poll: 'Abstimmung erstellen',
+        // Labels
+        lbl_contacts: 'Kontakte',
+        lbl_groups: 'Gruppen',
+        lbl_stories: 'Geschichten',
+        lbl_bookmarks: 'Lesezeichen',
+        lbl_archived: 'Archiviert',
+        lbl_pinned: 'Angeheftet',
+        lbl_online: 'Online',
+        lbl_offline: 'Offline',
+        lbl_typing: 'Schreibt...',
+        lbl_members: 'Mitglieder',
+        lbl_admin: 'Admin',
+        lbl_moderator: 'Moderator',
+        lbl_read: 'Gelesen',
+        lbl_sent: 'Gesendet',
+        lbl_delivered: 'Zugestellt',
+        lbl_deleted_msg: 'Nachricht gelöscht',
+        lbl_edited: 'Bearbeitet',
+        lbl_forwarded: 'Weitergeleitet',
+        lbl_reply_to: 'Antwort auf',
+        lbl_poll: 'Abstimmung',
+        lbl_poll_closed: 'Abstimmung geschlossen',
+        lbl_votes: 'Stimmen',
+        lbl_invite_link: 'Einladungslink',
+        lbl_group_created: 'Gruppe erstellt',
+        lbl_joined_group: 'Gruppe beigetreten',
+        lbl_left_group: 'Gruppe verlassen',
+        lbl_removed_from_group: 'Aus Gruppe entfernt',
+        lbl_made_admin: 'Zum Admin ernannt',
+        lbl_removed_admin: 'Admin-Rechte entzogen',
+        lbl_ban_history: 'Sperrhistorie',
+        lbl_warn_history: 'Warnungshistorie',
+        lbl_no_warnings: 'Keine Warnungen',
+        lbl_no_bans: 'Keine Sperren',
+        lbl_announcement: 'Ankündigung',
+        lbl_system_msg: 'Systemnachricht',
+        lbl_version: 'Version',
+        lbl_today: 'Heute',
+        lbl_yesterday: 'Gestern',
+        lbl_search_results: 'Suchergebnisse',
+        lbl_no_results: 'Keine Ergebnisse',
+        lbl_loading: 'Lädt...',
+        lbl_error: 'Fehler',
+        // Notifications extras
+        notif_contact_added: '✅ Kontakt hinzugefügt',
+        notif_group_created: '✅ Gruppe erstellt',
+        notif_group_joined: '✅ Gruppe beigetreten',
+        notif_group_left: '✅ Gruppe verlassen',
+        notif_link_copied: '✅ Link kopiert',
+        notif_poll_created: '✅ Abstimmung erstellt',
+        notif_poll_closed: '🔒 Abstimmung geschlossen',
+        notif_reported: '✅ Gemeldet',
+        notif_blocked: '✅ Blockiert',
+        notif_unblocked: '✅ Entsperrt',
+        notif_bookmark_saved: '✅ Lesezeichen gesetzt',
+        notif_chat_exported: '✅ Chat exportiert',
+        notif_announcement_sent: '✅ Ankündigung gesendet',
+        notif_warn_sent: '✅ Warnung gesendet',
+        notif_ban_applied: '✅ Sperre verhängt',
+        notif_unbanned: '✅ Entsperrt',
+        // Confirm dialogs
+        confirm_delete_msg: 'Nachricht wirklich löschen?',
+        confirm_clear_chat: 'Chat wirklich leeren?',
+        confirm_leave_group: 'Gruppe wirklich verlassen?',
+        confirm_remove_contact: 'Kontakt wirklich entfernen?',
+        confirm_delete_story: 'Geschichte wirklich löschen?',
+        confirm_close_poll: 'Abstimmung wirklich schließen?',
     },
     en: {
         // Tabs
@@ -3313,6 +3421,7 @@ const LANGS = {
         tab_security: 'Security',
         tab_help: 'Help',
         tab_help_title: 'Help & Info',
+        tab_warnings: 'Warnings',
         // Language
         lbl_language: 'Language:',
         // Personalization
@@ -3417,6 +3526,115 @@ const LANGS = {
         archived_label: '🗂️ Archived',
         forward_btn: 'Forward',
         forward_selected: 'Forward',
+        // Security extras
+        lbl_blocked_users: 'Blocked users',
+        btn_save_word_filter: 'Save filter',
+        lbl_word_filter: 'Word filter',
+        // Placeholders
+        ph_announcement: 'Message to all users...',
+        ph_announcement_title: 'Title (optional)',
+        ph_report_reason: 'Reason...',
+        ph_pin_hint: 'PIN hint (optional)',
+        ph_new_pin: 'New PIN (xxxx-xxxx)',
+        ph_current_pin: 'Current PIN',
+        ph_group_name: 'Group name...',
+        ph_message: 'Message...',
+        ph_edit_message: 'Edit message...',
+        // Empty states
+        empty_bookmarks: 'No bookmarks',
+        empty_stories: 'No stories',
+        // Context menu extras
+        ctx_bookmark: 'Bookmark',
+        ctx_report: 'Report',
+        ctx_save_image: 'Save image',
+        // Buttons
+        btn_send: 'Send',
+        btn_cancel: 'Cancel',
+        btn_save: 'Save',
+        btn_delete: 'Delete',
+        btn_close: 'Close',
+        btn_confirm: 'Confirm',
+        btn_create_group: 'Create group',
+        btn_invite: 'Invite',
+        btn_leave_group: 'Leave group',
+        btn_report: 'Report',
+        btn_block: 'Block',
+        btn_unblock: 'Unblock',
+        btn_add_contact: 'Add contact',
+        btn_remove_contact: 'Remove contact',
+        btn_clear_chat: 'Clear chat',
+        btn_export_chat: 'Export chat',
+        btn_share_qr: 'Share QR',
+        btn_publish_story: '✅ Publish story',
+        btn_add_slide: '+ Add slide',
+        btn_create_poll: 'Create poll',
+        // Labels
+        lbl_contacts: 'Contacts',
+        lbl_groups: 'Groups',
+        lbl_stories: 'Stories',
+        lbl_bookmarks: 'Bookmarks',
+        lbl_archived: 'Archived',
+        lbl_pinned: 'Pinned',
+        lbl_online: 'Online',
+        lbl_offline: 'Offline',
+        lbl_typing: 'Typing...',
+        lbl_members: 'Members',
+        lbl_admin: 'Admin',
+        lbl_moderator: 'Moderator',
+        lbl_read: 'Read',
+        lbl_sent: 'Sent',
+        lbl_delivered: 'Delivered',
+        lbl_deleted_msg: 'Message deleted',
+        lbl_edited: 'Edited',
+        lbl_forwarded: 'Forwarded',
+        lbl_reply_to: 'Reply to',
+        lbl_poll: 'Poll',
+        lbl_poll_closed: 'Poll closed',
+        lbl_votes: 'Votes',
+        lbl_invite_link: 'Invite link',
+        lbl_group_created: 'Group created',
+        lbl_joined_group: 'Joined group',
+        lbl_left_group: 'Left group',
+        lbl_removed_from_group: 'Removed from group',
+        lbl_made_admin: 'Made admin',
+        lbl_removed_admin: 'Admin rights removed',
+        lbl_ban_history: 'Ban history',
+        lbl_warn_history: 'Warning history',
+        lbl_no_warnings: 'No warnings',
+        lbl_no_bans: 'No bans',
+        lbl_announcement: 'Announcement',
+        lbl_system_msg: 'System message',
+        lbl_version: 'Version',
+        lbl_today: 'Today',
+        lbl_yesterday: 'Yesterday',
+        lbl_search_results: 'Search results',
+        lbl_no_results: 'No results',
+        lbl_loading: 'Loading...',
+        lbl_error: 'Error',
+        // Notifications extras
+        notif_contact_added: '✅ Contact added',
+        notif_group_created: '✅ Group created',
+        notif_group_joined: '✅ Joined group',
+        notif_group_left: '✅ Left group',
+        notif_link_copied: '✅ Link copied',
+        notif_poll_created: '✅ Poll created',
+        notif_poll_closed: '🔒 Poll closed',
+        notif_reported: '✅ Reported',
+        notif_blocked: '✅ Blocked',
+        notif_unblocked: '✅ Unblocked',
+        notif_bookmark_saved: '✅ Bookmark saved',
+        notif_chat_exported: '✅ Chat exported',
+        notif_announcement_sent: '✅ Announcement sent',
+        notif_warn_sent: '✅ Warning sent',
+        notif_ban_applied: '✅ Ban applied',
+        notif_unbanned: '✅ Unbanned',
+        // Confirm dialogs
+        confirm_delete_msg: 'Really delete this message?',
+        confirm_clear_chat: 'Really clear this chat?',
+        confirm_leave_group: 'Really leave this group?',
+        confirm_remove_contact: 'Really remove this contact?',
+        confirm_delete_story: 'Really delete this story?',
+        confirm_close_poll: 'Really close this poll?',
     },
       lx: {
         // Tabs
@@ -3425,6 +3643,7 @@ const LANGS = {
         tab_security: 'Sijúrita',
         tab_help: 'Hölf',
         tab_help_title: 'Hölf û Informaćio',
+        tab_warnings: 'Vârnjita',
         // Language
         lbl_language: 'Línjua:',
         // Personalization
@@ -3439,8 +3658,8 @@ const LANGS = {
         lbl_my_status: 'Mïn Zänverinjito:',
         btn_save_avatar: 'Sávi avatário',
         btn_save_status: 'Sávi zänverinjito',
-        // Security
-        sec_subtitle: 'Manage your PIN and session.',
+        // Security — fehlende Begriffe: deutsche Platzhalter
+        sec_subtitle: 'Ljava PIN û sesio',
         btn_change_pin: '🔑 Ževrö tí PIN',
         btn_logout: '🚪 Eçita sesío',
         lbl_qr: 'Iníca Code tül QR',
@@ -3456,6 +3675,9 @@ const LANGS = {
         opt_except: 'Kontakta untül...',
         opt_only_for: 'Kêne savira...',
         btn_save_visibility: 'Sáva',
+        lbl_blocked_users: 'Benúsna blocka',       // Platzhalter DE
+        btn_save_word_filter: 'Sáva Filtra pálavra',      // Platzhalter DE
+        lbl_word_filter: 'Filtra palavra',                 // Platzhalter DE
         // Help
         btn_open_help: '📖 Açesa Hölfe',
         btn_changelog: '📋 Livracećangean viva',
@@ -3464,19 +3686,30 @@ const LANGS = {
         register_tab: 'Nü',
         btn_start: 'Starta',
         btn_register: 'Registra',
-        ph_name: 'PH nóm',
+        ph_name: 'Nóm',
         ph_pin: 'PIN (xxxx-xxxx)',
         ph_search_user: 'ćerći benúsva...',
         ph_search_msg: 'ćerći mesajes...',
         ph_search_all: 'ćerći allân chats...',
         ph_status: 'dê ejemplo busja...',
-        ph_contact_note: 'Notá',
-        ph_group_search: 'ćerći grupa',
+        ph_contact_note: 'Notizen zu diesem Kontakt...',   // Platzhalter DE
+        ph_group_search: 'ćerći benúsva...',
+        ph_announcement: 'Annônça',    // Platzhalter DE
+        ph_announcement_title: 'Frânvíaćio (optionala)',         // Platzhalter DE
+        ph_report_reason: 'Eçerćio...',                 // Platzhalter DE
+        ph_pin_hint: 'PIN-Hintí (optionala)',             // Platzhalter DE
+        ph_new_pin: 'Nü PIN (xxxx-xxxx)',               // Platzhalter DE
+        ph_current_pin: 'PIN Nü',                   // Platzhalter DE
+        ph_group_name: 'Nóm grúpân',                   // Platzhalter DE
+        ph_message: 'Mesáje...',
+        ph_edit_message: 'Edíta...',        // Platzhalter DE
         // Empty state
         empty_chat_title: 'Nödel chat selektave',
         empty_chat_sub: 'Chúse kontakte tüllev vi gríd starta villo-chattja',
         empty_contacts: 'Nödel kontakta',
         empty_contacts_sub: 'Ćerće kontakta lista ô adda cod qr.',
+        empty_bookmarks: 'Nö Markas',              // Platzhalter DE
+        empty_stories: 'Nö storijas',                // Platzhalter DE
         // Context menu
         ctx_copy: 'Dupli',
         ctx_react: 'Reaćio',
@@ -3488,15 +3721,82 @@ const LANGS = {
         ctx_delete: 'Clêra',
         ctx_delete_all: 'Delêta',
         ctx_info: 'Mesáje info',
+        ctx_bookmark: 'Marka',                       // Platzhalter DE
+        ctx_report: 'Reporta',                              // Platzhalter DE
+        ctx_save_image: 'sáva piktća',                  // Platzhalter DE
+        // Buttons / Actions
+        btn_send: 'Vátül sênda',
+        btn_cancel: 'Abdande',                           // Platzhalter DE
+        btn_save: 'Sáva',
+        btn_delete: 'Delêta',
+        btn_close: 'Abdande',                            // Platzhalter DE
+        btn_confirm: 'OK',                         // Platzhalter DE
+        btn_create_group: 'Grupa creáçio',
+        btn_invite: 'Ínvita',                            // Platzhalter DE
+        btn_leave_group: 'Eçita grúpa',               // Platzhalter DE
+        btn_report: 'Repôrta',                              // Platzhalter DE
+        btn_block: 'Blockânvja',                           // Platzhalter DE
+        btn_unblock: 'Dêblockanvja',                         // Platzhalter DE
+        btn_add_contact: 'Adda Kontakta',             // Platzhalter DE
+        btn_remove_contact: 'Remóva kontakta',           // Platzhalter DE
+        btn_clear_chat: 'Delêta chat',                     // Platzhalter DE
+        btn_export_chat: 'exporta chat TXTên',               // Platzhalter DE
+        btn_share_qr: 'cód qr QR sênda',                        // Platzhalter DE
+        btn_publish_story: '✅ Storija poléva',
+        btn_add_slide: '+ Sildan adda',
+        btn_create_poll: 'Créata Pollâvjianćio',           // Platzhalter DE
+        // Labels / Titles
+        lbl_contacts: 'Kontakta',
+        lbl_groups: 'Grupä',                              // Platzhalter LX
+        lbl_stories: 'Storijas',
+        lbl_bookmarks: 'Markas',                      // Platzhalter DE
+        lbl_archived: 'Arvave',                        // Platzhalter DE
+        lbl_pinned: 'Pinve',                          // Platzhalter DE
+        lbl_online: 'On líne',
+        lbl_offline: 'Off líne',
+        lbl_typing: 'týpas',
+        lbl_members: 'Partićipantias',                         // Platzhalter DE
+        lbl_admin: 'Admínístrátore',
+        lbl_moderator: 'Mod.',                        // Platzhalter DE
+        lbl_read: 'Reda',                               // Platzhalter DE
+        lbl_sent: 'Sendâve',                              // Platzhalter DE
+        lbl_delivered: 'Açeptave',                       // Platzhalter DE
+        lbl_deleted_msg: 'Dêletave mesáje',             // Platzhalter DE
+        lbl_edited: 'edítave',                          // Platzhalter DE
+        lbl_forwarded: 'Sêndave tül',                   // Platzhalter DE
+        lbl_reply_to: 'Rêpla tül',                       // Platzhalter DE
+        lbl_poll: 'Pollâvjianćio',                            // Platzhalter DE
+        lbl_poll_closed: 'Poll. nödvanve',         // Platzhalter DE
+        lbl_votes: 'Sêrvas',                              // Platzhalter DE
+        lbl_invite_link: 'Ínvitaçio linkça',                 // Platzhalter DE
+        lbl_group_created: 'Creatave Grupa',              // Platzhalter DE
+        lbl_joined_group: 'Ínicia grupa',            // Platzhalter DE
+        lbl_left_group: 'Abd\'inda grupa',                // Platzhalter DE
+        lbl_removed_from_group: 'Vâlentave grúpa',     // Platzhalter DE
+        lbl_made_admin: 'Kä Admínístrátore',               // Platzhalter DE
+        lbl_removed_admin: 'Vê Admínístrátore',        // Platzhalter DE
+        lbl_ban_history: 'Baná histórja',                  // Platzhalter DE
+        lbl_warn_history: 'Alêrta histórja',              // Platzhalter DE
+        lbl_no_warnings: 'Nö alêrta ô fáléra',                // Platzhalter DE
+        lbl_no_bans: 'Nö bâna',                      // Platzhalter DE
+        lbl_announcement: 'Annônça',                   // Platzhalter DE
+        lbl_system_msg: 'Mesáje systémý',                 // Platzhalter DE
+        lbl_version: 'Versio',
+        lbl_today: 'Tüldía',                                // Platzhalter DE
+        lbl_yesterday: 'Vêdía',                          // Platzhalter DE
+        lbl_search_results: 'Resulta',              // Platzhalter DE
+        lbl_no_results: 'Nö Resulta. Ćinria velinccia û palavria ô triýa nüve',                // Platzhalter DE
+        lbl_loading: 'Lóada...',                            // Platzhalter DE
+        lbl_error: 'Fáler',                               // Platzhalter DE
         // Notifications
-        notif_accent_changed: '✅ Kolora carvave',
+        notif_accent_changed: '✅ Kolora ževri',
         notif_registered: '✅ Registra suçinfulla!',
         notif_name_taken: '⛔ Nóm nödel avallavila sini!',
         notif_wrong_credentials: '⛔ Nóm ô PIN inkorrekta!',
         notif_fill_all: '⚠️ Ínserta Nóm û PIN!',
         notif_msg_edited: '✅ Edítave mesáje',
         notif_msg_deleted: '✅ Clêrave ô deleta mesáje',
-        notif_contact_removed: '✅ Delêtave mesaje',
+        notif_contact_removed: '✅ Delêtave kontakte',
         notif_alias_saved: '✅ Saváve Alias',
         notif_chat_cleared: '✅ Cleváve chat',
         notif_no_chat: '⚠️ Nödel chat!',
@@ -3504,10 +3804,10 @@ const LANGS = {
         notif_img_error: '❌ Nödel create piktća',
         notif_new_msg: '💬 Nü mesaja de: ',
         notif_group_not_found: '❌ Nödel ćercarevi grupa',
-        notif_no_user: 'Errôre 11: Nödel benusnâ',
+        notif_no_user: 'Nödel benúsva ćercarevi',
         notif_avatar_saved: '✅ Avatário sávave',
-        notif_avatar_local: '✅ Avatario sávave',
-        notif_status_saved: '✅ zänverinjito saváve',
+        notif_avatar_local: '✅ Avatário lókali sávave',
+        notif_status_saved: '✅ Zänverinjito saváve',
         notif_setting_saved: '✅ Setûp ževri',
         notif_visibility_saved: '✅ Vište sava',
         notif_story_published: '✅ Sorija cúm',
@@ -3515,20 +3815,43 @@ const LANGS = {
         notif_slide_saved: '✅ Sildan sâvan',
         notif_slide_deleted: '🗑️ Sildan delêta',
         notif_stories_deleted: '🗑️ Pövels storija',
-        notif_wrong_pin: '❌ PIN inkorekta (adda - verintül 4-5).',
+        notif_wrong_pin: '❌ PIN inkorrekta',
         notif_pdf_creating: '⏳ Creata PDF...',
         notif_pdf_done: '✅ PDF creata!',
-        notif_pin_changed: '✅ PIN ževri',
-        notif_min_slide: '⚠️ Min. 1 silda',
-        notif_slide_content: '⚠️ Aadda kontenta fáv.',
+        notif_pin_changed: '✅ PIN ževri suçinfull',
+        notif_min_slide: '⚠️ Min. 1 silda adda',
+        notif_slide_content: '⚠️ Kontenta adda fáv.',
+        notif_contact_added: '✅ Kontakta adda',                  // Platzhalter LX
+        notif_group_created: '✅ Grupa creata',
+        notif_group_joined: '✅ Grupa ínicave',                  // Platzhalter DE
+        notif_group_left: '✅ Grupa deínicave',                  // Platzhalter DE
+        notif_link_copied: '✅ Link duploave',                     // Platzhalter DE
+        notif_poll_created: '✅ Pollâvjianćio creâtave',             // Platzhalter DE
+        notif_poll_closed: '🔒 Pollâvjianćio eçratan',          // Platzhalter DE
+        notif_reported: '✅ Repôrtave',                           // Platzhalter DE
+        notif_blocked: '✅ Blockân',                           // Platzhalter DE
+        notif_unblocked: '✅ Dêblockan',                         // Platzhalter DE
+        notif_bookmark_saved: '✅ Mârka istra',           // Platzhalter DE
+        notif_chat_exported: '✅ Chat eçporta',               // Platzhalter DE
+        notif_announcement_sent: '✅ Sêndave annônça',      // Platzhalter DE
+        notif_warn_sent: '✅ Eçrimva eksklamanća',                   // Platzhalter DE
+        notif_ban_applied: '✅ Banân',                  // Platzhalter DE
+        notif_unbanned: '✅ Unbanâve',                           // Platzhalter DE
         // Group info dynamic
         mute: '🔇 Volúmý nö',
         unmute: '🔊 Volúmý sï',
         archive: '🗂️ Archiva renç',
-        unarchive: '📤dearciva',
+        unarchive: '📤 Dearciva',
         archived_label: '🗂️ Arve',
         forward_btn: 'Sendjave',
         forward_selected: 'Sendjavea',
+        // Confirm dialogs
+        confirm_delete_msg: '¿Delêta mesája?',       // Platzhalter DE
+        confirm_clear_chat: '¿Delêta chat?',             // Platzhalter DE
+        confirm_leave_group: '¿Eçita grupa?',       // Platzhalter DE
+        confirm_remove_contact: '¿remóva kontakta?',   // Platzhalter DE
+        confirm_delete_story: '¿Delêta storija?',    // Platzhalter DE
+        confirm_close_poll: '¿Enda Pollâvjianćio?',    // Platzhalter DE
     }
 };
 
@@ -10078,7 +10401,7 @@ const _app  = getApps()[0];
 const _db   = getDatabase(_app);
 
 // ---- constants ----
-const USER_ADMIN = "USER"; // change this to the actual admin username
+const USER_ADMIN = "Admin"; // VilloChat Hauptadmin
 
 // ---- helpers ----
 function fmtDate(ts) {
@@ -10453,24 +10776,37 @@ window._loadWarningsSettingsTab = async () => {
 // =============================================
 // PATCH switchSettingsTab to handle warnings
 // =============================================
-const _origSwitchSettingsTab = window.switchSettingsTab;
-window.switchSettingsTab = (tab) => {
-    _origSwitchSettingsTab(tab);
-    if (tab === "warnings") {
-        // make panel visible (orig function may skip it since it doesn't know about it)
-        document.querySelectorAll(".settings-panel").forEach(p => {
-            p.style.display = p.id === "stab-warnings" ? "block" : "none";
+function _applySettingsTabPatch() {
+    const orig = window.switchSettingsTab;
+    if (!orig) { setTimeout(_applySettingsTabPatch, 50); return; }
+    // Register a safe alias used by the warnings tab onclick
+    window._switchSettingsTabSafe = (tab) => {
+        // Activate correct sidebar tab highlight
+        document.querySelectorAll('.settings-tab').forEach(t => {
+            t.classList.toggle('active', t.dataset.tab === tab);
         });
-        window._loadWarningsSettingsTab();
-    }
-};
+        if (tab === 'warnings') {
+            document.querySelectorAll('.settings-panel').forEach(p => {
+                p.style.display = p.id === 'stab-warnings' ? 'block' : 'none';
+            });
+            window._loadWarningsSettingsTab();
+        } else {
+            orig(tab);
+        }
+    };
+    // Also patch the original so other callers still work
+    window.switchSettingsTab = window._switchSettingsTabSafe;
+}
+setTimeout(_applySettingsTabPatch, 0);
 
 // =============================================
 // PATCH showApp to check TOS, ban, warnings on login
 // =============================================
-const _origShowApp = window.showApp;
-window.showApp = function() {
-    if (_origShowApp) _origShowApp.call(this);
+function _applyShowAppPatch() {
+    const orig = window.showApp;
+    if (!orig) { setTimeout(_applyShowAppPatch, 50); return; }
+    window.showApp = function() {
+        orig.call(this);
     const u = window.myUsername || localStorage.getItem("villo_session");
     if (!u) return;
     // Check TOS first
@@ -10499,6 +10835,8 @@ window.showApp = function() {
         }
     });
 };
+}
+setTimeout(_applyShowAppPatch, 0);
 
 // Expose to global if needed from inline html onclick
 window._db_admin = _db;
