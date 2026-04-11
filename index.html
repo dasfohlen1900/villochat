@@ -3033,19 +3033,19 @@
                         <div class="burger-dropdown" id="burger-dropdown">
                             <div class="burger-dropdown-item" onclick="openGroupCreate()">
                                 <span>👥</span>
-                                <span>Gruppe erstellen</span>
+                                <span data-i18n="menu_create_group">Gruppe erstellen</span>
                             </div>
                             <div class="burger-dropdown-item" onclick="openBookmarks()">
                                 <span>🔖</span>
-                                <span>Lesezeichen</span>
+                                <span data-i18n="menu_bookmarks">Lesezeichen</span>
                             </div>
                             <div class="burger-dropdown-item" onclick="openReports()">
                                 <span>🚨</span>
-                                <span>Gemeldete Nachrichten</span>
+                                <span data-i18n="menu_reports">Gemeldete Nachrichten</span>
                             </div>
                             <div class="burger-dropdown-item" onclick="openSettings()">
                                 <span>⚙️</span>
-                                <span>Einstellungen</span>
+                                <span data-i18n="menu_settings">Einstellungen</span>
                             </div>
                         </div>
                     </div>
@@ -3413,6 +3413,11 @@ const LANGS = {
         confirm_remove_contact: 'Kontakt wirklich entfernen?',
         confirm_delete_story: 'Geschichte wirklich löschen?',
         confirm_close_poll: 'Abstimmung wirklich schließen?',
+        // Burger menu
+        menu_settings: 'Einstellungen',
+        menu_reports: 'Gemeldete Nachrichten',
+        menu_create_group: 'Gruppe erstellen',
+        menu_bookmarks: 'Lesezeichen',
     },
     en: {
         // Tabs
@@ -3635,6 +3640,11 @@ const LANGS = {
         confirm_remove_contact: 'Really remove this contact?',
         confirm_delete_story: 'Really delete this story?',
         confirm_close_poll: 'Really close this poll?',
+        // Burger menu
+        menu_settings: 'Settings',
+        menu_reports: 'Reported Messages',
+        menu_create_group: 'Create Group',
+        menu_bookmarks: 'Bookmarks',
     },
       lx: {
         // Tabs
@@ -3852,6 +3862,11 @@ const LANGS = {
         confirm_remove_contact: '¿remóva kontakta?',   // Platzhalter DE
         confirm_delete_story: '¿Delêta storija?',    // Platzhalter DE
         confirm_close_poll: '¿Enda Pollâvjianćio?',    // Platzhalter DE
+        // Burger menu
+        menu_settings: 'Setûp',
+        menu_reports: 'Mesája repôrta',
+        menu_create_group: 'Creaćio Grupa',
+        menu_bookmarks: 'Marka',
     }
 };
 
@@ -3913,7 +3928,10 @@ window.setLanguage = (lang) => {
     currentLang = lang;
     localStorage.setItem('villo_lang', lang);
     applyLanguage();
-    showNotification(lang === 'en' ? '🇬🇧 English activated' : '🇩🇪 Deutsch aktiviert', 'success');
+    const _langNotif = lang === 'en' ? '🇬🇧 English activated'
+                     : lang === 'lx' ? 'LÜ Lükvián aktivîre'
+                     : '🇩🇪 Deutsch aktiviert';
+    showNotification(_langNotif, 'success');
 };
 
 
@@ -9335,6 +9353,17 @@ window.toggleFocusMode = () => {
     showNotification(isFocus ? '🎯 Focus-Modus aktiv' : '↩️ Focus-Modus deaktiviert', 'success');
 };
 
+/* FULLSCREEN (Browser) */
+window.toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            showNotification('⚠️ Vollbild nicht verfügbar: ' + err.message, 'error');
+        });
+    } else {
+        document.exitFullscreen();
+    }
+};
+
 /* ENHANCED KEYBOARD SHORTCUTS FOR V4 */
 function initV4Shortcuts() {
     document.addEventListener('keydown', (e) => {
@@ -10499,6 +10528,7 @@ window.showBanOverlay = (ban) => {
         reactivate.style.display = (expired && !ban.permanent) ? "inline-block" : "none";
     }
     ov.style.display = "flex";
+    ov.classList.add("active");
 };
 
 window.checkBanStatus = async () => {
@@ -10530,7 +10560,7 @@ window.reactivateAccount = async () => {
     if (ban.until && ban.until > Date.now()) { alert("Deine Sperre ist noch nicht abgelaufen."); return; }
     await update(ref(_db, `bans/${u}`), { active: false });
     const ov = document.getElementById("ban-overlay");
-    if (ov) ov.style.display = "none";
+    if (ov) { ov.style.display = "none"; ov.classList.remove("active"); }
     alert("Dein Konto wurde reaktiviert. Willkommen zurück!");
 };
 
@@ -10541,12 +10571,12 @@ window.showWarningOverlay = (title, text) => {
     document.getElementById("warning-title").textContent = "⚠️ " + (title || "Warnung");
     document.getElementById("warning-text").textContent = text || "";
     const ov = document.getElementById("warning-overlay");
-    if (ov) ov.style.display = "flex";
+    if (ov) { ov.style.display = "flex"; ov.classList.add("active"); }
 };
 
 window.closeWarning = () => {
     const ov = document.getElementById("warning-overlay");
-    if (ov) ov.style.display = "none";
+    if (ov) { ov.style.display = "none"; ov.classList.remove("active"); }
 };
 
 // =============================================
@@ -10858,6 +10888,7 @@ window.fmtDate = fmtDate;
 .admin-user-row:last-child { border-bottom: none; }
 /* Make fullscreen overlays flex */
 #warning-overlay[style*="flex"], #ban-overlay[style*="flex"] { display: flex !important; }
+#warning-overlay.active, #ban-overlay.active { display: flex !important; }
 </style>
 
 </body>
