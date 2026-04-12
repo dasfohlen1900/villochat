@@ -1753,6 +1753,24 @@
             background: #dc3545;
         }
 
+        /* Admin user row */
+        .admin-user-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .admin-user-row:last-child { border-bottom: none; }
+
+        /* Fullscreen overlays: sicherstellen, dass .active display:flex setzt */
+        #warning-overlay.active,
+        #ban-overlay.active {
+            display: flex !important;
+        }
+
         /* === Warning History === */
         .warning-history-item {
             padding: 12px;
@@ -3149,6 +3167,116 @@
         </div>
     </div>
 
+
+    <!-- Admin Panel Overlay -->
+    <div id="admin-panel-overlay" class="admin-panel-overlay">
+        <div class="admin-panel">
+            <div class="admin-panel-header">
+                <h2>👑 Admin Panel</h2>
+                <span style="cursor:pointer; font-size:24px;" onclick="closeAdminPanel()">✕</span>
+            </div>
+            <div class="admin-panel-tabs">
+                <button class="admin-tab active" onclick="switchAdminTab('users')">👥 Nutzer</button>
+                <button class="admin-tab" onclick="switchAdminTab('announcements')">📢 Announcements</button>
+                <button class="admin-tab" onclick="switchAdminTab('moderation')">⚠️ Moderation</button>
+            </div>
+            <div class="admin-panel-content">
+                <!-- Users Tab -->
+                <div id="admin-tab-users" class="admin-tab-content active">
+                    <h3>Nutzer-Verwaltung</h3>
+                    <div id="users-list"></div>
+                </div>
+                
+                <!-- Announcements Tab -->
+                <div id="admin-tab-announcements" class="admin-tab-content">
+                    <h3>Announcement senden</h3>
+                    <div class="announcement-form">
+                        <input type="text" id="announcement-title" placeholder="Titel (optional)">
+                        <textarea id="announcement-text" placeholder="Nachricht an alle Nutzer..."></textarea>
+                        <button class="send-announcement-btn" onclick="sendAnnouncement()">📢 Announcement senden</button>
+                    </div>
+                </div>
+                
+                <!-- Moderation Tab -->
+                <div id="admin-tab-moderation" class="admin-tab-content">
+                    <h3>Warn- und Ban-Übersicht</h3>
+                    <div id="moderation-overview"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Warning Overlay (Fullscreen) -->
+    <div id="warning-overlay" class="fullscreen-overlay">
+        <div class="warning-modal">
+            <h2 id="warning-title">⚠️ Warnung</h2>
+            <p id="warning-text"></p>
+            <button class="warning-ok-btn" onclick="closeWarning()">OK</button>
+        </div>
+    </div>
+
+    <!-- Ban Overlay (Fullscreen) -->
+    <div id="ban-overlay" class="fullscreen-overlay">
+        <div class="ban-modal">
+            <h2>🚫 Account gesperrt</h2>
+            <p id="ban-message"></p>
+            <div class="ban-info">
+                <strong>Grund:</strong>
+                <div id="ban-reason"></div>
+                <br>
+                <strong>Verstoßender Inhalt:</strong>
+                <div id="ban-content"></div>
+                <br>
+                <strong>Sperrung bis:</strong>
+                <div id="ban-until"></div>
+            </div>
+            <div class="ban-actions">
+                <button class="ban-action-btn danger" onclick="logout()">Abmelden</button>
+                <button class="ban-action-btn secondary" onclick="checkBanStatus()">Konto prüfen</button>
+                <button class="ban-action-btn" id="reactivate-btn" onclick="reactivateAccount()" style="display:none;">Reaktivieren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms of Service Overlay -->
+    <div id="tos-overlay" class="tos-overlay">
+        <div class="tos-modal">
+            <h2>📜 Nutzungsbedingungen</h2>
+            <div class="tos-content">
+                <h3>Willkommen bei VilloChat!</h3>
+                <p>Bitte lies und akzeptiere unsere Nutzungsbedingungen, um VilloChat zu nutzen.</p>
+                
+                <h3>1. Verhaltensregeln</h3>
+                <p>Du verpflichtest dich:</p>
+                <ul>
+                    <li>Respektvoll mit anderen Nutzern umzugehen</li>
+                    <li>Keine beleidigenden, diskriminierenden oder illegalen Inhalte zu teilen</li>
+                    <li>Die Privatsphäre anderer zu respektieren</li>
+                    <li>Keine Spam-Nachrichten zu versenden</li>
+                </ul>
+                
+                <h3>2. Konsequenzen bei Verstößen</h3>
+                <p>Bei Verstößen gegen diese Regeln können wir:</p>
+                <ul>
+                    <li>Warnungen aussprechen</li>
+                    <li>Deinen Account temporär oder dauerhaft sperren</li>
+                    <li>Gemeldete Inhalte überprüfen und entfernen</li>
+                </ul>
+                
+                <h3>3. Datenschutz</h3>
+                <p>Wir verwenden Firebase Realtime Database zur Speicherung deiner Chat-Daten. Deine Daten werden nur für den Betrieb des Dienstes verwendet.</p>
+                
+                <h3>4. Änderungen</h3>
+                <p>Wir behalten uns das Recht vor, diese Nutzungsbedingungen jederzeit zu ändern. Wichtige Änderungen werden per Announcement kommuniziert.</p>
+            </div>
+            <div class="tos-actions">
+                <button class="tos-decline-btn" onclick="declineTOS()">Ablehnen</button>
+                <button class="tos-accept-btn" onclick="acceptTOS()">Akzeptieren</button>
+            </div>
+        </div>
+    </div>
+
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -3526,9 +3654,9 @@ const LANGS = {
         lbl_recur_daily: 'Täglich wiederholen',
         lbl_recur_weekly: 'Wöchentlich wiederholen',
         h2_group_create: '👥 Gruppe erstellen',
-        lbl_group_name: t('lbl_group_name'),
-        lbl_add_members: t('lbl_add_members'),
-        lbl_selected_members: t('lbl_selected_members'),
+        lbl_group_name: 'Gruppenname:',
+        lbl_add_members: 'Mitglieder hinzufügen:',
+        lbl_selected_members: 'Ausgewählte Mitglieder:',
         h2_group_info: '👥 Gruppeninfo',
         lbl_attach_image: 'Bild',
         lbl_attach_audio: 'Audio',
@@ -4450,7 +4578,11 @@ const LANGS = {
 let currentLang = localStorage.getItem('villo_lang') || 'de';
 
 function t(key) {
-    return (LANGS[currentLang] && LANGS[currentLang][key]) || LANGS.de[key] || key;
+    const lang = LANGS[currentLang];
+    if (lang && key in lang) return lang[key];
+    if (key in LANGS.de) return LANGS.de[key];
+    console.warn(`[i18n] Missing translation key: "${key}"`);
+    return key;
 }
 
 function applyLanguage() {
@@ -10863,149 +10995,10 @@ window.onload = () => {
         }, 3000);
     });
 };
-</script>
 
-    <!-- Hilfe-Funktion früh verfügbar machen (vor Module-Script-Load) -->
-    <script>
-        function openHelp() {
-            const overlay = document.getElementById('help-overlay');
-            if(!overlay) return;
-            overlay.style.display = 'flex';
-            const search = document.getElementById('help-search');
-            if(search) search.value = '';
-            // showHelpNav & renderHelpList werden vom Module-Script übernommen sobald geladen
-            const nav = document.getElementById('help-nav');
-            const view = document.getElementById('help-article-view');
-            if(nav) nav.style.display = 'block';
-            if(view) view.style.display = 'none';
-            // Artikel-Liste rendern falls Module schon geladen
-            if(window._renderHelpList && window._helpArticles) {
-                window._renderHelpList(window._helpArticles);
-            }
-        }
-    </script>
-
-    <!-- Admin Panel Overlay -->
-    <div id="admin-panel-overlay" class="admin-panel-overlay">
-        <div class="admin-panel">
-            <div class="admin-panel-header">
-                <h2>👑 Admin Panel</h2>
-                <span style="cursor:pointer; font-size:24px;" onclick="closeAdminPanel()">✕</span>
-            </div>
-            <div class="admin-panel-tabs">
-                <button class="admin-tab active" onclick="switchAdminTab('users')">👥 Nutzer</button>
-                <button class="admin-tab" onclick="switchAdminTab('announcements')">📢 Announcements</button>
-                <button class="admin-tab" onclick="switchAdminTab('moderation')">⚠️ Moderation</button>
-            </div>
-            <div class="admin-panel-content">
-                <!-- Users Tab -->
-                <div id="admin-tab-users" class="admin-tab-content active">
-                    <h3>Nutzer-Verwaltung</h3>
-                    <div id="users-list"></div>
-                </div>
-                
-                <!-- Announcements Tab -->
-                <div id="admin-tab-announcements" class="admin-tab-content">
-                    <h3>Announcement senden</h3>
-                    <div class="announcement-form">
-                        <input type="text" id="announcement-title" placeholder="Titel (optional)">
-                        <textarea id="announcement-text" placeholder="Nachricht an alle Nutzer..."></textarea>
-                        <button class="send-announcement-btn" onclick="sendAnnouncement()">📢 Announcement senden</button>
-                    </div>
-                </div>
-                
-                <!-- Moderation Tab -->
-                <div id="admin-tab-moderation" class="admin-tab-content">
-                    <h3>Warn- und Ban-Übersicht</h3>
-                    <div id="moderation-overview"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Warning Overlay (Fullscreen) -->
-    <div id="warning-overlay" class="fullscreen-overlay">
-        <div class="warning-modal">
-            <h2 id="warning-title">⚠️ Warnung</h2>
-            <p id="warning-text"></p>
-            <button class="warning-ok-btn" onclick="closeWarning()">OK</button>
-        </div>
-    </div>
-
-    <!-- Ban Overlay (Fullscreen) -->
-    <div id="ban-overlay" class="fullscreen-overlay">
-        <div class="ban-modal">
-            <h2>🚫 Account gesperrt</h2>
-            <p id="ban-message"></p>
-            <div class="ban-info">
-                <strong>Grund:</strong>
-                <div id="ban-reason"></div>
-                <br>
-                <strong>Verstoßender Inhalt:</strong>
-                <div id="ban-content"></div>
-                <br>
-                <strong>Sperrung bis:</strong>
-                <div id="ban-until"></div>
-            </div>
-            <div class="ban-actions">
-                <button class="ban-action-btn danger" onclick="logout()">Abmelden</button>
-                <button class="ban-action-btn secondary" onclick="checkBanStatus()">Konto prüfen</button>
-                <button class="ban-action-btn" id="reactivate-btn" onclick="reactivateAccount()" style="display:none;">Reaktivieren</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Terms of Service Overlay -->
-    <div id="tos-overlay" class="tos-overlay">
-        <div class="tos-modal">
-            <h2>📜 Nutzungsbedingungen</h2>
-            <div class="tos-content">
-                <h3>Willkommen bei VilloChat!</h3>
-                <p>Bitte lies und akzeptiere unsere Nutzungsbedingungen, um VilloChat zu nutzen.</p>
-                
-                <h3>1. Verhaltensregeln</h3>
-                <p>Du verpflichtest dich:</p>
-                <ul>
-                    <li>Respektvoll mit anderen Nutzern umzugehen</li>
-                    <li>Keine beleidigenden, diskriminierenden oder illegalen Inhalte zu teilen</li>
-                    <li>Die Privatsphäre anderer zu respektieren</li>
-                    <li>Keine Spam-Nachrichten zu versenden</li>
-                </ul>
-                
-                <h3>2. Konsequenzen bei Verstößen</h3>
-                <p>Bei Verstößen gegen diese Regeln können wir:</p>
-                <ul>
-                    <li>Warnungen aussprechen</li>
-                    <li>Deinen Account temporär oder dauerhaft sperren</li>
-                    <li>Gemeldete Inhalte überprüfen und entfernen</li>
-                </ul>
-                
-                <h3>3. Datenschutz</h3>
-                <p>Wir verwenden Firebase Realtime Database zur Speicherung deiner Chat-Daten. Deine Daten werden nur für den Betrieb des Dienstes verwendet.</p>
-                
-                <h3>4. Änderungen</h3>
-                <p>Wir behalten uns das Recht vor, diese Nutzungsbedingungen jederzeit zu ändern. Wichtige Änderungen werden per Announcement kommuniziert.</p>
-            </div>
-            <div class="tos-actions">
-                <button class="tos-decline-btn" onclick="declineTOS()">Ablehnen</button>
-                <button class="tos-accept-btn" onclick="acceptTOS()">Akzeptieren</button>
-            </div>
-        </div>
-    </div>
-
-
-<script type="module">
 // =============================================
-// ADMIN / WARN / BAN / TOS  –  VilloChat
+// ADMIN / WARN / BAN / TOS
 // =============================================
-import { getDatabase, ref, set, get, push, update, onValue, remove }
-    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-
-// Re-use existing app (already initialized in main script)
-const _app  = getApps()[0];
-const _db   = getDatabase(_app);
-
 // ---- constants ----
 const USER_ADMIN = "Admin"; // VilloChat Hauptadmin
 
@@ -11049,7 +11042,7 @@ window.toggleBurgerMenu = () => {
 window.acceptTOS = () => {
     const u = window.myUsername || localStorage.getItem("villo_session");
     if (u) {
-        set(ref(_db, `accounts/${u}/tosAccepted`), true);
+        set(ref(db, `accounts/${u}/tosAccepted`), true);
         localStorage.setItem("villo_tos_accepted", "1");
     }
     const ov = document.getElementById("tos-overlay");
@@ -11062,7 +11055,7 @@ window.declineTOS = () => {
 
 window.checkAndShowTOS = async (username) => {
     if (localStorage.getItem("villo_tos_accepted") === "1") return;
-    const snap = await get(ref(_db, `accounts/${username}/tosAccepted`));
+    const snap = await get(ref(db, `accounts/${username}/tosAccepted`));
     if (!snap.exists() || !snap.val()) {
         const ov = document.getElementById("tos-overlay");
         if (ov) { ov.style.display = "flex"; }
@@ -11073,14 +11066,14 @@ window.checkAndShowTOS = async (username) => {
 // BAN CHECK (called on login)
 // =============================================
 window.checkAndShowBan = async (username) => {
-    const snap = await get(ref(_db, `bans/${username}`));
+    const snap = await get(ref(db, `bans/${username}`));
     if (!snap.exists()) return false;
     const ban = snap.val();
     if (!ban.active) return false;
     // Check if ban expired
     if (ban.until && ban.until < Date.now()) {
         // Ban expired – auto-clear active flag but keep record
-        await update(ref(_db, `bans/${username}`), { active: false });
+        await update(ref(db, `bans/${username}`), { active: false });
         return false;
     }
     // Show ban overlay
@@ -11111,13 +11104,13 @@ window.showBanOverlay = (ban) => {
 window.checkBanStatus = async () => {
     const u = window.myUsername || localStorage.getItem("villo_session");
     if (!u) return;
-    const snap = await get(ref(_db, `bans/${u}`));
+    const snap = await get(ref(db, `bans/${u}`));
     if (!snap.exists() || !snap.val().active) {
         alert("Dein Konto ist aktuell nicht gesperrt.");
     } else {
         const ban = snap.val();
         if (ban.until && ban.until < Date.now()) {
-            await update(ref(_db, `bans/${u}`), { active: false });
+            await update(ref(db, `bans/${u}`), { active: false });
             alert("Deine Sperre ist abgelaufen. Du kannst dein Konto reaktivieren.");
             const rb = document.getElementById("reactivate-btn");
             if (rb) rb.style.display = "inline-block";
@@ -11130,12 +11123,12 @@ window.checkBanStatus = async () => {
 window.reactivateAccount = async () => {
     const u = window.myUsername || localStorage.getItem("villo_session");
     if (!u) return;
-    const snap = await get(ref(_db, `bans/${u}`));
+    const snap = await get(ref(db, `bans/${u}`));
     if (!snap.exists()) return;
     const ban = snap.val();
     if (ban.permanent) { alert("Dauerhafte Sperren können nicht selbst aufgehoben werden."); return; }
     if (ban.until && ban.until > Date.now()) { alert("Deine Sperre ist noch nicht abgelaufen."); return; }
-    await update(ref(_db, `bans/${u}`), { active: false });
+    await update(ref(db, `bans/${u}`), { active: false });
     const ov = document.getElementById("ban-overlay");
     if (ov) { ov.style.display = "none"; ov.classList.remove("active"); }
     alert("Dein Konto wurde reaktiviert. Willkommen zurück!");
@@ -11162,7 +11155,7 @@ window.closeWarning = () => {
 window.openAdminPanel = async () => {
     const u = window.myUsername || localStorage.getItem("villo_session");
     // Check Firebase admin status
-    const adminSnap = await get(ref(_db, `admins/${u}`));
+    const adminSnap = await get(ref(db, `admins/${u}`));
     if (u !== USER_ADMIN && (!adminSnap.exists() || !adminSnap.val())) {
         alert("Kein Zugriff.");
         return;
@@ -11193,12 +11186,12 @@ window.loadAdminUsers = async () => {
     const list = document.getElementById("users-list");
     if (!list) return;
     list.innerHTML = "<p style='opacity:.5'>Lade Nutzer…</p>";
-    const snap = await get(ref(_db, "accounts"));
+    const snap = await get(ref(db, "accounts"));
     if (!snap.exists()) { list.innerHTML = "<p>Keine Nutzer gefunden.</p>"; return; }
     const accounts = snap.val();
-    const adminSnap = await get(ref(_db, "admins"));
+    const adminSnap = await get(ref(db, "admins"));
     const admins = adminSnap.exists() ? adminSnap.val() : {};
-    const banSnap = await get(ref(_db, "bans"));
+    const banSnap = await get(ref(db, "bans"));
     const bans = banSnap.exists() ? banSnap.val() : {};
 
     list.innerHTML = "";
@@ -11228,9 +11221,9 @@ window.loadAdminUsers = async () => {
 window.adminToggleAdmin = async (username, currentlyAdmin) => {
     if (!confirm(`Admin-Status für "${username}" ${currentlyAdmin ? "entziehen" : "vergeben"}?`)) return;
     if (currentlyAdmin) {
-        await set(ref(_db, `admins/${username}`), false);
+        await set(ref(db, `admins/${username}`), false);
     } else {
-        await set(ref(_db, `admins/${username}`), true);
+        await set(ref(db, `admins/${username}`), true);
     }
     loadAdminUsers();
 };
@@ -11246,9 +11239,9 @@ window.adminWarnUser = async (username) => {
         timestamp: Date.now(),
         by: window.myUsername || USER_ADMIN
     };
-    await push(ref(_db, `warnings/${username}`), warnData);
+    await push(ref(db, `warnings/${username}`), warnData);
     // Send Firebase notification to user
-    await set(ref(_db, `notifications/${username}/pendingWarning`), warnData);
+    await set(ref(db, `notifications/${username}/pendingWarning`), warnData);
     alert(`Warnung an "${username}" gesendet.`);
     loadAdminUsers();
 };
@@ -11268,16 +11261,16 @@ window.adminBanUser = async (username) => {
         since: Date.now(),
         by: window.myUsername || USER_ADMIN
     };
-    await set(ref(_db, `bans/${username}`), banData);
+    await set(ref(db, `bans/${username}`), banData);
     // Notify the user
-    await set(ref(_db, `notifications/${username}/pendingBan`), banData);
+    await set(ref(db, `notifications/${username}/pendingBan`), banData);
     alert(`"${username}" wurde gesperrt.`);
     loadAdminUsers();
 };
 
 window.adminUnbanUser = async (username) => {
     if (!confirm(`Sperre für "${username}" aufheben?`)) return;
-    await update(ref(_db, `bans/${username}`), { active: false });
+    await update(ref(db, `bans/${username}`), { active: false });
     loadAdminUsers();
 };
 
@@ -11286,7 +11279,7 @@ window.loadModerationOverview = async () => {
     if (!ov) return;
     ov.innerHTML = "<p style='opacity:.5'>Lade…</p>";
     const [warnSnap, banSnap] = await Promise.all([
-        get(ref(_db, "warnings")), get(ref(_db, "bans"))
+        get(ref(db, "warnings")), get(ref(db, "bans"))
     ]);
     const warns = warnSnap.exists() ? warnSnap.val() : {};
     const bans = banSnap.exists() ? banSnap.val() : {};
@@ -11320,7 +11313,7 @@ window.sendAnnouncement = async () => {
     const title = document.getElementById("announcement-title")?.value.trim() || "";
     const text  = document.getElementById("announcement-text")?.value.trim() || "";
     if (!text) { alert("Bitte einen Text eingeben."); return; }
-    await push(ref(_db, "announcements"), {
+    await push(ref(db, "announcements"), {
         title, text, timestamp: Date.now(),
         by: window.myUsername || USER_ADMIN
     });
@@ -11338,7 +11331,7 @@ window._loadWarningsSettingsTab = async () => {
     if (!container || !u) return;
 
     // Check if user is admin
-    const adminSnap = await get(ref(_db, `admins/${u}`));
+    const adminSnap = await get(ref(db, `admins/${u}`));
     const isAdmin = (u === USER_ADMIN) || (adminSnap.exists() && adminSnap.val());
 
     if (isAdmin) {
@@ -11351,8 +11344,8 @@ window._loadWarningsSettingsTab = async () => {
 
     // Regular user: show their own warn and ban history
     const [warnSnap, banSnap] = await Promise.all([
-        get(ref(_db, `warnings/${u}`)),
-        get(ref(_db, `bans/${u}`))
+        get(ref(db, `warnings/${u}`)),
+        get(ref(db, `bans/${u}`))
     ]);
     let html = "<h4 style='margin-top:0;color:var(--primary)'>⚠️ Deine Warnungen</h4>";
     if (!warnSnap.exists()) {
@@ -11404,7 +11397,7 @@ function _applySettingsTabPatch() {
     // Also patch the original so other callers still work
     window.switchSettingsTab = window._switchSettingsTabSafe;
 }
-setTimeout(_applySettingsTabPatch, 0);
+document.addEventListener("DOMContentLoaded", () => setTimeout(_applySettingsTabPatch, 100));
 
 // =============================================
 // PATCH showApp to check TOS, ban, warnings on login
@@ -11414,59 +11407,48 @@ function _applyShowAppPatch() {
     if (!orig) { setTimeout(_applyShowAppPatch, 50); return; }
     window.showApp = function() {
         orig.call(this);
-    const u = window.myUsername || localStorage.getItem("villo_session");
-    if (!u) return;
-    // Check TOS first
-    setTimeout(() => {
-        checkAndShowTOS(u).then(() => {
-            // Then check ban
-            checkAndShowBan(u).then(isBanned => {
-                if (isBanned) return;
-                // Check for pending warnings
-                get(ref(_db, `notifications/${u}/pendingWarning`)).then(snap => {
-                    if (!snap.exists()) return;
-                    const w = snap.val();
-                    showWarningOverlay(w.title || "Warnung", w.reason || "");
-                    // Clear notification after showing
-                    remove(ref(_db, `notifications/${u}/pendingWarning`));
+        const u = window.myUsername || localStorage.getItem("villo_session");
+        if (!u) return;
+        // Check TOS first
+        setTimeout(() => {
+            checkAndShowTOS(u).then(() => {
+                // Then check ban
+                checkAndShowBan(u).then(isBanned => {
+                    if (isBanned) return;
+                    // Check for pending warnings
+                    get(ref(db, `notifications/${u}/pendingWarning`)).then(snap => {
+                        if (!snap.exists()) return;
+                        const w = snap.val();
+                        showWarningOverlay(w.title || "Warnung", w.reason || "");
+                        // Clear notification after showing
+                        remove(ref(db, `notifications/${u}/pendingWarning`));
+                    });
                 });
             });
+        }, 800);
+        // Listen for live ban/warn push while user is online
+        onValue(ref(db, `notifications/${u}/pendingBan`), async (snap) => {
+            if (!snap.exists()) return;
+            const ban = snap.val();
+            if (ban.active) {
+                showBanOverlay(ban);
+                // Notification nach Anzeige entfernen, damit sie nicht bei
+                // jedem Reconnect / Reload erneut triggert.
+                remove(ref(db, `notifications/${u}/pendingBan`));
+            }
         });
-    }, 800);
-    // Listen for live ban/warn push while user is online
-    onValue(ref(_db, `notifications/${u}/pendingBan`), async (snap) => {
-        if (!snap.exists()) return;
-        const ban = snap.val();
-        if (ban.active) {
-            showBanOverlay(ban);
-        }
-    });
-};
+    };
 }
-setTimeout(_applyShowAppPatch, 0);
+// Warte auf das Haupt-Modul (window.showApp), bevor der Patch greift.
+// setTimeout(0) reicht nicht bei zwei parallelen type="module"-Scripts.
+document.addEventListener("DOMContentLoaded", () => setTimeout(_applyShowAppPatch, 100));
 
 // Expose to global if needed from inline html onclick
-window._db_admin = _db;
+window._db_admin = db;
 window.USER_ADMIN = USER_ADMIN;
 window.fmtDate = fmtDate;
-</script>
 
-<style>
-/* Admin user row */
-.admin-user-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border-color);
-    gap: 8px;
-    flex-wrap: wrap;
-}
-.admin-user-row:last-child { border-bottom: none; }
-/* Make fullscreen overlays flex */
-#warning-overlay[style*="flex"], #ban-overlay[style*="flex"] { display: flex !important; }
-#warning-overlay.active, #ban-overlay.active { display: flex !important; }
-</style>
+</script>
 
 </body>
 </html>
