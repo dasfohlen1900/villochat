@@ -1858,7 +1858,7 @@
         <div class="modal" style="max-width:700px; width:95vw; max-height:85vh; height:85vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
             <!-- Header -->
             <div class="modal-header" style="flex-shrink:0; padding:15px 20px;">
-                <h2>⚙️ Einstellungen</h2>
+                <h2 data-i18n="h2_settings">⚙️ Einstellungen</h2>
                 <span style="cursor:pointer; font-size:20px;" onclick="closeOverlay('settings-overlay')">✕</span>
             </div>
             <!-- Body: sidebar + content -->
@@ -1869,7 +1869,7 @@
                     <div class="settings-tab" data-tab="profile" onclick="switchSettingsTab('profile')">👤 <span class="tab-label" data-i18n="tab_profile">Profil</span></div>
                     <div class="settings-tab" data-tab="security" onclick="switchSettingsTab('security')">🔒 <span class="tab-label" data-i18n="tab_security">Sicherheit</span></div>
                     <div class="settings-tab" data-tab="help" onclick="switchSettingsTab('help')">❓ <span class="tab-label" data-i18n="tab_help">Hilfe</span></div>
-                    <div class="settings-tab" id="warnings-settings-tab" data-tab="warnings" onclick="(window._switchSettingsTabSafe||window.switchSettingsTab||function(){})('warnings')">⚠️ <span class="tab-label">Warnungen</span></div>
+                    <div class="settings-tab" id="warnings-settings-tab" data-tab="warnings" onclick="(window._switchSettingsTabSafe||window.switchSettingsTab||function(){})('warnings')">⚠️ <span class="tab-label" data-i18n="lbl_tab_warnings">Warnungen</span></div>
                 </div>
                 <!-- Content -->
                 <div id="settings-content" style="flex:1; overflow-y:auto; padding:20px;">
@@ -1911,13 +1911,13 @@
 
                         <label class="settings-label" data-i18n="lbl_fontsize">Schriftgröße:</label>
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
-                            <div class="font-size-option" data-size="13px" data-name="Klein">Klein</div>
-                            <div class="font-size-option" data-size="15px" data-name="Normal">Normal</div>
-                            <div class="font-size-option" data-size="17px" data-name="Groß">Groß</div>
+                            <div class="font-size-option" data-size="13px" data-name="Klein" data-i18n="lbl_fontsize_small">Klein</div>
+                            <div class="font-size-option" data-size="15px" data-name="Normal" data-i18n="lbl_fontsize_normal">Normal</div>
+                            <div class="font-size-option" data-size="17px" data-name="Groß" data-i18n="lbl_fontsize_large">Groß</div>
                             <div class="font-size-option" data-size="20px" data-name="Sehr Groß">XL</div>
                         </div>
 
-                        <label class="settings-label">Schrift-Design:</label>
+                        <label class="settings-label" data-i18n="lbl_font_design">Schrift-Design:</label>
                         <select id="font-design-select" onchange="setFontDesign(this.value)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:16px;">
                             <option value="default">Standard (Inter / VilloChat Sans / VilloChat Serif)</option>
                             <option value="villochat_alt">VilloChat (alt) — VilloChat Sans überall</option>
@@ -1932,9 +1932,9 @@
 
                         <label class="settings-label" data-i18n="lbl_bubble_style">Bubble-Stil:</label>
                         <div style="display:flex; gap:8px; margin-bottom:16px;">
-                            <div class="font-size-option" data-style="rounded" onclick="setBubbleStyle('rounded')" style="font-size:12px;">● Rund</div>
-                            <div class="font-size-option" data-style="square" onclick="setBubbleStyle('square')" style="font-size:12px;">■ Eckig</div>
-                            <div class="font-size-option" data-style="minimal" onclick="setBubbleStyle('minimal')" style="font-size:12px;">– Minimal</div>
+                            <div class="font-size-option" data-style="rounded" onclick="setBubbleStyle('rounded')" style="font-size:12px;" data-i18n="lbl_bubble_style_round">● Rund</div>
+                            <div class="font-size-option" data-style="square" onclick="setBubbleStyle('square')" style="font-size:12px;" data-i18n="lbl_bubble_style_square">■ Eckig</div>
+                            <div class="font-size-option" data-style="minimal" onclick="setBubbleStyle('minimal')" style="font-size:12px;" data-i18n="lbl_bubble_style_minimal">– Minimal</div>
                         </div>
 
                         <label class="settings-label" data-i18n="lbl_my_bubble">Meine Bubble-Farbe:</label>
@@ -1952,12 +1952,12 @@
                             <input type="text" id="quick-reaction-5" maxlength="2" placeholder="😢" style="width:100%; text-align:center; font-size:20px; padding:8px;">
                             <input type="text" id="quick-reaction-6" maxlength="2" placeholder="🙏" style="width:100%; text-align:center; font-size:20px; padding:8px;">
                         </div>
-                        <button onclick="saveQuickReactions()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">Reaktionen speichern</button>
+                        <button onclick="saveQuickReactions()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_save_reactions">Reaktionen speichern</button>
 
-                        <label class="settings-label" style="margin-top:16px;">Sound:</label>
+                        <label class="settings-label" style="margin-top:16px;" data-i18n="lbl_sound">Sound:</label>
                         <label style="display:flex; align-items:center; cursor:pointer; margin-bottom:16px;">
                             <input type="checkbox" id="sound-toggle" style="width:auto; margin-right:10px;">
-                            <span>🔊 Benachrichtigungston aktivieren</span>
+                            <span data-i18n="lbl_sound_toggle">🔊 Benachrichtigungston aktivieren</span>
                         </label>
                     </div>
 
@@ -1979,9 +1979,9 @@
 
                         <!-- Letter section -->
                         <div id="avs-letter">
-                            <label class="settings-label">Avatar-Farbe:</label>
+                            <label class="settings-label" data-i18n="lbl_avatar_color">Avatar-Farbe:</label>
                             <input type="color" id="my-avatar-color-picker" style="width:100%; height:40px; margin-bottom:12px; cursor:pointer;">
-                            <label class="settings-label">Avatar-Schriftart:</label>
+                            <label class="settings-label" data-i18n="lbl_avatar_font">Avatar-Schriftart:</label>
                             <select id="my-avatar-font-picker" style="width:100%; padding:10px; border-radius:8px; margin-bottom:12px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color);">
                                 <option value="'VilloChat Sans', sans-serif">VilloChat Sans ✦</option>
                                 <option value="'VilloChat Serif', serif">VilloChat Serif ✦</option>
@@ -2000,20 +2000,20 @@
 
                         <!-- Emoji section -->
                         <div id="avs-emoji" style="display:none;">
-                            <label class="settings-label">Emoji als Profilbild:</label>
+                            <label class="settings-label" data-i18n="lbl_avatar_emoji">Emoji als Profilbild:</label>
                             <input type="text" id="my-avatar-emoji-input" style="display:none;" readonly>
                             <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
                                 <div id="avatar-emoji-display" style="font-size:52px; min-width:60px; text-align:center; line-height:1;">😎</div>
-                                <button onclick="emojiTarget='my-avatar-emoji-input'; openEmojiPicker();" style="flex:1; background:var(--primary); color:white; border:none;">😊 Emoji wählen</button>
+                                <button onclick="emojiTarget='my-avatar-emoji-input'; openEmojiPicker();" style="flex:1; background:var(--primary); color:white; border:none;" data-i18n="btn_pick_emoji">😊 Emoji wählen</button>
                             </div>
-                            <label class="settings-label" style="margin-top:4px;">Hintergrundfarbe:</label>
+                            <label class="settings-label" style="margin-top:4px;" data-i18n="lbl_avatar_bg">Hintergrundfarbe:</label>
                             <input type="color" id="my-avatar-color-picker-emoji" style="width:100%; height:36px; margin-bottom:12px; cursor:pointer;">
                         </div>
 
                         <!-- Image section -->
                         <div id="avs-image" style="display:none;">
-                            <label class="settings-label">Bild als Profilbild (max. 200 KB):</label>
-                            <button onclick="document.getElementById('avatar-img-input').click()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:8px;">📁 Bild auswählen</button>
+                            <label class="settings-label" data-i18n="lbl_avatar_image">Bild als Profilbild (max. 200 KB):</label>
+                            <button onclick="document.getElementById('avatar-img-input').click()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:8px;" data-i18n="btn_pick_image">📁 Bild auswählen</button>
                             <input type="file" id="avatar-img-input" accept="image/*" style="display:none;">
                             <div id="avatar-img-preview" style="display:none; width:80px; height:80px; border-radius:50%; overflow:hidden; margin:0 auto 8px;"><img id="avatar-img-preview-img" style="width:100%; height:100%; object-fit:cover;"></div>
                         </div>
@@ -2028,7 +2028,7 @@
                             <a href="https://sites.google.com/view/villochat/download#h.pxu4uk2i7gl8" target="_blank" rel="noopener noreferrer" style="display:block; text-decoration:none;">
                                 <button type="button" style="width:100%; background:var(--primary);">🌐 VilloChat-Website</button>
                             </a>
-                            <button onclick="location.reload()" style="width:100%; margin-top:8px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🔄 App neu laden</button>
+                            <button onclick="location.reload()" style="width:100%; margin-top:8px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_reload_app">🔄 App neu laden</button>
                         </div>
                     </div>
 
@@ -2067,43 +2067,41 @@
                             </select>
                             <!-- Contact picker for except/only modes -->
                             <div id="story-visibility-picker" style="display:none;">
-                                <div style="font-size:12px; opacity:0.6; margin-bottom:6px;" id="story-visibility-picker-label">Ausgenommene Kontakte:</div>
+                                <div style="font-size:12px; opacity:0.6; margin-bottom:6px;" id="story-visibility-picker-label" data-i18n="lbl_except_contacts">Ausgenommene Kontakte:</div>
                                 <div id="story-visibility-contact-list" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; min-height:32px; padding:6px; border:1px solid var(--border-color); border-radius:8px; background:var(--bg);"></div>
-                                <div style="font-size:11px; opacity:0.5;">Tippe einen Kontaktnamen zum Suchen:</div>
+                                <div style="font-size:11px; opacity:0.5;" data-i18n="lbl_vis_search_hint">Tippe einen Kontaktnamen zum Suchen:</div>
                                 <input type="text" id="story-visibility-search" placeholder="Kontakt suchen..." oninput="searchStoryVisibilityContact()" style="width:100%; margin-top:4px; margin-bottom:4px;">
                                 <div id="story-visibility-results" style="display:flex; flex-wrap:wrap; gap:4px;"></div>
                             </div>
                             <button onclick="saveStoryVisibility()" style="width:100%; background:var(--primary); margin-top:4px;" data-i18n="btn_save_visibility">Sichtbarkeit speichern</button>
-                            <p style="font-size:11px; opacity:0.5; margin-top:6px; line-height:1.5;">Bestehende Geschichten bleiben bis zu 48h sichtbar. Die Einstellung gilt für neue Aufrufe.</p>
+                            <p style="font-size:11px; opacity:0.5; margin-top:6px; line-height:1.5;" data-i18n="lbl_vis_story_note">Bestehende Geschichten bleiben bis zu 48h sichtbar. Die Einstellung gilt für neue Aufrufe.</p>
                         </div>
 
                         <div style="margin-top:16px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color);">
-                            <div style="font-weight:600; margin-bottom:8px; font-size:14px;">🔐 Datenschutz</div>
-                            <p style="font-size:13px; opacity:0.7; margin:0; line-height:1.6;">Nachrichten werden in Firebase Realtime Database gespeichert. Dein PIN wird als Klartext gespeichert — wähle ihn sorgfältig. VilloChat nutzt keine Werbung und gibt keine Daten weiter.</p>
+                            <div style="font-weight:600; margin-bottom:8px; font-size:14px;" data-i18n="lbl_privacy">🔐 Datenschutz</div>
+                            <p style="font-size:13px; opacity:0.7; margin:0; line-height:1.6;" data-i18n="lbl_privacy_desc">Nachrichten werden in Firebase Realtime Database gespeichert. Dein PIN wird als Klartext gespeichert — wähle ihn sorgfältig. VilloChat nutzt keine Werbung und gibt keine Daten weiter.</p>
                         </div>
 
                         <!-- Word filter -->
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
-                            <label class="settings-label">🚫 Wortfilter</label>
-                            <p style="font-size:12px; opacity:0.6; margin:4px 0 8px;">Nachrichten die diese Wörter enthalten werden ausgeblendet. Kommagetrennt.</p>
+                            <label class="settings-label" data-i18n="lbl_word_filter_section">🚫 Wortfilter</label>
+                            <p style="font-size:12px; opacity:0.6; margin:4px 0 8px;" data-i18n="lbl_word_filter_desc">Nachrichten die diese Wörter enthalten werden ausgeblendet. Kommagetrennt.</p>
                             <textarea id="word-filter-input" placeholder="z.B. spam, werbung, hass" rows="3" style="width:100%; resize:vertical; margin-bottom:8px;"></textarea>
-                            <button onclick="saveWordFilter()" style="width:100%; background:var(--primary);">💾 Wortfilter speichern</button>
+                            <button onclick="saveWordFilter()" style="width:100%; background:var(--primary);" data-i18n="btn_save_word_filter2">💾 Wortfilter speichern</button>
                         </div>
 
                         <!-- Blocked users -->
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
-                            <label class="settings-label">🚷 Blockierte Nutzer</label>
+                            <label class="settings-label" data-i18n="lbl_blocked_section">🚷 Blockierte Nutzer</label>
                             <div id="blocked-users-list" style="margin-bottom:8px; display:flex; flex-wrap:wrap; gap:6px; min-height:28px;"></div>
-                            <p id="blocked-empty" style="font-size:12px; opacity:0.5; margin:0;">Keine blockierten Nutzer.</p>
+                            <p id="blocked-empty" style="font-size:12px; opacity:0.5; margin:0;" data-i18n="lbl_blocked_empty">Keine blockierten Nutzer.</p>
                         </div>
 
                         <!-- Warnings/Admin Panel -->
                         <div style="margin-top:20px; border-top:1px solid var(--border-color); padding-top:16px;">
-                            <label class="settings-label">⚠️ Warnungen & Sperren</label>
-                            <button id="warnings-admin-btn" onclick="openWarningsOrAdmin()" style="width:100%; background:var(--primary); margin-bottom:8px;">
-                                📋 Warnungen anzeigen
-                            </button>
-                            <p style="font-size:12px; opacity:0.6; margin:0;">Zeigt deine Warn- und Banhistorie. Admins können hier das Admin Panel öffnen.</p>
+                            <label class="settings-label" data-i18n="lbl_warnings_section">⚠️ Warnungen & Sperren</label>
+                            <button id="warnings-admin-btn" onclick="openWarningsOrAdmin()" style="width:100%; background:var(--primary); margin-bottom:8px;" data-i18n="btn_show_warnings">📋 Warnungen anzeigen</button>
+                            <p style="font-size:12px; opacity:0.6; margin:0;" data-i18n="lbl_warnings_desc">Zeigt deine Warn- und Banhistorie. Admins können hier das Admin Panel öffnen.</p>
                         </div>
                     </div>
 
@@ -2121,7 +2119,7 @@
 
                     <!-- WARNINGS (Admin opens panel; Users see history) -->
                     <div id="stab-warnings" class="settings-panel" style="display:none;">
-                        <h3 style="margin-top:0; color:var(--primary);">⚠️ Warnungen & Sperren</h3>
+                        <h3 style="margin-top:0; color:var(--primary);" data-i18n="h3_warnings_bans">⚠️ Warnungen & Sperren</h3>
                         <div id="warnings-panel-content">
                             <!-- filled by switchSettingsTab -->
                         </div>
@@ -2135,13 +2133,13 @@
     <div id="confirm-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>Bestätigung</h2>
+                <h2 data-i18n="h2_confirm">Bestätigung</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('confirm-overlay')">✕</span>
             </div>
             <div class="modal-body">
                 <p id="confirm-text">Text...</p>
-                <button id="confirm-yes" style="background:#cc0000; color:white; width:48%; margin-right:4%;">Ja</button>
-                <button onclick="closeOverlay('confirm-overlay')" style="background:#ccc; color:black; width:48%;">Nein</button>
+                <button id="confirm-yes" style="background:#cc0000; color:white; width:48%; margin-right:4%;" data-i18n="btn_yes">Ja</button>
+                <button onclick="closeOverlay('confirm-overlay')" style="background:#ccc; color:black; width:48%;" data-i18n="btn_no">Nein</button>
             </div>
         </div>
     </div>
@@ -2149,7 +2147,7 @@
     <div id="search-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>Suche</h2>
+                <h2 data-i18n="h2_search">Suche</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('search-overlay')">✕</span>
             </div>
             <div id="search-results" style="max-height:300px; overflow-y:auto;"></div>
@@ -2159,7 +2157,7 @@
     <div id="chat-search-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>In Chat suchen</h2>
+                <h2 data-i18n="h2_chat_search">In Chat suchen</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('chat-search-overlay')">✕</span>
             </div>
             <div class="modal-body">
@@ -2172,13 +2170,13 @@
     <div id="alias-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>Alias bearbeiten</h2>
+                <h2 data-i18n="h2_alias">Alias bearbeiten</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('alias-overlay')">✕</span>
             </div>
             <div class="modal-body">
-                <p id="alias-text">Alias für Kontakt:</p>
+                <p id="alias-text" data-i18n="lbl_alias">Alias für Kontakt:</p>
                 <input type="text" id="alias-input" style="width:100%; padding:10px; border-radius:10px; margin-top:5px;">
-                <button id="alias-save" style="margin-top:10px; width:100%; background:#075e54; color:white;">Speichern</button>
+                <button id="alias-save" style="margin-top:10px; width:100%; background:#075e54; color:white;" data-i18n="btn_save">Speichern</button>
             </div>
         </div>
     </div>
@@ -2187,7 +2185,7 @@
     <div id="bookmarks-overlay" class="overlay" onclick="closeOverlay('bookmarks-overlay')">
         <div class="modal" style="max-width:420px; width:95vw; max-height:80vh; padding:0; overflow:hidden; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
             <div class="modal-header" style="flex-shrink:0;">
-                <h2>🔖 Lesezeichen</h2>
+                <h2 data-i18n="h2_bookmarks">🔖 Lesezeichen</h2>
                 <span style="cursor:pointer;" onclick="closeOverlay('bookmarks-overlay')">✕</span>
             </div>
             <div id="bookmarks-list" style="flex:1; overflow-y:auto; padding:12px;"></div>
@@ -2198,7 +2196,7 @@
     <div id="reports-overlay" class="overlay" onclick="closeOverlay('reports-overlay')">
         <div class="modal" style="max-width:420px; width:95vw; max-height:80vh; padding:0; overflow:hidden; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
             <div class="modal-header" style="flex-shrink:0;">
-                <h2>🚨 Gemeldete Nachrichten</h2>
+                <h2 data-i18n="h2_reports">🚨 Gemeldete Nachrichten</h2>
                 <span style="cursor:pointer;" onclick="closeOverlay('reports-overlay')">✕</span>
             </div>
             <div id="reports-list" style="flex:1; overflow-y:auto; padding:12px;"></div>
@@ -2209,7 +2207,7 @@
     <div id="contact-tags-overlay" class="overlay" onclick="closeOverlay('contact-tags-overlay')">
         <div class="modal" style="max-width:380px; width:95vw; max-height:75vh; padding:0; overflow:hidden; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
             <div class="modal-header" style="flex-shrink:0;">
-                <h2>🏷️ Tags verwalten</h2>
+                <h2 data-i18n="h2_tags">🏷️ Tags verwalten</h2>
                 <span style="cursor:pointer;" onclick="closeOverlay('contact-tags-overlay')">✕</span>
             </div>
             <div style="flex:1; overflow-y:auto; padding:14px;">
@@ -2222,7 +2220,7 @@
                     <button onclick="addContactTag()" style="background:var(--primary); padding:8px 14px;">+</button>
                 </div>
                 <!-- Suggestions -->
-                <div style="font-size:12px; opacity:0.5; margin-bottom:6px;">VORSCHLÄGE</div>
+                <div style="font-size:12px; opacity:0.5; margin-bottom:6px;" data-i18n="lbl_tag_suggestions">VORSCHLÄGE</div>
                 <div style="display:flex; flex-wrap:wrap; gap:6px;" id="tag-suggestions">
                     <div class="tag-filter-chip" onclick="quickAddTag('🏠 Familie')">🏠 Familie</div>
                     <div class="tag-filter-chip" onclick="quickAddTag('💼 Arbeit')">💼 Arbeit</div>
@@ -2239,7 +2237,7 @@
     <div id="sticker-overlay" class="overlay" onclick="closeOverlay('sticker-overlay')">
         <div class="modal" style="max-width:400px; width:95vw; max-height:80vh; padding:0; overflow:hidden; display:flex; flex-direction:column;" onclick="event.stopPropagation()">
             <div class="modal-header" style="padding:12px 16px; flex-shrink:0;">
-                <h2>🎭 Sticker</h2>
+                <h2 data-i18n="h2_sticker">🎭 Sticker</h2>
                 <span style="cursor:pointer;" onclick="closeOverlay('sticker-overlay')">✕</span>
             </div>
             <!-- Category tabs -->
@@ -2254,7 +2252,7 @@
     <div id="emoji-overlay" class="overlay">
         <div class="modal" style="max-width:400px; max-height:500px;">
             <div class="modal-header">
-                <h2>Zeichen wählen</h2>
+                <h2 data-i18n="h2_emoji">Zeichen wählen</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('emoji-overlay')">✕</span>
             </div>
             <div class="modal-body" style="padding:10px;">
@@ -2277,7 +2275,7 @@
     <div id="user-info-overlay" class="overlay">
         <div class="modal" style="max-height:85vh;">
             <div class="modal-header">
-                <h2>Benutzer-Info</h2>
+                <h2 data-i18n="h2_user_info">Benutzer-Info</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('user-info-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:calc(85vh - 60px); overflow-y:auto;">
@@ -2292,25 +2290,25 @@
                 <div id="info-stats-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:12px 0; padding:12px 0; border-top:1px solid var(--border-color); border-bottom:1px solid var(--border-color);">
                     <div style="background:var(--bg); border-radius:10px; padding:10px; text-align:center;">
                         <div id="info-msg-count" style="font-size:20px; font-weight:bold; color:var(--primary);">…</div>
-                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Nachrichten</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;" data-i18n="lbl_stat_msgs">Nachrichten</div>
                     </div>
                     <div style="background:var(--bg); border-radius:10px; padding:10px; text-align:center;">
                         <div id="info-emoji-stat" style="font-size:22px;">…</div>
-                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Lieblings-Emoji</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;" data-i18n="lbl_stat_fav_emoji">Lieblings-Emoji</div>
                     </div>
                     <div style="background:var(--bg); border-radius:10px; padding:10px; text-align:center;">
                         <div id="info-since" style="font-size:13px; font-weight:bold; color:var(--primary);">…</div>
-                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Erste Nachricht</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;" data-i18n="lbl_stat_first_msg">Erste Nachricht</div>
                     </div>
                     <div style="background:var(--bg); border-radius:10px; padding:10px; text-align:center;">
                         <div id="info-avg-len" style="font-size:20px; font-weight:bold; color:var(--primary);">…</div>
-                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Ø Zeichen/Nachricht</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;" data-i18n="lbl_stat_avg_chars">Ø Zeichen/Nachricht</div>
                     </div>
                 </div>
 
                 <div style="padding-bottom:10px; border-bottom:1px solid var(--border-color); margin-bottom:12px;">
-                    <div style="font-size:12px; font-weight:600; opacity:0.5; margin-bottom:8px;">ALIAS & VERWALTUNG</div>
-                    <p style="margin:4px 0; font-size:13px;"><strong>Alias:</strong> <span id="info-alias"></span></p>
+                    <div style="font-size:12px; font-weight:600; opacity:0.5; margin-bottom:8px;" data-i18n="lbl_alias_section">ALIAS & VERWALTUNG</div>
+                    <p style="margin:4px 0; font-size:13px;"><strong data-i18n="lbl_alias_label">Alias:</strong> <span id="info-alias"></span></p>
                 </div>
 
                 <div style="display:flex; gap:10px; margin-bottom:12px;">
@@ -2318,26 +2316,26 @@
                     <button id="btn-archive-contact" onclick="toggleArchiveContact()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">🗂️ Archivieren</button>
                 </div>
 
-                <label style="display:block; font-weight:500; margin-bottom:5px;">Chat-Bubble-Farbe:</label>
+                <label style="display:block; font-weight:500; margin-bottom:5px;" data-i18n="lbl_chat_bubble_color">Chat-Bubble-Farbe:</label>
                 <input type="color" id="contact-color-picker" style="width:100%; height:38px; margin:0 0 8px; cursor:pointer;">
-                <button onclick="saveContactColor()" style="width:100%;">Farbe speichern</button>
+                <button onclick="saveContactColor()" style="width:100%;" data-i18n="btn_save_color">Farbe speichern</button>
 
                 <div style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:12px;">
-                    <label style="display:block; font-weight:500; margin-bottom:5px;">📋 Notiz <span style="font-size:11px; opacity:0.5; font-weight:400;">(nur für dich sichtbar)</span></label>
+                    <label style="display:block; font-weight:500; margin-bottom:5px;"><span data-i18n="lbl_note">📋 Notiz</span> <span style="font-size:11px; opacity:0.5; font-weight:400;" data-i18n="lbl_note_private">(nur für dich sichtbar)</span></label>
                     <textarea id="contact-note-input" placeholder="Notizen zu diesem Kontakt..." rows="3" style="width:100%; resize:vertical; min-height:70px; max-height:200px; font-size:13px;"></textarea>
-                    <button onclick="saveContactNote()" style="width:100%; margin-top:6px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">Notiz speichern</button>
+                    <button onclick="saveContactNote()" style="width:100%; margin-top:6px; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_save_note">Notiz speichern</button>
                 </div>
 
                 <div style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:12px;">
-                    <div style="font-size:12px; font-weight:600; opacity:0.5; margin-bottom:8px;">TAGS</div>
+                    <div style="font-size:12px; font-weight:600; opacity:0.5; margin-bottom:8px;" data-i18n="lbl_tags_section">TAGS</div>
                     <div id="info-tags-display" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; min-height:24px;"></div>
-                    <button onclick="openContactTags(document.getElementById('info-username').textContent)" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); font-size:13px;">🏷️ Tags bearbeiten</button>
+                    <button onclick="openContactTags(document.getElementById('info-username').textContent)" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); font-size:13px;" data-i18n="btn_edit_tags">🏷️ Tags bearbeiten</button>
                 </div>
 
                 <div style="border-top:1px solid var(--border-color); padding-top:12px; margin-top:12px;">
-                    <div style="font-size:12px; font-weight:600; opacity:0.5; margin-bottom:8px;">GEMEINSAME GRUPPEN</div>
+                    <div style="font-size:12px; font-weight:600; opacity:0.5; margin-bottom:8px;" data-i18n="lbl_shared_groups">GEMEINSAME GRUPPEN</div>
                     <div id="info-shared-groups" style="display:flex; flex-direction:column; gap:6px;">
-                        <span style="font-size:12px; opacity:0.4;">Wird geladen…</span>
+                        <span style="font-size:12px; opacity:0.4;" data-i18n="lbl_loading">Wird geladen…</span>
                     </div>
                 </div>
             </div>
@@ -2347,7 +2345,7 @@
     <div id="changelog-overlay" class="overlay">
         <div class="modal" style="max-width:500px; max-height:80vh;">
             <div class="modal-header">
-                <h2>📝 Changelog</h2>
+                <h2 data-i18n="h2_changelog">📝 Changelog</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
@@ -2603,11 +2601,11 @@
     <div id="global-search-overlay" class="overlay">
         <div class="modal" style="max-width:500px; max-height:80vh;">
             <div class="modal-header">
-                <h2>🔍 Globale Suche</h2>
+                <h2 data-i18n="h2_global_search">🔍 Globale Suche</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('global-search-overlay')">✕</span>
             </div>
             <div class="modal-body" style="padding:10px;">
-                <input type="text" id="global-search-input" placeholder="In allen Chats suchen..." style="width:100%; padding:10px; margin-bottom:10px;">
+                <input type="text" id="global-search-input" placeholder="In allen Chats suchen..." data-i18n-placeholder="ph_search_all" style="width:100%; padding:10px; margin-bottom:10px;">
                 <div id="global-search-results" style="max-height:50vh; overflow-y:auto;"></div>
             </div>
         </div>
@@ -2616,7 +2614,7 @@
     <div id="my-profile-overlay" class="overlay">
         <div class="modal" style="max-height:80vh;">
             <div class="modal-header">
-                <h2>👤 Mein Profil</h2>
+                <h2 data-i18n="h2_my_profile">👤 Mein Profil</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('my-profile-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:calc(80vh - 60px); overflow-y:auto;">
@@ -2624,17 +2622,17 @@
                     <div id="my-profile-avatar" style="width:90px; height:90px; border-radius:50%; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:white; cursor:pointer;" onclick="openSettings()" title="In Einstellungen ändern"></div>
                     <h3 id="my-profile-name" style="margin:0 0 4px 0;"></h3>
                     <p id="my-profile-status" style="color:#999; font-size:14px; margin:0 0 8px;"></p>
-                    <span style="font-size:12px; color:var(--primary); cursor:pointer;" onclick="closeOverlay('my-profile-overlay'); openSettings();">✏️ Bearbeiten</span>
+                    <span style="font-size:12px; color:var(--primary); cursor:pointer;" onclick="closeOverlay('my-profile-overlay'); openSettings();" data-i18n="btn_edit_profile">✏️ Bearbeiten</span>
                 </div>
 
                 <div style="border-top:1px solid var(--border-color); padding-top:15px; display:grid; grid-template-columns:1fr 1fr; gap:12px; text-align:center; margin-bottom:15px;">
                     <div style="background:var(--bg); border-radius:10px; padding:12px;">
                         <div id="my-profile-msg-count" style="font-size:24px; font-weight:bold; color:var(--primary);">—</div>
-                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Nachrichten gesendet</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;" data-i18n="lbl_stat_msgs_sent">Nachrichten gesendet</div>
                     </div>
                     <div style="background:var(--bg); border-radius:10px; padding:12px;">
                         <div id="my-profile-contact-count" style="font-size:24px; font-weight:bold; color:var(--primary);">—</div>
-                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Kontakte</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;" data-i18n="lbl_stat_contacts">Kontakte</div>
                     </div>
                     <div style="background:var(--bg); border-radius:10px; padding:12px;">
                         <div id="my-profile-emoji-stat" style="font-size:24px;">—</div>
@@ -2642,12 +2640,12 @@
                     </div>
                     <div style="background:var(--bg); border-radius:10px; padding:12px;">
                         <div id="my-profile-since" style="font-size:14px; font-weight:bold; color:var(--primary);">—</div>
-                        <div style="font-size:11px; opacity:0.6; margin-top:2px;">Dabei seit</div>
+                        <div style="font-size:11px; opacity:0.6; margin-top:2px;" data-i18n="lbl_stat_since">Dabei seit</div>
                     </div>
                 </div>
 
                 <div style="border-top:1px solid var(--border-color); padding-top:12px;">
-                    <div style="font-size:12px; font-weight:600; margin-bottom:8px; opacity:0.6;">HÄUFIGSTE KONTAKTE</div>
+                    <div style="font-size:12px; font-weight:600; margin-bottom:8px; opacity:0.6;" data-i18n="lbl_top_contacts">HÄUFIGSTE KONTAKTE</div>
                     <div id="my-profile-top-contacts"></div>
                 </div>
             </div>
@@ -2657,7 +2655,7 @@
     <div id="forward-overlay" class="overlay">
         <div class="modal" style="max-height:80vh;">
             <div class="modal-header">
-                <h2>📤 Weiterleiten an...</h2>
+                <h2 data-i18n="h2_forward">📤 Weiterleiten an...</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('forward-overlay')">✕</span>
             </div>
             <div style="padding:10px 15px; border-bottom:1px solid var(--border-color); background:var(--bg);">
@@ -2665,7 +2663,7 @@
             </div>
             <div id="forward-contacts-list" style="max-height:50vh; overflow-y:auto;"></div>
             <div style="padding:12px 15px; border-top:1px solid var(--border-color);">
-                <button id="forward-send-btn" onclick="sendForward()" style="width:100%; background:var(--primary);" disabled>Weiterleiten (0 ausgewählt)</button>
+                <button id="forward-send-btn" onclick="sendForward()" style="width:100%; background:var(--primary);" disabled data-i18n="btn_forward_zero">Weiterleiten (0 ausgewählt)</button>
             </div>
         </div>
     </div>
@@ -2677,19 +2675,19 @@
     <div id="poll-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>📊 Abstimmung erstellen</h2>
+                <h2 data-i18n="h2_poll">📊 Abstimmung erstellen</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('poll-overlay')">✕</span>
             </div>
             <div class="modal-body">
-                <label style="display:block; font-weight:500; margin-bottom:6px;">Frage:</label>
+                <label style="display:block; font-weight:500; margin-bottom:6px;" data-i18n="lbl_poll_question">Frage:</label>
                 <input type="text" id="poll-question" placeholder="Was möchtest du fragen?" maxlength="120" style="width:100%; margin-bottom:14px;">
-                <label style="display:block; font-weight:500; margin-bottom:6px;">Optionen:</label>
+                <label style="display:block; font-weight:500; margin-bottom:6px;" data-i18n="lbl_poll_options">Optionen:</label>
                 <div id="poll-options-list">
                     <input type="text" class="poll-option-input" placeholder="Option 1" maxlength="60" style="width:100%; margin-bottom:8px;">
                     <input type="text" class="poll-option-input" placeholder="Option 2" maxlength="60" style="width:100%; margin-bottom:8px;">
                 </div>
-                <button onclick="addPollOption()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:14px;">+ Option hinzufügen</button>
-                <button onclick="sendPoll()" style="width:100%; background:var(--primary);">📊 Abstimmung senden</button>
+                <button onclick="addPollOption()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:14px;" data-i18n="btn_add_option">+ Option hinzufügen</button>
+                <button onclick="sendPoll()" style="width:100%; background:var(--primary);" data-i18n="btn_send_poll">📊 Abstimmung senden</button>
             </div>
         </div>
     </div>
@@ -2698,15 +2696,15 @@
     <div id="qr-pin-overlay" class="overlay">
         <div class="modal" style="max-width:360px; width:95vw;">
             <div class="modal-header">
-                <h2>📄 QR-Code generieren</h2>
+                <h2 data-i18n="h2_qr_gen">📄 QR-Code generieren</h2>
                 <span style="cursor:pointer;" onclick="closeOverlay('qr-pin-overlay')">✕</span>
             </div>
             <div class="modal-body">
-                <p style="font-size:13px; opacity:0.7; margin-bottom:14px;">Gib deinen PIN ein um das PDF zu generieren. Das PDF enthält deinen Benutzernamen, PIN und einen QR-Code zum direkten Einloggen.</p>
+                <p style="font-size:13px; opacity:0.7; margin-bottom:14px;" data-i18n="lbl_qr_desc2">Gib deinen PIN ein um das PDF zu generieren. Das PDF enthält deinen Benutzernamen, PIN und einen QR-Code zum direkten Einloggen.</p>
                 <label style="font-size:12px; opacity:0.6; display:block; margin-bottom:4px;">PIN (Format: xxxx-xxxx)</label>
                 <input type="password" id="qr-pin-input" placeholder="xxxx-xxxx" maxlength="9" style="width:100%; margin-bottom:4px;" oninput="this.value=this.value.replace(/[^0-9-]/g,'')">
                 <p id="qr-pin-error" style="color:#dc3545; font-size:12px; min-height:18px; margin:4px 0 10px;"></p>
-                <button onclick="generateLoginQR()" style="width:100%; background:var(--primary);">📄 PDF generieren & herunterladen</button>
+                <button onclick="generateLoginQR()" style="width:100%; background:var(--primary);" data-i18n="btn_gen_qr2">📄 PDF generieren & herunterladen</button>
             </div>
         </div>
     </div>
@@ -2714,20 +2712,20 @@
     <div id="change-pin-overlay" class="overlay">
         <div class="modal">
             <div class="modal-header">
-                <h2>🔑 PIN ändern</h2>
+                <h2 data-i18n="h2_change_pin">🔑 PIN ändern</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('change-pin-overlay')">✕</span>
             </div>
             <div class="modal-body">
                 <p style="font-size:13px; opacity:0.7; margin-top:0;">Ändere deinen Login-PIN. Das Format ist <strong>xxxx-xxxx</strong> (8 Ziffern).</p>
-                <label style="display:block; margin-bottom:5px; font-weight:500;">Aktueller PIN:</label>
+                <label style="display:block; margin-bottom:5px; font-weight:500;" data-i18n="lbl_current_pin">Aktueller PIN:</label>
                 <input type="password" id="pin-current" placeholder="xxxx-xxxx" maxlength="9" style="width:100%; margin-bottom:12px;">
-                <label style="display:block; margin-bottom:5px; font-weight:500;">Neuer PIN:</label>
+                <label style="display:block; margin-bottom:5px; font-weight:500;" data-i18n="lbl_new_pin">Neuer PIN:</label>
                 <input type="password" id="pin-new" placeholder="xxxx-xxxx" maxlength="9" style="width:100%; margin-bottom:12px;">
-                <label style="display:block; margin-bottom:5px; font-weight:500;">Neuen PIN wiederholen:</label>
+                <label style="display:block; margin-bottom:5px; font-weight:500;" data-i18n="lbl_repeat_pin">Neuen PIN wiederholen:</label>
                 <input type="password" id="pin-confirm" placeholder="xxxx-xxxx" maxlength="9" style="width:100%; margin-bottom:12px;">
-                <label style="display:block; margin-bottom:5px; font-weight:500;">PIN-Hinweis <span style="font-weight:400; opacity:0.5;">(optional, sichtbar beim Login)</span></label>
+                <label style="display:block; margin-bottom:5px; font-weight:500;"><span data-i18n="lbl_pin_hint_label">PIN-Hinweis</span> <span style="font-weight:400; opacity:0.5;" data-i18n="lbl_pin_hint_opt">(optional, sichtbar beim Login)</span></label>
                 <input type="text" id="pin-hint-settings" placeholder="z.B. Lieblingsfilm + Geburtsjahr" maxlength="80" style="width:100%; margin-bottom:16px;">
-                <button onclick="savePINChange()" style="width:100%; background:var(--primary);">PIN ändern</button>
+                <button onclick="savePINChange()" style="width:100%; background:var(--primary);" data-i18n="btn_change_pin2">PIN ändern</button>
             </div>
         </div>
     </div>
@@ -2735,20 +2733,20 @@
     <div id="help-overlay" class="overlay">
         <div class="modal" style="max-height:85vh;">
             <div class="modal-header">
-                <h2>❓ Hilfe</h2>
+                <h2 data-i18n="h2_help">❓ Hilfe</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('help-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:calc(85vh - 60px); overflow-y:auto; padding:0;">
 
                 <!-- Article navigation -->
                 <div id="help-nav" style="padding:10px 15px; border-bottom:1px solid var(--border-color);">
-                    <input type="text" id="help-search" placeholder="Hilfeartikel suchen..." style="width:100%; margin:0 0 10px 0;" oninput="filterHelp(this.value)">
+                    <input type="text" id="help-search" placeholder="Hilfeartikel suchen..." data-i18n-placeholder="ph_help_search" style="width:100%; margin:0 0 10px 0;" oninput="filterHelp(this.value)">
                     <div id="help-articles-list"></div>
                 </div>
 
                 <!-- Article content -->
                 <div id="help-article-view" style="display:none; padding:15px;">
-                    <div style="cursor:pointer; color:var(--primary); font-size:13px; margin-bottom:15px;" onclick="showHelpNav()">← Alle Artikel</div>
+                    <div style="cursor:pointer; color:var(--primary); font-size:13px; margin-bottom:15px;" onclick="showHelpNav()" data-i18n="lbl_help_back">← Alle Artikel</div>
                     <h3 id="help-article-title" style="margin-top:0;"></h3>
                     <div id="help-article-body" style="font-size:14px; line-height:1.7;"></div>
                 </div>
@@ -2773,7 +2771,7 @@
                 </div>
                 <button id="btn-auth" type="submit" style="width:100%;" data-i18n="btn_start">Starten</button>
             </form>
-            <button onclick="if(window.openHelp) window.openHelp(); else document.getElementById('help-overlay').style.display='flex';" style="width:100%; margin-top:10px; background:transparent; color:#999; border:1px solid #ddd; font-size:13px;">❓ Brauchst du Hilfe?</button>
+            <button onclick="if(window.openHelp) window.openHelp(); else document.getElementById('help-overlay').style.display='flex';" style="width:100%; margin-top:10px; background:transparent; color:#999; border:1px solid #ddd; font-size:13px;" data-i18n="btn_need_help">❓ Brauchst du Hilfe?</button>
         </div>
     </div>
 
@@ -2781,13 +2779,13 @@
     <div id="story-ctx-overlay" class="overlay" style="background:rgba(0,0,0,0.5);" onclick="closeOverlay('story-ctx-overlay')">
         <div class="modal" style="max-width:360px; width:95vw; max-height:80vh; overflow-y:auto; padding:0;" onclick="event.stopPropagation()">
             <div class="modal-header" style="padding:14px 18px;">
-                <h2>📖 Meine Geschichten</h2>
+                <h2 data-i18n="h2_my_stories">📖 Meine Geschichten</h2>
                 <span onclick="closeOverlay('story-ctx-overlay')" style="cursor:pointer;">✕</span>
             </div>
             <div style="padding:12px 16px;">
-                <button onclick="closeOverlay('story-ctx-overlay'); openStoryCreate();" style="width:100%; background:var(--primary); margin-bottom:8px;">➕ Zur Geschichte hinzufügen</button>
-                <button onclick="deleteAllMyStories()" style="width:100%; background:#dc3545; margin-bottom:12px;">🗑️ Alle Geschichten löschen</button>
-                <div style="font-size:12px; opacity:0.5; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;">Einzelne Slides</div>
+                <button onclick="closeOverlay('story-ctx-overlay'); openStoryCreate();" style="width:100%; background:var(--primary); margin-bottom:8px;" data-i18n="btn_add_to_story">➕ Zur Geschichte hinzufügen</button>
+                <button onclick="deleteAllMyStories()" style="width:100%; background:#dc3545; margin-bottom:12px;" data-i18n="btn_delete_all_stories">🗑️ Alle Geschichten löschen</button>
+                <div style="font-size:12px; opacity:0.5; text-transform:uppercase; letter-spacing:.5px; margin-bottom:8px;" data-i18n="lbl_single_slides">Einzelne Slides</div>
                 <div id="story-ctx-slides-list"></div>
             </div>
         </div>
@@ -2797,7 +2795,7 @@
     <div id="story-create-overlay" class="overlay">
         <div class="modal" style="max-width:420px; width:95vw; max-height:92vh; flex-direction:column; padding:0; overflow:hidden;">
             <div class="modal-header" style="flex-shrink:0; padding:14px 18px;">
-                <h2>📖 Geschichte erstellen</h2>
+                <h2 data-i18n="h2_story_create">📖 Geschichte erstellen</h2>
                 <span style="cursor:pointer;" onclick="closeOverlay('story-create-overlay')">✕</span>
             </div>
             <div style="flex:1; overflow-y:auto; padding:16px;">
@@ -2825,7 +2823,7 @@
                 <div id="story-text-section">
                     <textarea id="story-text-input" placeholder="Was möchtest du teilen?" maxlength="120" rows="2" oninput="updateStoryPreview()" style="width:100%; resize:none; margin-bottom:6px;"></textarea>
                     <div style="margin-bottom:8px;">
-                        <label style="font-size:11px; opacity:0.6; display:block; margin-bottom:4px;">SCHRIFTART</label>
+                        <label style="font-size:11px; opacity:0.6; display:block; margin-bottom:4px;" data-i18n="lbl_story_font">SCHRIFTART</label>
                         <select id="story-font-picker" oninput="updateStoryPreview()" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:6px;">
                             <option value="'VilloChat Sans', sans-serif">VilloChat Sans ✦</option>
                             <option value="'VilloChat Serif', serif">VilloChat Serif ✦</option>
@@ -2860,7 +2858,7 @@
                     <input type="text" id="story-emoji-input" style="display:none;" readonly>
                     <div style="display:flex; align-items:center; gap:10px; margin-bottom:8px;">
                         <div id="story-emoji-display" style="font-size:52px; min-width:60px; text-align:center; line-height:1;">😊</div>
-                        <button onclick="emojiTarget='story-emoji-input'; openEmojiPicker();" style="flex:1; background:var(--primary); color:white; border:none;">😊 Emoji wählen</button>
+                        <button onclick="emojiTarget='story-emoji-input'; openEmojiPicker();" style="flex:1; background:var(--primary); color:white; border:none;" data-i18n="btn_story_emoji">😊 Emoji wählen</button>
                     </div>
                     <div style="margin-bottom:8px;">
                         <label style="font-size:11px; opacity:0.6; display:block; margin-bottom:4px;">HINTERGRUNDFARBE</label>
@@ -2888,7 +2886,7 @@
                 <!-- Actions -->
                 <div style="display:flex; gap:8px; margin-top:4px;">
                     <button onclick="saveCurrentSlide()" style="flex:1; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);">💾 Slide speichern</button>
-                    <button onclick="publishStory()" style="flex:1; background:var(--primary);">📖 Veröffentlichen</button>
+                    <button onclick="publishStory()" style="flex:1; background:var(--primary);" data-i18n="btn_publish_story2">📖 Veröffentlichen</button>
                 </div>
                 <div id="story-slide-counter" style="text-align:center; font-size:12px; opacity:0.5; margin-top:6px;">0 / 15 Slides</div>
             </div>
@@ -2938,7 +2936,7 @@
     <div id="scheduled-overlay" class="overlay">
         <div class="modal" style="max-width:480px; max-height:85vh; padding:0; overflow:hidden; display:flex; flex-direction:column;">
             <div class="modal-header" style="flex-shrink:0;">
-                <h2>🕐 Geplante Nachrichten</h2>
+                <h2 data-i18n="h2_scheduled">🕐 Geplante Nachrichten</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('scheduled-overlay')">✕</span>
             </div>
             <div style="flex:1; overflow-y:auto; padding:16px;">
@@ -2950,13 +2948,13 @@
                     <!-- Repeat -->
                     <select id="scheduled-repeat" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:8px;">
                         <option value="none">Einmalig</option>
-                        <option value="daily">Täglich wiederholen</option>
-                        <option value="weekly">Wöchentlich wiederholen</option>
+                        <option value="daily" data-i18n="lbl_recur_daily">Täglich wiederholen</option>
+                        <option value="weekly" data-i18n="lbl_recur_weekly">Wöchentlich wiederholen</option>
                     </select>
                     <!-- Reminder -->
                     <label style="display:flex; align-items:center; gap:8px; font-size:13px; margin-bottom:10px; cursor:pointer;">
                         <input type="checkbox" id="scheduled-remind" style="width:16px; height:16px;">
-                        <span>5 Minuten vorher erinnern</span>
+                        <span data-i18n="lbl_reminder_5min">5 Minuten vorher erinnern</span>
                     </label>
                     <!-- Target: current chat or group -->
                     <div style="font-size:12px; opacity:0.5; margin-bottom:8px;" id="scheduled-target-label"></div>
@@ -2986,11 +2984,11 @@
     <div id="group-create-overlay" class="overlay">
         <div class="modal" style="max-width:420px;">
             <div class="modal-header">
-                <h2>👥 Gruppe erstellen</h2>
+                <h2 data-i18n="h2_group_create">👥 Gruppe erstellen</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('group-create-overlay')">✕</span>
             </div>
             <div class="modal-body">
-                <label style="display:block; font-weight:500; margin-bottom:5px;">Gruppenname:</label>
+                <label style="display:block; font-weight:500; margin-bottom:5px;" data-i18n="lbl_group_name">Gruppenname:</label>
                 <input type="text" id="group-name-input" placeholder="z.B. Freunde, Arbeit..." maxlength="40" style="width:100%; margin-bottom:14px;">
                 <label style="display:block; font-weight:500; margin-bottom:5px;">Mitglieder hinzufügen:</label>
                 <div style="display:flex; gap:6px; margin-bottom:10px;">
@@ -3009,7 +3007,7 @@
     <div id="group-info-overlay" class="overlay">
         <div class="modal" style="max-width:420px; max-height:80vh;">
             <div class="modal-header">
-                <h2>👥 Gruppeninfo</h2>
+                <h2 data-i18n="h2_group_info">👥 Gruppeninfo</h2>
                 <span style="cursor:pointer" onclick="closeOverlay('group-info-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
@@ -3087,10 +3085,10 @@
                     <span class="menu-dots" onclick="toggleChatMenu()">⋮</span>
                     <div id="chat-menu" class="dropdown-menu">
                         <div class="menu-item" id="menu-group-info" onclick="openGroupInfo()" style="display:none;">👥 Gruppeninfo</div>
-                        <div class="menu-item" onclick="openScheduled()">🕐 Geplante Nachrichten</div>
-                        <div class="menu-item" onclick="exportChat()">📥 Chat exportieren</div>
-                        <div class="menu-item" onclick="searchInChat()">🔍 Nachricht suchen</div>
-                        <div class="menu-item" onclick="clearChat()">🗑️ Chat leeren</div>
+                        <div class="menu-item" onclick="openScheduled()" data-i18n="menu_scheduled">🕐 Geplante Nachrichten</div>
+                        <div class="menu-item" onclick="exportChat()" data-i18n="menu_export">📥 Chat exportieren</div>
+                        <div class="menu-item" onclick="searchInChat()" data-i18n="menu_search_chat">🔍 Nachricht suchen</div>
+                        <div class="menu-item" onclick="clearChat()" data-i18n="menu_clear_chat">🗑️ Chat leeren</div>
                     </div>
                 </div>
             </div>
@@ -3098,7 +3096,7 @@
             <div id="pinned-msg-bar" style="display:none; padding:8px 15px; background:var(--white); border-bottom:1px solid var(--border-color); cursor:pointer; align-items:center; gap:8px;" onclick="scrollToPinned()">
                 <span style="font-size:16px;">📌</span>
                 <div style="flex:1; overflow:hidden;">
-                    <div style="font-size:10px; font-weight:600; color:var(--primary);">Angeheftete Nachricht</div>
+                    <div style="font-size:10px; font-weight:600; color:var(--primary);" data-i18n="lbl_pinned_msg">Angeheftete Nachricht</div>
                     <div id="pinned-msg-text" style="font-size:12px; opacity:0.7; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"></div>
                 </div>
                 <span onclick="event.stopPropagation(); unpinMessage()" style="opacity:0.4; font-size:18px; cursor:pointer;">✕</span>
@@ -3128,7 +3126,7 @@
             <div id="voice-recording-bar">
                 <div class="rec-dot"></div>
                 <span id="voice-rec-timer">0:00</span>
-                <span style="flex:1; opacity:0.7;">Aufnehmen… loslassen zum Senden</span>
+                <span style="flex:1; opacity:0.7;" data-i18n="lbl_recording">Aufnehmen… loslassen zum Senden</span>
                 <button onclick="cancelVoiceRecord()" style="background:transparent; color:#dc3545; border:none; cursor:pointer; font-size:18px; padding:0;">✕</button>
             </div>
             <div id="input-area">
@@ -3137,9 +3135,9 @@
                 <button onclick="openPollCreator()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Abstimmung erstellen">📊</button>
                 <button onclick="toggleAttachMenu()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0;" title="Anhang senden">📎</button>
                 <div id="attach-menu" style="display:none; position:absolute; bottom:60px; left:8px; background:var(--white); border:1px solid var(--border-color); border-radius:12px; padding:6px; box-shadow:0 4px 16px rgba(0,0,0,0.15); z-index:100; flex-direction:column; gap:2px;">
-                    <div onclick="document.getElementById('img-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">🖼️ <span>Bild</span></div>
-                    <div onclick="document.getElementById('audio-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">🎵 <span>Audio</span></div>
-                    <div onclick="document.getElementById('doc-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">📄 <span>Dokument</span></div>
+                    <div onclick="document.getElementById('img-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">🖼️ <span data-i18n="lbl_attach_image">Bild</span></div>
+                    <div onclick="document.getElementById('audio-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">🎵 <span data-i18n="lbl_attach_audio">Audio</span></div>
+                    <div onclick="document.getElementById('doc-upload-input').click(); closeAttachMenu()" style="display:flex; align-items:center; gap:10px; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">📄 <span data-i18n="lbl_attach_doc">Dokument</span></div>
                 </div>
                 <input type="file" id="img-upload-input" accept="image/*" style="display:none;">
                 <input type="file" id="audio-upload-input" accept="audio/mp3,audio/wav,audio/ogg,audio/mpeg,.mp3,.wav,.ogg" style="display:none;">
@@ -3418,6 +3416,147 @@ const LANGS = {
         menu_reports: 'Gemeldete Nachrichten',
         menu_create_group: 'Gruppe erstellen',
         menu_bookmarks: 'Lesezeichen',
+        h2_settings: '⚙️ Einstellungen',
+        lbl_font_design: 'Schrift-Design:',
+        lbl_bubble_style_round: '● Rund',
+        lbl_bubble_style_square: '■ Eckig',
+        lbl_bubble_style_minimal: '– Minimal',
+        lbl_fontsize_small: 'Klein',
+        lbl_fontsize_normal: 'Normal',
+        lbl_fontsize_large: 'Groß',
+        btn_save_reactions: 'Reaktionen speichern',
+        lbl_sound: 'Sound:',
+        lbl_sound_toggle: '🔊 Benachrichtigungston aktivieren',
+        lbl_tab_warnings: 'Warnungen',
+        lbl_avatar_color: 'Avatar-Farbe:',
+        lbl_avatar_font: 'Avatar-Schriftart:',
+        lbl_avatar_emoji: 'Emoji als Profilbild:',
+        btn_pick_emoji: '😊 Emoji wählen',
+        lbl_avatar_bg: 'Hintergrundfarbe:',
+        lbl_avatar_image: 'Bild als Profilbild (max. 200 KB):',
+        btn_pick_image: '📁 Bild auswählen',
+        btn_reload_app: '🔄 App neu laden',
+        lbl_privacy: '🔐 Datenschutz',
+        lbl_privacy_desc: 'Nachrichten werden in Firebase Realtime Database gespeichert. Dein PIN wird als Klartext gespeichert — wähle ihn sorgfältig. VilloChat nutzt keine Werbung und gibt keine Daten weiter.',
+        lbl_word_filter_section: '🚫 Wortfilter',
+        lbl_word_filter_desc: 'Nachrichten die diese Wörter enthalten werden ausgeblendet. Kommagetrennt.',
+        btn_save_word_filter2: '💾 Wortfilter speichern',
+        lbl_blocked_section: '🚷 Blockierte Nutzer',
+        lbl_blocked_empty: 'Keine blockierten Nutzer.',
+        lbl_warnings_section: '⚠️ Warnungen & Sperren',
+        btn_show_warnings: '📋 Warnungen anzeigen',
+        lbl_warnings_desc: 'Zeigt deine Warn- und Banhistorie. Admins können hier das Admin Panel öffnen.',
+        h3_warnings_bans: '⚠️ Warnungen & Sperren',
+        h2_confirm: 'Bestätigung',
+        btn_yes: 'Ja',
+        btn_no: 'Nein',
+        h2_search: 'Suche',
+        h2_chat_search: 'In Chat suchen',
+        h2_alias: 'Alias bearbeiten',
+        lbl_alias: 'Alias für Kontakt:',
+        h2_bookmarks: '🔖 Lesezeichen',
+        h2_reports: '🚨 Gemeldete Nachrichten',
+        h2_tags: '🏷️ Tags verwalten',
+        lbl_tag_suggestions: 'VORSCHLÄGE',
+        h2_sticker: '🎭 Sticker',
+        h2_emoji: 'Zeichen wählen',
+        h2_user_info: 'Benutzer-Info',
+        lbl_stat_msgs: 'Nachrichten',
+        lbl_stat_fav_emoji: 'Lieblings-Emoji',
+        lbl_stat_first_msg: 'Erste Nachricht',
+        lbl_stat_avg_chars: 'Ø Zeichen/Nachricht',
+        lbl_alias_section: 'ALIAS & VERWALTUNG',
+        lbl_alias_label: 'Alias:',
+        lbl_chat_bubble_color: 'Chat-Bubble-Farbe:',
+        btn_save_color: 'Farbe speichern',
+        lbl_note: '📋 Notiz',
+        lbl_note_private: '(nur für dich sichtbar)',
+        btn_save_note: 'Notiz speichern',
+        lbl_tags_section: 'TAGS',
+        btn_edit_tags: '🏷️ Tags bearbeiten',
+        lbl_shared_groups: 'GEMEINSAME GRUPPEN',
+        lbl_loading: 'Wird geladen…',
+        h2_my_profile: '👤 Mein Profil',
+        lbl_stat_msgs_sent: 'Nachrichten gesendet',
+        lbl_stat_contacts: 'Kontakte',
+        lbl_stat_fav_emoji2: 'Lieblings-Emoji',
+        lbl_stat_since: 'Dabei seit',
+        lbl_top_contacts: 'HÄUFIGSTE KONTAKTE',
+        btn_edit_profile: '✏️ Bearbeiten',
+        h2_forward: '📤 Weiterleiten an...',
+        btn_forward_zero: 'Weiterleiten (0 ausgewählt)',
+        h2_poll: '📊 Abstimmung erstellen',
+        lbl_poll_question: 'Frage:',
+        lbl_poll_options: 'Optionen:',
+        btn_add_option: '+ Option hinzufügen',
+        btn_send_poll: '📊 Abstimmung senden',
+        h2_qr_gen: '📄 QR-Code generieren',
+        lbl_qr_desc2: 'Gib deinen PIN ein um das PDF zu generieren. Das PDF enthält deinen Benutzernamen, PIN und einen QR-Code zum direkten Einloggen.',
+        btn_gen_qr2: '📄 PDF generieren & herunterladen',
+        h2_change_pin: '🔑 PIN ändern',
+        lbl_pin_format: 'Ändere deinen Login-PIN. Das Format ist',
+        lbl_current_pin: 'Aktueller PIN:',
+        lbl_new_pin: 'Neuer PIN:',
+        lbl_repeat_pin: 'Neuen PIN wiederholen:',
+        lbl_pin_hint_label: 'PIN-Hinweis',
+        lbl_pin_hint_opt: '(optional, sichtbar beim Login)',
+        btn_change_pin2: 'PIN ändern',
+        h2_help: '❓ Hilfe',
+        lbl_help_back: '← Alle Artikel',
+        btn_need_help: '❓ Brauchst du Hilfe?',
+        h2_my_stories: '📖 Meine Geschichten',
+        btn_add_to_story: '➕ Zur Geschichte hinzufügen',
+        btn_delete_all_stories: '🗑️ Alle Geschichten löschen',
+        lbl_single_slides: 'Einzelne Slides',
+        h2_story_create: '📖 Geschichte erstellen',
+        lbl_story_font: 'SCHRIFTART',
+        lbl_story_bg: 'HINTERGRUNDFARBE',
+        btn_story_emoji: '😊 Emoji wählen',
+        lbl_story_image_upload: '📁 Bild auswählen (max. 500 KB)',
+        btn_publish_story2: '📖 Veröffentlichen',
+        lbl_story_slides_count: '/ 15 Slides',
+        lbl_just_now: 'Gerade eben',
+        lbl_hours_ago: 'vor',
+        lbl_react_label: 'Reagieren:',
+        btn_prev_story: '‹ Zurück',
+        btn_next_story: 'Weiter ›',
+        h2_scheduled: '🕐 Geplante Nachrichten',
+        lbl_reminder_5min: '5 Minuten vorher erinnern',
+        lbl_recur_once: 'Einmalig',
+        lbl_recur_daily: 'Täglich wiederholen',
+        lbl_recur_weekly: 'Wöchentlich wiederholen',
+        h2_group_create: '👥 Gruppe erstellen',
+        lbl_group_name: t('lbl_group_name'),
+        lbl_add_members: t('lbl_add_members'),
+        lbl_selected_members: t('lbl_selected_members'),
+        h2_group_info: '👥 Gruppeninfo',
+        lbl_attach_image: 'Bild',
+        lbl_attach_audio: 'Audio',
+        lbl_attach_doc: 'Dokument',
+        lbl_recording: 'Aufnehmen… loslassen zum Senden',
+        lbl_pinned_msg: 'Angeheftete Nachricht',
+        lbl_typing_now: 'schreibt gerade...',
+        menu_scheduled: '🕐 Geplante Nachrichten',
+        menu_export: '📥 Chat exportieren',
+        menu_search_chat: '🔍 Nachricht suchen',
+        menu_clear_chat: '🗑️ Chat leeren',
+        lbl_new_slide: 'Neuer Slide...',
+        lbl_slide_of: 'Slide',
+        ph_help_search: 'Hilfeartikel suchen...',
+        h2_global_search: '🔍 Globale Suche',
+        h2_changelog: '📝 Changelog',
+        lbl_vis_search_hint: 'Tippe einen Kontaktnamen zum Suchen:',
+        lbl_vis_story_note: 'Bestehende Geschichten bleiben bis zu 48h sichtbar. Die Einstellung gilt für neue Aufrufe.',
+        lbl_my_stickers: '⭐ Meine',
+        lbl_no_stickers: 'Noch keine eigenen Sticker',
+        lbl_enter_pin_error: 'Bitte PIN eingeben.',
+        lbl_wrong_pin_error: '❌ Falscher PIN.',
+        lbl_story_user: 'Deine',
+        lbl_story_all: 'Alle',
+        lbl_read_delivered: 'Gelesen',
+        lbl_delivered2: 'Zugestellt',
+        lbl_profil_tab: 'Profil',
+        lbl_chat_tab: 'Chat',
         notif_enter_name: '❌ Bitte Namen eingeben',
         notif_enter_current_pin: '⚠️ Bitte aktuellen PIN eingeben',
         notif_enter_question: '⚠️ Bitte eine Frage eingeben',
@@ -3697,6 +3836,147 @@ const LANGS = {
         menu_reports: 'Reported Messages',
         menu_create_group: 'Create Group',
         menu_bookmarks: 'Bookmarks',
+        h2_settings: '⚙️ Settings',
+        lbl_font_design: 'Font design:',
+        lbl_bubble_style_round: '● Round',
+        lbl_bubble_style_square: '■ Square',
+        lbl_bubble_style_minimal: '– Minimal',
+        lbl_fontsize_small: 'Small',
+        lbl_fontsize_normal: 'Normal',
+        lbl_fontsize_large: 'Large',
+        btn_save_reactions: 'Save reactions',
+        lbl_sound: 'Sound:',
+        lbl_sound_toggle: '🔊 Enable notification sound',
+        lbl_tab_warnings: 'Warnings',
+        lbl_avatar_color: 'Avatar color:',
+        lbl_avatar_font: 'Avatar font:',
+        lbl_avatar_emoji: 'Emoji as profile picture:',
+        btn_pick_emoji: '😊 Pick emoji',
+        lbl_avatar_bg: 'Background color:',
+        lbl_avatar_image: 'Image as profile pic (max. 200 KB):',
+        btn_pick_image: '📁 Select image',
+        btn_reload_app: '🔄 Reload app',
+        lbl_privacy: '🔐 Privacy',
+        lbl_privacy_desc: 'Messages are stored in Firebase Realtime Database. Your PIN is stored as plaintext — choose it carefully. VilloChat uses no ads and shares no data.',
+        lbl_word_filter_section: '🚫 Word filter',
+        lbl_word_filter_desc: 'Messages containing these words will be hidden. Comma-separated.',
+        btn_save_word_filter2: '💾 Save word filter',
+        lbl_blocked_section: '🚷 Blocked users',
+        lbl_blocked_empty: 'No blocked users.',
+        lbl_warnings_section: '⚠️ Warnings & Bans',
+        btn_show_warnings: '📋 Show warnings',
+        lbl_warnings_desc: 'Shows your warning and ban history. Admins can open the admin panel here.',
+        h3_warnings_bans: '⚠️ Warnings & Bans',
+        h2_confirm: 'Confirmation',
+        btn_yes: 'Yes',
+        btn_no: 'No',
+        h2_search: 'Search',
+        h2_chat_search: 'Search in chat',
+        h2_alias: 'Edit alias',
+        lbl_alias: 'Alias for contact:',
+        h2_bookmarks: '🔖 Bookmarks',
+        h2_reports: '🚨 Reported Messages',
+        h2_tags: '🏷️ Manage tags',
+        lbl_tag_suggestions: 'SUGGESTIONS',
+        h2_sticker: '🎭 Sticker',
+        h2_emoji: 'Pick character',
+        h2_user_info: 'User info',
+        lbl_stat_msgs: 'Messages',
+        lbl_stat_fav_emoji: 'Favourite emoji',
+        lbl_stat_first_msg: 'First message',
+        lbl_stat_avg_chars: 'Ø chars/message',
+        lbl_alias_section: 'ALIAS & MANAGEMENT',
+        lbl_alias_label: 'Alias:',
+        lbl_chat_bubble_color: 'Chat bubble color:',
+        btn_save_color: 'Save color',
+        lbl_note: '📋 Note',
+        lbl_note_private: '(only visible to you)',
+        btn_save_note: 'Save note',
+        lbl_tags_section: 'TAGS',
+        btn_edit_tags: '🏷️ Edit tags',
+        lbl_shared_groups: 'SHARED GROUPS',
+        lbl_loading: 'Loading…',
+        h2_my_profile: '👤 My profile',
+        lbl_stat_msgs_sent: 'Messages sent',
+        lbl_stat_contacts: 'Contacts',
+        lbl_stat_fav_emoji2: 'Favourite emoji',
+        lbl_stat_since: 'Member since',
+        lbl_top_contacts: 'TOP CONTACTS',
+        btn_edit_profile: '✏️ Edit',
+        h2_forward: '📤 Forward to...',
+        btn_forward_zero: 'Forward (0 selected)',
+        h2_poll: '📊 Create poll',
+        lbl_poll_question: 'Question:',
+        lbl_poll_options: 'Options:',
+        btn_add_option: '+ Add option',
+        btn_send_poll: '📊 Send poll',
+        h2_qr_gen: '📄 Generate QR code',
+        lbl_qr_desc2: 'Enter your PIN to generate the PDF. The PDF contains your username, PIN and a QR code for direct login.',
+        btn_gen_qr2: '📄 Generate & download PDF',
+        h2_change_pin: '🔑 Change PIN',
+        lbl_pin_format: 'Change your login PIN. The format is',
+        lbl_current_pin: 'Current PIN:',
+        lbl_new_pin: 'New PIN:',
+        lbl_repeat_pin: 'Repeat new PIN:',
+        lbl_pin_hint_label: 'PIN hint',
+        lbl_pin_hint_opt: '(optional, visible at login)',
+        btn_change_pin2: 'Change PIN',
+        h2_help: '❓ Help',
+        lbl_help_back: '← All articles',
+        btn_need_help: '❓ Need help?',
+        h2_my_stories: '📖 My stories',
+        btn_add_to_story: '➕ Add to story',
+        btn_delete_all_stories: '🗑️ Delete all stories',
+        lbl_single_slides: 'Individual slides',
+        h2_story_create: '📖 Create story',
+        lbl_story_font: 'FONT',
+        lbl_story_bg: 'BACKGROUND COLOR',
+        btn_story_emoji: '😊 Pick emoji',
+        lbl_story_image_upload: '📁 Select image (max. 500 KB)',
+        btn_publish_story2: '📖 Publish',
+        lbl_story_slides_count: '/ 15 slides',
+        lbl_just_now: 'Just now',
+        lbl_hours_ago: 'ago',
+        lbl_react_label: 'React:',
+        btn_prev_story: '‹ Back',
+        btn_next_story: 'Next ›',
+        h2_scheduled: '🕐 Scheduled messages',
+        lbl_reminder_5min: 'Remind 5 minutes before',
+        lbl_recur_once: 'Once',
+        lbl_recur_daily: 'Repeat daily',
+        lbl_recur_weekly: 'Repeat weekly',
+        h2_group_create: '👥 Create group',
+        lbl_group_name: 'Group name:',
+        lbl_add_members: 'Add members:',
+        lbl_selected_members: 'Selected members:',
+        h2_group_info: '👥 Group info',
+        lbl_attach_image: 'Image',
+        lbl_attach_audio: 'Audio',
+        lbl_attach_doc: 'Document',
+        lbl_recording: 'Recording… release to send',
+        lbl_pinned_msg: 'Pinned message',
+        lbl_typing_now: 'is typing...',
+        menu_scheduled: '🕐 Scheduled messages',
+        menu_export: '📥 Export chat',
+        menu_search_chat: '🔍 Search messages',
+        menu_clear_chat: '🗑️ Clear chat',
+        lbl_new_slide: 'New slide...',
+        lbl_slide_of: 'Slide',
+        ph_help_search: 'Search help articles...',
+        h2_global_search: '🔍 Global search',
+        h2_changelog: '📝 Changelog',
+        lbl_vis_search_hint: 'Type a contact name to search:',
+        lbl_vis_story_note: 'Existing stories remain visible for up to 48h. The setting applies to new views.',
+        lbl_my_stickers: '⭐ Mine',
+        lbl_no_stickers: 'No custom stickers yet',
+        lbl_enter_pin_error: 'Please enter your PIN.',
+        lbl_wrong_pin_error: '❌ Wrong PIN.',
+        lbl_story_user: 'Your',
+        lbl_story_all: 'All',
+        lbl_read_delivered: 'Read',
+        lbl_delivered2: 'Delivered',
+        lbl_profil_tab: 'Profile',
+        lbl_chat_tab: 'Chat',
         notif_enter_name: '❌ Please enter a name',
         notif_enter_current_pin: '⚠️ Please enter your current PIN',
         notif_enter_question: '⚠️ Please enter a question',
@@ -3971,6 +4251,147 @@ const LANGS = {
         menu_reports: 'Mesája repôrta',
         menu_create_group: 'Creaćio Grupa',
         menu_bookmarks: 'Marka',
+        h2_settings: '⚙️ Setûp',
+        lbl_font_design: 'Têma',
+        lbl_bubble_style_round: '● Çerkular',
+        lbl_bubble_style_square: '■ Sguara',
+        lbl_bubble_style_minimal: '– Minimala',
+        lbl_fontsize_small: 'Ülp',
+        lbl_fontsize_normal: 'Normala',
+        lbl_fontsize_large: 'Grânde',
+        btn_save_reactions: 'Sáva ti reaćios',
+        lbl_sound: 'Sôn:',
+        lbl_sound_toggle: '🔊 Pernúltal sôn mesája',
+        lbl_tab_warnings: 'Eçklamaćios',
+        lbl_avatar_color: 'Kolora de avátario:',
+        lbl_avatar_font: 'Font de avátario:',
+        lbl_avatar_emoji: 'Avatário de emojia:',
+        btn_pick_emoji: '😊 Chuse tí emoji',
+        lbl_avatar_bg: 'Kolora:',
+        lbl_avatar_image: 'Piktća (max. 200 KB):',
+        btn_pick_image: '📁 Chuse piktća vê systémý datan',
+        btn_reload_app: '🔄 Reínića',
+        lbl_privacy: '🔐 Sijúrita',
+        lbl_privacy_desc: 'Tí PIN û mesajas kên sávâve de Savasystémý ya Firebase Realtime Database tül teçtajayri. Chuse içtrallavla zän PIN. VilloChat nödel úsa advertisikancćios û nödel ênraćas data personalisisavias. Nôv eraçtiran dê enhança sáva.',
+        lbl_word_filter_section: '🚫 Filtro',
+        lbl_word_filter_desc: 'Mesájas cúm pálavras tülva ce blockave û nö lićtan',
+        btn_save_word_filter2: '💾 Sáva',
+        lbl_blocked_section: '🚷 Benúsva blokava',
+        lbl_blocked_empty: 'Nödel blokava benúsva.',
+        lbl_warnings_section: '⚠️ Alêrtas',
+        btn_show_warnings: '📋 Eçra Alêrtas',
+        lbl_warnings_desc: 'Plíä alêrtas û banas.',
+        h3_warnings_bans: '⚠️ Alêrtas û banas',
+        h2_confirm: 'Pêrnúltal',
+        btn_yes: 'Sï',
+        btn_no: 'Nö',
+        h2_search: 'Ćerće',
+        h2_chat_search: 'Ćerći chattan',
+        h2_alias: 'Alías ževre',
+        lbl_alias: 'Alias de kontakta:',
+        h2_bookmarks: '🔖 Markas',
+        h2_reports: '🚨 Mesajas repôrtas',
+        h2_tags: '🏷️ Pina',
+        lbl_tag_suggestions: 'SÚJESTIAS',
+        h2_sticker: '🎭 Stickra',
+        h2_emoji: 'Chúse karakta',
+        h2_user_info: 'Informaćio de benúsna',
+        lbl_stat_msgs: 'Mesájas',
+        lbl_stat_fav_emoji: 'Lieblings-Emoji',
+        lbl_stat_first_msg: '1ᵉ mesája',
+        lbl_stat_avg_chars: 'Ø karaktas de mesáje',
+        lbl_alias_section: 'ALIAS Û EÇRAVA',
+        lbl_alias_label: 'Alias:',
+        lbl_chat_bubble_color: 'Kolora búbla:',
+        btn_save_color: 'Sáva',
+        lbl_note: '📋 Nota',
+        lbl_note_private: '(prívat)',
+        btn_save_note: 'sáva',
+        lbl_tags_section: 'TAGS',
+        btn_edit_tags: '🏷️ Edíta Tags',
+        lbl_shared_groups: 'GRÚPAS VE PLAN',
+        lbl_loading: 'Loada…',
+        h2_my_profile: '👤 Profília',
+        lbl_stat_msgs_sent: 'Sendava',
+        lbl_stat_contacts: 'Kontakta',
+        lbl_stat_fav_emoji2: 'Emoji fáva',
+        lbl_stat_since: 'Cúmve de',
+        lbl_top_contacts: 'Max. Mesajas',
+        btn_edit_profile: '✏️ Edíta',
+        h2_forward: '📤 Senda tül',
+        btn_forward_zero: 'Senda tül (0 ćhusave)',
+        h2_poll: '📊 Creata Pollâvjianćio',
+        lbl_poll_question: 'Guestio:',
+        lbl_poll_options: 'Općios:',
+        btn_add_option: '+ Addas općio',
+        btn_send_poll: '📊 Senda Pollâvjianćio',
+        h2_qr_gen: '📄 creata cod QR',
+        lbl_qr_desc2: 'Introducća PIN ya dônload\'a cod QR de Inića',
+        btn_gen_qr2: '📄 PDF generaćio',
+        h2_change_pin: '🔑 Ževrö PIN',
+        lbl_pin_format: 'Ževrö tí PIN Formáta sini:',
+        lbl_current_pin: 'PIN aktuala:',
+        lbl_new_pin: 'PIN nüve:',
+        lbl_repeat_pin: 'Repêta PIN nüve:',
+        lbl_pin_hint_label: 'PIN-Hinta',
+        lbl_pin_hint_opt: '(optionala, ćenvra)',
+        btn_change_pin2: 'Ževrö PIN',
+        h2_help: '❓ Hölf',
+        lbl_help_back: '← Backân',
+        btn_need_help: '❓ Nïde hölf',
+        h2_my_stories: '📖 Mi storijas',
+        btn_add_to_story: '➕ Adda',
+        btn_delete_all_stories: '🗑️ Delêta allân',
+        lbl_single_slides: 'Sinjilarya slida',
+        h2_story_create: '📖 Crêaćio de storija',
+        lbl_story_font: 'FONT',
+        lbl_story_bg: 'KOLORA',
+        btn_story_emoji: '😊 Emoji:',
+        lbl_story_image_upload: '📁 Chuse piktća (max. 500 KB)',
+        btn_publish_story2: '📖 Publika',
+        lbl_story_slides_count: 'de 15 Slidas',
+        lbl_just_now: 'Rá tül',
+        lbl_hours_ago: 'den',
+        lbl_react_label: 'Reáćio:',
+        btn_prev_story: '‹ Backân',
+        btn_next_story: 'Tül ›',
+        h2_scheduled: '🕐 Plannavi',
+        lbl_reminder_5min: '5a reminda',
+        lbl_recur_once: 'Íva',
+        lbl_recur_daily: 'Repêta díalia',
+        lbl_recur_weekly: 'Repêta mêka',
+        h2_group_create: '👥 Grúpa kreaćio',
+        lbl_group_name: 'Nóm...',
+        lbl_add_members: 'Adda pârtipićias:',
+        lbl_selected_members: 'Di pârtipićias:',
+        h2_group_info: '👥 Informaćio',
+        lbl_attach_image: 'Piktća',
+        lbl_attach_audio: 'Sôn',
+        lbl_attach_doc: 'Dokumenta',
+        lbl_recording: 'Rekorda...',
+        lbl_pinned_msg: 'Pinave mesaja',
+        lbl_typing_now: 'scriva atül...',
+        menu_scheduled: '🕐 Plannavi',
+        menu_export: '📥 Chat exportieren',
+        menu_search_chat: '🔍 Nachricht suchen',
+        menu_clear_chat: '🗑️ Chat leeren',
+        lbl_new_slide: 'Neuer Slide...',
+        lbl_slide_of: 'Slide',
+        ph_help_search: 'Hilfeartikel suchen...',
+        h2_global_search: '🔍 Globale Suche',
+        h2_changelog: '📝 Changelog',
+        lbl_vis_search_hint: 'Tippe einen Kontaktnamen zum Suchen:',
+        lbl_vis_story_note: 'Bestehende Geschichten bleiben bis zu 48h sichtbar. Die Einstellung gilt für neue Aufrufe.',
+        lbl_my_stickers: '⭐ Meine',
+        lbl_no_stickers: 'Noch keine eigenen Sticker',
+        lbl_enter_pin_error: 'Bitte PIN eingeben.',
+        lbl_wrong_pin_error: '❌ Falscher PIN.',
+        lbl_story_user: 'Deine',
+        lbl_story_all: 'Alle',
+        lbl_read_delivered: 'Gelesen',
+        lbl_delivered2: 'Zugestellt',
+        lbl_profil_tab: 'Profil',
+        lbl_chat_tab: 'Chat',
         notif_enter_name: '❌ Adda nóm fáv.',
         notif_enter_current_pin: '⚠️ Adda PIN aktüali fáv.',
         notif_enter_question: '⚠️ Adda qüestio fáv.',
@@ -5465,7 +5886,7 @@ function startChat(n){
 
     typingRef = ref(db, `typing/${activeChatId}/${n}`);
     onValue(typingRef, s => {
-        document.getElementById('typing-status').innerText = s.val()?`${displayName} schreibt gerade...`:'';
+        document.getElementById('typing-status').innerText = s.val()?`${displayName} ${t('lbl_typing_now')}`:'';
     });
     
     // Re-initialize scroll button for new chat
@@ -6179,7 +6600,7 @@ window.openMsgInfo = async (msgKey) => {
                 <div style="font-weight:600; font-size:13px; margin-bottom:8px; opacity:0.7;">STATUS</div>
                 <div style="display:flex; align-items:center; gap:10px; padding:6px 0;">
                     <span style="font-size:20px;">${m.read ? '✓✓' : '✓'}</span>
-                    <span>${m.read ? 'Gelesen' : 'Zugestellt'}</span>
+                    <span>${m.read ? t('lbl_read_delivered') : t('lbl_delivered2')}</span>
                 </div>
             </div>`;
     }
@@ -6710,7 +7131,7 @@ function renderSlidesStrip() {
         };
         strip.appendChild(thumb);
     });
-    counter.textContent = `${storySlides.length} / 15 Slides`;
+    counter.textContent = `${storySlides.length} / 15 ${t('lbl_story_slides_count')}`;
     addBtn.style.display = storySlides.length >= 15 ? 'none' : 'flex';
 }
 
@@ -6780,7 +7201,7 @@ function renderCurrentStory() {
     avEl.textContent = currentStoryUser.charAt(0).toUpperCase();
     document.getElementById('viewer-username').textContent = currentStoryUser;
     const h = Math.floor((Date.now() - s.createdAt) / 3600000);
-    document.getElementById('viewer-time').textContent = h < 1 ? 'Gerade eben' : `vor ${h}h`;
+    document.getElementById('viewer-time').textContent = h < 1 ? t('lbl_just_now') : `${t('lbl_hours_ago')} ${h}h`;
 
     const deleteBtn = document.getElementById('viewer-delete-btn');
     const addBtn = document.getElementById('viewer-add-btn');
@@ -7241,7 +7662,7 @@ function renderStickerPicker(packIndex) {
     // "Meine Sticker" tab first
     const myTab = document.createElement('div');
     myTab.className = 'sticker-tab' + (packIndex === -1 ? ' active' : '');
-    myTab.textContent = '⭐ Meine';
+    myTab.textContent = t('lbl_my_stickers');
     myTab.onclick = () => renderStickerPicker(-1);
     tabsEl.appendChild(myTab);
 
@@ -7274,7 +7695,7 @@ function renderStickerPicker(packIndex) {
         if(customs.length === 0) {
             const hint = document.createElement('div');
             hint.style.cssText = 'grid-column:1/-1; text-align:center; opacity:0.4; font-size:13px; padding:20px 0;';
-            hint.textContent = 'Noch keine eigenen Sticker';
+            hint.textContent = t('lbl_no_stickers');
             grid.appendChild(hint);
         } else {
             customs.forEach(s => {
@@ -7351,12 +7772,12 @@ window.generateLoginQR = async () => {
     const pinInput = document.getElementById('qr-pin-input').value.trim();
     const errEl = document.getElementById('qr-pin-error');
     errEl.textContent = '';
-    if(!pinInput) { errEl.textContent = 'Bitte PIN eingeben.'; return; }
+    if(!pinInput) { errEl.textContent = t('lbl_enter_pin_error'); return; }
 
     // Verify PIN against Firebase
     const pinSnap = await get(ref(db, `accounts/${myUsername}/pin`));
     if(!pinSnap.exists() || pinSnap.val() !== pinInput) {
-        errEl.textContent = '❌ Falscher PIN.';
+        errEl.textContent = t('lbl_wrong_pin_error');
         return;
     }
 
@@ -7935,7 +8356,7 @@ window.openMyProfile = async () => {
     
     // Status
     const savedStatus = localStorage.getItem('villo_status') || '';
-    document.getElementById('my-profile-status').textContent = savedStatus ? `💬 "${savedStatus}"` : 'Kein Status gesetzt';
+    document.getElementById('my-profile-status').textContent = savedStatus ? `💬 "${savedStatus}"` : t('notif_status_saved');
     
     // Stats: count messages and contacts
     let totalMessages = 0;
@@ -9063,7 +9484,7 @@ async function globalSearch(query) {
         const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         const hl = item.text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark style="background:#ffeb3b; border-radius:2px;">$1</mark>');
         const preview = hl.length > 120 ? hl.substring(0, 120) + '...' : hl;
-        const groupBadge = item.isGroup ? '<span style="font-size:10px; opacity:0.5; margin-left:4px;">Gruppe</span>' : '';
+        const groupBadge = item.isGroup ? '<span style="font-size:10px; opacity:0.5; margin-left:4px;">'+t('lbl_groups')+'</span>' : '';
         const div = document.createElement('div');
         div.className = 'search-result-item';
         div.innerHTML = `
@@ -9779,7 +10200,7 @@ window.onload = () => {
             const gData = gSnap.val();
             const members = Object.keys(gData.members || {});
             const countEl = document.getElementById('group-member-count');
-            if(countEl) countEl.textContent = `${members.length} Mitglieder`;
+            if(countEl) countEl.textContent = `${members.length} ${t('lbl_members')}`;
             const avatarEl = document.getElementById('group-chat-avatar');
             if(avatarEl) avatarEl.textContent = gData.avatar || '👥';
         }
@@ -10025,7 +10446,7 @@ window.onload = () => {
             showNotification(t('notif_create_error'), 'error');
         }
         btn.disabled = false;
-        btn.innerHTML = '✅ Gruppe erstellen';
+        btn.innerHTML = `✅ ${t('h2_group_create').replace('👥 ','')}`;
     };
 
     // ── Gruppeninfo anzeigen ──────────────────────────────────────
