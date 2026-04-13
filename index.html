@@ -5311,7 +5311,34 @@ function showApp() {
     document.getElementById('auth-area').style.display = 'none';
     document.getElementById('chat-area').style.display = 'flex';
     document.getElementById('my-name-display').innerText = myUsername;
-    
+
+    // TOS → Ban → Pending Warning prüfen
+    const _u = myUsername;
+    if (_u) {
+        setTimeout(() => {
+            checkAndShowTOS(_u).then(() => {
+                checkAndShowBan(_u).then(isBanned => {
+                    if (isBanned) return;
+                    get(ref(db, `notifications/${_u}/pendingWarning`)).then(snap => {
+                        if (!snap.exists()) return;
+                        const w = snap.val();
+                        showWarningOverlay(w.title || "Warnung", w.reason || "");
+                        remove(ref(db, `notifications/${_u}/pendingWarning`));
+                    });
+                });
+            });
+        }, 800);
+        // Live-Listener für Ban während der Session
+        onValue(ref(db, `notifications/${_u}/pendingBan`), snap => {
+            if (!snap.exists()) return;
+            const ban = snap.val();
+            if (ban.active) {
+                showBanOverlay(ban);
+                remove(ref(db, `notifications/${_u}/pendingBan`));
+            }
+        });
+    }
+
     const savedBg = localStorage.getItem('villo_bg');
     if(savedBg) document.getElementById('main-chat').style.backgroundColor = savedBg;
     
@@ -11402,49 +11429,6 @@ document.addEventListener("DOMContentLoaded", () => setTimeout(_applySettingsTab
 // =============================================
 // PATCH showApp to check TOS, ban, warnings on login
 // =============================================
-function _applyShowAppPatch() {
-    const orig = window.showApp;
-    if (!orig) { setTimeout(_applyShowAppPatch, 50); return; }
-    window.showApp = function() {
-        orig.call(this);
-        const u = window.myUsername || localStorage.getItem("villo_session");
-        if (!u) return;
-        // Check TOS first
-        setTimeout(() => {
-            checkAndShowTOS(u).then(() => {
-                // Then check ban
-                checkAndShowBan(u).then(isBanned => {
-                    if (isBanned) return;
-                    // Check for pending warnings
-                    get(ref(db, `notifications/${u}/pendingWarning`)).then(snap => {
-                        if (!snap.exists()) return;
-                        const w = snap.val();
-                        showWarningOverlay(w.title || "Warnung", w.reason || "");
-                        // Clear notification after showing
-                        remove(ref(db, `notifications/${u}/pendingWarning`));
-                    });
-                });
-            });
-        }, 800);
-        // Listen for live ban/warn push while user is online
-        onValue(ref(db, `notifications/${u}/pendingBan`), async (snap) => {
-            if (!snap.exists()) return;
-            const ban = snap.val();
-            if (ban.active) {
-                showBanOverlay(ban);
-                // Notification nach Anzeige entfernen, damit sie nicht bei
-                // jedem Reconnect / Reload erneut triggert.
-                remove(ref(db, `notifications/${u}/pendingBan`));
-            }
-        });
-    };
-}
-// Warte auf das Haupt-Modul (window.showApp), bevor der Patch greift.
-// setTimeout(0) reicht nicht bei zwei parallelen type="module"-Scripts.
-document.addEventListener("DOMContentLoaded", () => setTimeout(_applyShowAppPatch, 100));
-
-// Expose to global if needed from inline html onclick
-window._db_admin = db;
 window.USER_ADMIN = USER_ADMIN;
 window.fmtDate = fmtDate;
 
