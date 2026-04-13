@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 5.10</title>
+    <title>VilloChat - Version 6.0</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -1985,7 +1985,7 @@
                         <div style="text-align:center; margin-bottom:20px;">
                             <div id="settings-avatar-preview" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
                             <div style="font-size:18px; font-weight:700;" id="set-username"></div>
-                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 5.10 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
+                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 6.0 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
                         </div>
 
                         <!-- Avatar type tabs -->
@@ -2129,7 +2129,7 @@
                         <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);" data-i18n="btn_open_help">📖 Hilfe-Center öffnen</button>
                         <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_changelog">📋 Changelog</button>
                         <div style="margin-top:20px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color); font-size:13px; line-height:1.7; opacity:0.8;">
-                            <strong>VilloChat 5.10</strong><br>
+                            <strong>VilloChat 6.0</strong><br>
                             Entwickelt als Single-File Web-App.<br>
                             Firebase Realtime Database · Web Audio API · keine externen Tracker.
                         </div>
@@ -2367,42 +2367,47 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.7 🌐</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 6.0 🤖</h3>
+                <ul>
+                    <li>🤖 <strong>VilloAI</strong> — KI-Assistent direkt im Chat! Rechenaufgaben lösen, Fragen beantworten — alles auf Deutsch. Stündliches Nutzungslimit schützt vor Missbrauch. Über den 🤖-Button im Chat erreichbar.</li>
+                    <li>🏷️ <strong>Versionierung 6.0</strong> — Vollständige Code-Überarbeitung: Style, HTML und Skript sauber getrennt. Ban/TOS-System zuverlässig integriert.</li>
+                </ul>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.10 🌐</h3>
                 <ul>
                     <li>🌐 <strong>DE / EN Sprachumschaltung</strong> — Einstellungen → Personalisierung: 🇩🇪 Deutsch / 🇬🇧 English. Alle UI-Texte, Buttons, Labels, Platzhalter, Benachrichtigungen und Kontextmenü-Einträge werden sofort umgestellt. Gespeichert in localStorage</li>
                 </ul>
-                <h3 style="color:var(--primary); margin-top:0;">Version 5.10 🎤</h3>
+                <h3 style="color:var(--primary); margin-top:0;">Version 5.9 🎤</h3>
                 <ul>
                     <li>🎤 <strong>Sprachnachrichten</strong> — 🎤-Button halten zum Aufnehmen (max. 2 Min), Wellenform-Anzeige beim Abspielen, scrubben per Klick, ✕ zum Abbrechen</li>
                     <li>📅 <strong>Nachrichtenplanung verbessert</strong> — Alle geplanten Nachrichten in einer Übersicht (chatübergreifend), bearbeiten per ✏️, täglich/wöchentlich wiederholen, 5-Minuten-Erinnerung, Gruppen-Support</li>
                     <li>🏷️ <strong>Kontakt-Tags</strong> — Eigene Tags vergeben (🏠 Familie, 💼 Arbeit, …), Tags erscheinen als Badge in der Sidebar, Filter-Leiste oben filtert Kontakte live</li>
                     <li>👥 <strong>Profilseite: Gemeinsame Gruppen</strong> — In der Benutzer-Info werden gemeinsame Gruppen angezeigt, klicken öffnet die Gruppe direkt</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.9 🛡️</h3>
+                <h3 style="color:var(--primary);">Version 5.8 🛡️</h3>
                 <ul>
                     <li>🔖 <strong>Lesezeichen</strong> — Nachrichten per Rechtsklick speichern, über 🔖-Button in der Toolbar abrufen. Springt direkt zur Nachricht im Chat</li>
                     <li>🔍 <strong>Globale Suche verbessert</strong> — Sucht jetzt auch in Gruppen, zeigt Absender, Ergebnisse bis 60 Treffer</li>
                     <li>🎭 <strong>Eigene Sticker</strong> — Tab „⭐ Meine" im Sticker-Picker: Bilder hochladen (max. 200 KB), bis 30 eigene Sticker</li>
                     <li>🛡️ <strong>Moderation</strong> — Wortfilter (Einstellungen → Sicherheit), Nachrichten melden (🚨), Nutzer blockieren (🚷) per Rechtsklick. Gemeldete Nachrichten über 🚨 in der Toolbar einsehbar</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.8 🎭</h3>
+                <h3 style="color:var(--primary);">Version 5.7 🎭</h3>
                 <ul>
                     <li>🎭 <strong>Sticker</strong> — Neuer 🎭-Button im Chat öffnet Sticker-Picker mit 7 Kategorien (Gesichter, Gesten, Herzen, Tiere, Essen, Aktivität, Natur) und über 170 Stickern. Sticker werden groß dargestellt, ohne Nachrichtenblase</li>
                     <li>🔧 <strong>Gruppen-Fix</strong> — Mehrfachanzeige durch doppelte Firebase-Listener behoben; Render-Token-Guard verhindert Race Conditions</li>
                     <li>🖼️ <strong>Profilbild-Fix</strong> — Avatar-Speichern lädt nicht mehr die ganze App neu</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.7 📎</h3>
+                <h3 style="color:var(--primary);">Version 5.6 📎</h3>
                 <ul>
                     <li>📎 <strong>Anhänge</strong> — Neuer 📎-Button ersetzt 🖼️. Auswahl zwischen Bild, Audio (MP3/WAV/OGG, max. 500 KB) und Dokument (PDF/TXT, max. 500 KB). Audiodateien als Player, Dokumente als Download-Card</li>
                     <li>🖼️ <strong>Bildgröße erhöht</strong> — Max. 1 MB (statt 500 KB), wird automatisch komprimiert. Auch Ctrl+V unterstützt 1 MB</li>
                     <li>🔧 <strong>Gruppen-Fix</strong> — Gruppenmenü wird beim Wechsel zu 1:1-Chat korrekt ausgeblendet</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.6 🔍</h3>
+                <h3 style="color:var(--primary);">Version 5.5 🔍</h3>
                 <ul>
                     <li>🔍 <strong>Teilstring-Suche</strong> — Kontaktfelder in Gruppe erstellen, Gruppeninfo und Story-Sichtbarkeit zeigen bereits bei Teileingabe passende Kontakte — live beim Tippen. "Kontakt hinzufügen" bleibt weiterhin exact-match</li>
                     <li>👥 <strong>Gruppeneinladungs-Datenschutz</strong> — Einstellungen → Sicherheit: Wer kann mich zu Gruppen hinzufügen? (Alle / Nur Kontakte / Niemand). Wird bei jedem Hinzufügen geprüft</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.5 ✨</h3>
+                <h3 style="color:var(--primary);">Version 5.4 ✨</h3>
                 <ul>
                     <li>📖 <strong>Geschichten — Multi-Slide</strong> — Bis zu 15 Slides pro Geschichte (Text, Emoji, Bild). Schriftart pro Slide wählbar. Slides-Leiste mit Thumbnail-Vorschau im Creator</li>
                     <li>🖼️ <strong>Profilbild</strong> — Drei Typen: Buchstabe (Farbe + Schrift), Emoji (via Emoji-Dialog) oder Bild (Base64, max. 200 KB). Überall sichtbar: Sidebar, Chat, Gruppen, Geschichten</li>
@@ -2410,26 +2415,26 @@
                     <li>👁️ <strong>Story-Sichtbarkeit</strong> — Einstellungen → Sicherheit: Alle Kontakte / Kontakte außer... / Nur teilen für... / Niemand</li>
                     <li>📚 <strong>Hilfe erweitert</strong> — Neue Artikel: „Geschichten" und „Profilbild". Feature-Übersicht aktualisiert</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.4 💡</h3>
+                <h3 style="color:var(--primary);">Version 5.3 💡</h3>
                 <ul>
                     <li>🖼️ <strong>Bildversand</strong> — Bilder via 🖼️-Button hochladen oder direkt aus Zwischenablage einfügen (Ctrl+V). Max. 500 KB, wird automatisch komprimiert. Klick auf Bild öffnet Lightbox</li>
                     <li>💡 <strong>PIN-Hinweis</strong> — Beim Registrieren oder in Einstellungen → PIN ändern einen Hinweis hinterlegen. Erscheint automatisch beim Login sobald der Username eingegeben wird</li>
                     <li>🔑 <strong>Hint in Einstellungen</strong> — Bestehender Hinweis wird bei „PIN ändern" vorausgefüllt und kann angepasst oder entfernt werden</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.3 🛡️</h3>
+                <h3 style="color:var(--primary);">Version 5.2 🛡️</h3>
                 <ul>
                     <li>🛡️ <strong>Moderator-Rolle</strong> — Admins können Mitglieder zum Moderator ernennen (🛡️). Mods können Mitglieder entfernen, aber keine Admins ernennen oder Gruppeneinstellungen ändern</li>
                     <li>📤 <strong>Weiterleiten verbessert</strong> — Nachrichten können jetzt auch direkt an Gruppen weitergeleitet werden; Kontakte und Gruppen sind klar getrennt aufgelistet</li>
                     <li>🕐 <strong>Geplante Nachrichten</strong> — Datum & Uhrzeit wählen, Nachricht wird automatisch zum gewählten Zeitpunkt gesendet. Erreichbar über Chat-Menü → Geplante Nachrichten</li>
                     <li>🔊 <strong>Tipp-Sound beim Senden</strong> — Kurzer aufsteigender Ton beim Absenden einer Nachricht (an/aus über Sound-Einstellung)</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.2 🔗</h3>
+                <h3 style="color:var(--primary);">Version 5.1 🔗</h3>
                 <ul>
                     <li>🔗 <strong>Gruppen-Einladungslink</strong> — Link kopieren & teilen; Empfänger treten nach Login automatisch bei</li>
                     <li>📝 <strong>Gruppen-Beschreibung</strong> — Admins können eine Kurzbeschreibung setzen, sichtbar für alle Mitglieder</li>
                     <li>📌 <strong>Nachrichten in Gruppen anheften</strong> — Gleiches System wie in 1:1-Chats, via Firebase für alle sichtbar</li>
                 </ul>
-                <h3 style="color:var(--primary);">Version 5.1 🔍</h3>
+                <h3 style="color:var(--primary);">Version 5.0 🔍</h3>
                 <ul>
                     <li>🔍 <strong>Nachrichtensuche in Gruppen</strong> — Absender farbig hervorgehoben, Suchbegriff markiert</li>
                     <li>✏️ <strong>Gruppe umbenennen</strong> — Admins können Gruppenname direkt in der Gruppeninfo ändern</li>
@@ -2775,7 +2780,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 5.9</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 6.0</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);" data-i18n="login_tab">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;" data-i18n="register_tab">Neu</div>
@@ -3162,6 +3167,7 @@
                 <input type="file" id="doc-upload-input" accept=".pdf,.txt,.html,application/pdf,text/plain,text/html" style="display:none;">
                 <textarea id="msg-input" placeholder="Nachricht..." rows="1" style="resize:none; overflow:hidden; min-height:44px; max-height:120px; line-height:1.4; padding:12px 20px;"></textarea>
                 <button id="btn-mic" onmousedown="startVoiceRecord()" onmouseup="stopVoiceRecord()" ontouchstart="startVoiceRecord()" ontouchend="stopVoiceRecord()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0; flex-shrink:0;" title="Sprachnachricht halten zum Aufnehmen">🎤</button>
+                <button onclick="openVilloAI()" style="width:45px; background:transparent; color:var(--text-color); font-size:20px; padding:0; flex-shrink:0;" title="VilloAI – KI-Assistent">🤖</button>
                 <button id="btn-send" style="width:60px;">➤</button>
             </div>
         </div>
@@ -11432,7 +11438,213 @@ document.addEventListener("DOMContentLoaded", () => setTimeout(_applySettingsTab
 window.USER_ADMIN = USER_ADMIN;
 window.fmtDate = fmtDate;
 
+// =============================================
+// VILLOAI – KI-Assistent (nur Deutsch)
+// =============================================
+(function() {
+    const LIMIT_KEY  = 'villoai_count';
+    const RESET_KEY  = 'villoai_reset';
+    const MAX_USES   = 20;
+
+    const QA_POOL = [
+        { rx: /rechne?\s+([\s\S]+)/i,                            fn: mathHandler },
+        { rx: /^\s*([\d\s\+\-\*\/\(\)\.]+)\s*=?\s*$/,           fn: mathHandler },
+        { rx: /wie\s+sp[aä]t\s+ist\s+es|wie\s+viel\s+uhr/i,    fn: () => 'Es ist gerade ' + new Date().toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'}) + ' Uhr.' },
+        { rx: /welchen?\s+tag|welches\s+datum|was\s+ist\s+heute/i, fn: () => 'Heute ist ' + new Date().toLocaleDateString('de-DE', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) + '.' },
+        { rx: /wie\s+hei[sß]t\s+du|wer\s+bist\s+du/i,          fn: () => 'Ich bin VilloAI, dein Assistent in VilloChat!' },
+        { rx: /wer\s+hat\s+dich\s+(gemacht|entwickelt|gebaut|erstellt)/i, fn: () => 'Ich wurde vom VilloChat-Team entwickelt.' },
+        { rx: /wie\s+geht\s+(es\s+)?dir/i,                       fn: () => 'Als KI habe ich keine Gefühle, aber ich helfe dir gerne!' },
+        { rx: /hauptstadt\s+von\s+([a-z\u00e4\u00f6\u00fc\u00df\s]+)/i, fn: capitalHandler },
+        { rx: /was\s+ist\s+die\s+hauptstadt\s+von\s+([a-z\u00e4\u00f6\u00fc\u00df\s]+)/i, fn: capitalHandler },
+        { rx: /wie\s+viele?\s+tage\s+hat\s+ein\s+jahr/i,        fn: () => 'Ein Jahr hat **365 Tage** (Schaltjahr: 366).' },
+        { rx: /wie\s+viele?\s+monate\s+hat\s+ein\s+jahr/i,      fn: () => 'Ein Jahr hat **12 Monate**.' },
+        { rx: /wie\s+viele?\s+wochen\s+hat\s+ein\s+jahr/i,      fn: () => 'Ein Jahr hat ca. **52 Wochen**.' },
+        { rx: /wie\s+viele?\s+stunden\s+hat\s+ein\s+tag/i,      fn: () => 'Ein Tag hat **24 Stunden**.' },
+        { rx: /was\s+ist\s+(ki|k\u00fcnstliche\s+intelligenz)/i, fn: () => 'KI steht fuer Kuenstliche Intelligenz - Systeme die menschliche Intelligenz nachahmen, wie ich!' },
+        { rx: /was\s+ist\s+villoch?at/i,                          fn: () => 'VilloChat ist eine Echtzeit-Chat-App mit Gruppen, Stories, KI und vielem mehr!' },
+        { rx: /hilf?\s+mir|was\s+kannst\s+du/i,                  fn: () => 'Ich kann rechnen, einfache Fragen beantworten und dir bei VilloChat helfen - alles auf Deutsch!' },
+        { rx: /hallo|hi\b|hey\b|guten\s+(morgen|tag|abend)/i,    fn: () => 'Hallo! Wie kann ich dir helfen?' },
+        { rx: /danke|vielen?\s+dank/i,                            fn: () => 'Gern geschehen!' },
+        { rx: /tsch[uü]ss|auf\s+wiedersehen|bye/i,               fn: () => 'Tschuess! Bis bald!' },
+        { rx: /witz/i,                                            fn: () => 'Warum koennen Programmierer nicht kochen? Weil sie immer nur Bugs essen!' },
+        { rx: /wie\s+alt\s+bist\s+du/i,                          fn: () => 'Als KI habe ich kein Alter - ich wurde mit VilloChat 6.0 eingefuehrt!' },
+        { rx: /pi\b/i,                                             fn: () => 'Die Kreiszahl Pi lautet: **3,14159265358979...**' },
+        { rx: /(\d+)\s*\^\s*(\d+)/,                              fn: powHandler },
+        { rx: /wurzel\s+(?:aus\s+)?(\d+)/i,                      fn: sqrtHandler },
+        { rx: /prozent.*?(\d+[\.,]\d+|\d+)\s+von\s+(\d+[\.,]\d+|\d+)/i, fn: percentHandler },
+        { rx: /(\d+[\.,]\d+|\d+)\s+prozent\s+von\s+(\d+[\.,]\d+|\d+)/i, fn: percentHandler },
+    ];
+
+    function mathHandler(match) {
+        try {
+            const raw = (match[1] || match[0]).replace(/[^\d\s\+\-\*\/\(\)\.]/g, '').trim();
+            if (!raw || raw.length > 100) return null;
+            const result = Function('return (' + raw + ')')();
+            if (typeof result !== 'number' || !isFinite(result)) return null;
+            const rounded = Math.round(result * 1e10) / 1e10;
+            return 'Das Ergebnis ist: **' + rounded + '**';
+        } catch(e) { return null; }
+    }
+
+    function powHandler(match) {
+        const base = parseFloat(match[1]), exp = parseInt(match[2]);
+        const r = Math.pow(base, exp);
+        return '**' + base + '^' + exp + ' = ' + r + '**';
+    }
+
+    function sqrtHandler(match) {
+        const n = parseFloat(match[1]);
+        if (n < 0) return 'Die Wurzel aus einer negativen Zahl ist nicht reell!';
+        const r = Math.sqrt(n);
+        return 'Die Wurzel aus ' + n + ' ist: **' + (Math.round(r*1e6)/1e6) + '**';
+    }
+
+    function percentHandler(match) {
+        const p = parseFloat((match[1]||'').replace(',','.'));
+        const v = parseFloat((match[2]||'').replace(',','.'));
+        if (isNaN(p)||isNaN(v)) return null;
+        const r = Math.round(v * p / 100 * 100) / 100;
+        return '**' + p + '% von ' + v + ' = ' + r + '**';
+    }
+
+    function capitalHandler(match) {
+        const CAPS = {
+            'deutschland':'Berlin','frankreich':'Paris','spanien':'Madrid',
+            'italien':'Rom','england':'London','grossbritannien':'London',
+            'österreich':'Wien','osterreich':'Wien','schweiz':'Bern',
+            'usa':'Washington D.C.','japan':'Tokio','china':'Peking',
+            'russland':'Moskau','brasilien':'Brasilia','kanada':'Ottawa',
+            'australien':'Canberra','indien':'Neu-Delhi','türkei':'Ankara',
+            'turkei':'Ankara','griechenland':'Athen','portugal':'Lissabon',
+            'niederlande':'Amsterdam','belgien':'Brüssel','schweden':'Stockholm',
+            'norwegen':'Oslo','dänemark':'Kopenhagen','danemark':'Kopenhagen',
+            'finnland':'Helsinki','polen':'Warschau','ungarn':'Budapest',
+            'tschechien':'Prag','rumänien':'Bukarest','rumanien':'Bukarest',
+            'ukraine':'Kiew','kroatien':'Zagreb','serbien':'Belgrad',
+            'mexiko':'Mexiko-Stadt','argentinien':'Buenos Aires',
+        };
+        const land = (match[1]||'').trim().toLowerCase()
+            .replace(/ä/g,'a').replace(/ö/g,'o').replace(/ü/g,'u').replace(/ß/g,'ss');
+        const landOrig = (match[1]||'').trim().toLowerCase();
+        const result = CAPS[landOrig] || CAPS[land];
+        if (result) return 'Die Hauptstadt von ' + (match[1]||'').trim() + ' ist **' + result + '**.';
+        return null;
+    }
+
+    function getRemainingUses() {
+        const now = Date.now();
+        const reset = parseInt(localStorage.getItem(RESET_KEY)||'0');
+        if (now > reset) {
+            localStorage.setItem(LIMIT_KEY,'0');
+            localStorage.setItem(RESET_KEY, String(now + 3600000));
+        }
+        return MAX_USES - parseInt(localStorage.getItem(LIMIT_KEY)||'0');
+    }
+
+    function consumeUse() {
+        localStorage.setItem(LIMIT_KEY, String(parseInt(localStorage.getItem(LIMIT_KEY)||'0') + 1));
+    }
+
+    function updateLimitInfo() {
+        const el = document.getElementById('villoai-limit-info');
+        if (!el) return;
+        const rem = getRemainingUses();
+        el.textContent = rem > 0
+            ? 'Noch ' + rem + ' von ' + MAX_USES + ' Anfragen diese Stunde'
+            : 'Stündliches Limit erreicht.';
+    }
+
+    function addMessage(text, role) {
+        const chat = document.getElementById('villoai-chat');
+        if (!chat) return;
+        const div = document.createElement('div');
+        const isUser = role === 'user';
+        div.style.cssText = 'padding:10px 14px; border-radius:14px; max-width:85%; font-size:14px; line-height:1.5; word-break:break-word;' +
+            (isUser ? 'align-self:flex-end; background:var(--primary,#075e54); color:#fff; border-bottom-right-radius:4px;'
+                    : 'align-self:flex-start; background:var(--bg,#f0f0f0); color:var(--text-color,#000); border-bottom-left-radius:4px;');
+        div.innerHTML = text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+    }
+
+    function getAnswer(question) {
+        const q = question.trim();
+        for (const entry of QA_POOL) {
+            const m = q.match(entry.rx);
+            if (m) {
+                const ans = entry.fn(m);
+                if (ans) return ans;
+            }
+        }
+        // Einfache Mathe-Erkennung als Fallback
+        if (/^[\d\s\+\-\*\/\(\)\.]+$/.test(q)) {
+            const ans = mathHandler([q, q]);
+            if (ans) return ans;
+        }
+        return 'Das weiss ich leider nicht. Ich kann Rechenaufgaben lösen und einfache Fragen auf Deutsch beantworten. Versuche es anders!';
+    }
+
+    window.openVilloAI = function() {
+        const ov = document.getElementById('villoai-overlay');
+        if (ov) ov.style.display = 'flex';
+        updateLimitInfo();
+        const chat = document.getElementById('villoai-chat');
+        if (chat && chat.children.length === 0) {
+            addMessage('Hallo! Ich bin VilloAI - dein KI-Assistent. Stelle mir eine Frage auf Deutsch oder lass mich rechnen!', 'ai');
+        }
+        setTimeout(() => { const inp = document.getElementById('villoai-input'); if (inp) inp.focus(); }, 100);
+    };
+
+    window.closeVilloAI = function() {
+        const ov = document.getElementById('villoai-overlay');
+        if (ov) ov.style.display = 'none';
+    };
+
+    window.sendVilloAI = function() {
+        const inp = document.getElementById('villoai-input');
+        if (!inp) return;
+        const q = inp.value.trim();
+        if (!q) return;
+        if (getRemainingUses() <= 0) {
+            addMessage('Du hast das stündliche Limit erreicht. Bitte warte eine Stunde.', 'ai');
+            inp.value = '';
+            return;
+        }
+        addMessage(q, 'user');
+        inp.value = '';
+        consumeUse();
+        updateLimitInfo();
+        setTimeout(() => addMessage(getAnswer(q), 'ai'), 250);
+    };
+
+    document.addEventListener('click', function(e) {
+        const ov = document.getElementById('villoai-overlay');
+        if (ov && e.target === ov) window.closeVilloAI();
+    });
+})();
+
+
 </script>
 
+    <!-- VilloAI Modal -->
+    <div id="villoai-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:99998; justify-content:center; align-items:flex-end;">
+        <div style="background:var(--white,#fff); border-radius:20px 20px 0 0; width:100%; max-width:600px; padding:20px; max-height:80vh; display:flex; flex-direction:column; box-shadow:0 -4px 30px rgba(0,0,0,0.2);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:26px;">🤖</span>
+                    <div>
+                        <div style="font-weight:700; font-size:16px;">VilloAI</div>
+                        <div style="font-size:11px; color:#999;" id="villoai-limit-info">Lade…</div>
+                    </div>
+                </div>
+                <button onclick="closeVilloAI()" style="background:transparent; border:none; font-size:22px; cursor:pointer; color:#999;">✕</button>
+            </div>
+            <div id="villoai-chat" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; min-height:120px; max-height:45vh; margin-bottom:12px;"></div>
+            <div style="display:flex; gap:8px;">
+                <input id="villoai-input" type="text" placeholder="Frage stellen…" style="flex:1; padding:10px 14px; border:1px solid var(--border-color,#ddd); border-radius:10px; font-size:14px; background:var(--bg,#f5f5f5); color:var(--text-color,#000);" onkeydown="if(event.key==='Enter') sendVilloAI()">
+                <button onclick="sendVilloAI()" style="padding:10px 18px; background:var(--primary,#075e54); color:#fff; border:none; border-radius:10px; font-size:14px; cursor:pointer; font-weight:600;">Senden</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
