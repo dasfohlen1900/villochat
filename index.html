@@ -11439,149 +11439,430 @@ window.USER_ADMIN = USER_ADMIN;
 window.fmtDate = fmtDate;
 
 // =============================================
+
+// =============================================
 // VILLOAI – KI-Assistent (nur Deutsch)
+// Token-Limit: 15.000 Tokens/Stunde (1 Zeichen = 1 Token)
 // =============================================
 (function() {
-    const LIMIT_KEY  = 'villoai_count';
+    const TOKEN_KEY  = 'villoai_tokens';
     const RESET_KEY  = 'villoai_reset';
-    const MAX_USES   = 20;
-
-    const QA_POOL = [
-        { rx: /rechne?\s+([\s\S]+)/i,                            fn: mathHandler },
-        { rx: /^\s*([\d\s\+\-\*\/\(\)\.]+)\s*=?\s*$/,           fn: mathHandler },
-        { rx: /wie\s+sp[aä]t\s+ist\s+es|wie\s+viel\s+uhr/i,    fn: () => 'Es ist gerade ' + new Date().toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'}) + ' Uhr.' },
-        { rx: /welchen?\s+tag|welches\s+datum|was\s+ist\s+heute/i, fn: () => 'Heute ist ' + new Date().toLocaleDateString('de-DE', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) + '.' },
-        { rx: /wie\s+hei[sß]t\s+du|wer\s+bist\s+du/i,          fn: () => 'Ich bin VilloAI, dein Assistent in VilloChat!' },
-        { rx: /wer\s+hat\s+dich\s+(gemacht|entwickelt|gebaut|erstellt)/i, fn: () => 'Ich wurde vom VilloChat-Team entwickelt.' },
-        { rx: /wie\s+geht\s+(es\s+)?dir/i,                       fn: () => 'Als KI habe ich keine Gefühle, aber ich helfe dir gerne!' },
-        { rx: /hauptstadt\s+von\s+([a-z\u00e4\u00f6\u00fc\u00df\s]+)/i, fn: capitalHandler },
-        { rx: /was\s+ist\s+die\s+hauptstadt\s+von\s+([a-z\u00e4\u00f6\u00fc\u00df\s]+)/i, fn: capitalHandler },
-        { rx: /wie\s+viele?\s+tage\s+hat\s+ein\s+jahr/i,        fn: () => 'Ein Jahr hat **365 Tage** (Schaltjahr: 366).' },
-        { rx: /wie\s+viele?\s+monate\s+hat\s+ein\s+jahr/i,      fn: () => 'Ein Jahr hat **12 Monate**.' },
-        { rx: /wie\s+viele?\s+wochen\s+hat\s+ein\s+jahr/i,      fn: () => 'Ein Jahr hat ca. **52 Wochen**.' },
-        { rx: /wie\s+viele?\s+stunden\s+hat\s+ein\s+tag/i,      fn: () => 'Ein Tag hat **24 Stunden**.' },
-        { rx: /was\s+ist\s+(ki|k\u00fcnstliche\s+intelligenz)/i, fn: () => 'KI steht fuer Kuenstliche Intelligenz - Systeme die menschliche Intelligenz nachahmen, wie ich!' },
-        { rx: /was\s+ist\s+villoch?at/i,                          fn: () => 'VilloChat ist eine Echtzeit-Chat-App mit Gruppen, Stories, KI und vielem mehr!' },
-        { rx: /hilf?\s+mir|was\s+kannst\s+du/i,                  fn: () => 'Ich kann rechnen, einfache Fragen beantworten und dir bei VilloChat helfen - alles auf Deutsch!' },
-        { rx: /hallo|hi\b|hey\b|guten\s+(morgen|tag|abend)/i,    fn: () => 'Hallo! Wie kann ich dir helfen?' },
-        { rx: /danke|vielen?\s+dank/i,                            fn: () => 'Gern geschehen!' },
-        { rx: /tsch[uü]ss|auf\s+wiedersehen|bye/i,               fn: () => 'Tschuess! Bis bald!' },
-        { rx: /witz/i,                                            fn: () => 'Warum koennen Programmierer nicht kochen? Weil sie immer nur Bugs essen!' },
-        { rx: /wie\s+alt\s+bist\s+du/i,                          fn: () => 'Als KI habe ich kein Alter - ich wurde mit VilloChat 6.0 eingefuehrt!' },
-        { rx: /pi\b/i,                                             fn: () => 'Die Kreiszahl Pi lautet: **3,14159265358979...**' },
-        { rx: /(\d+)\s*\^\s*(\d+)/,                              fn: powHandler },
-        { rx: /wurzel\s+(?:aus\s+)?(\d+)/i,                      fn: sqrtHandler },
-        { rx: /prozent.*?(\d+[\.,]\d+|\d+)\s+von\s+(\d+[\.,]\d+|\d+)/i, fn: percentHandler },
-        { rx: /(\d+[\.,]\d+|\d+)\s+prozent\s+von\s+(\d+[\.,]\d+|\d+)/i, fn: percentHandler },
+    const MAX_TOKENS = 15000;
+    const WITZE = [
+        'Warum können Programmierer nicht kochen? Weil sie immer nur Bugs essen!',
+        'Was sagt ein Informatiker, wenn er im Fahrstuhl steckt? Die Cloud hängt!',
+        'Warum hat der Programmierer seinen Job verloren? Er hat zu viele Fehler gemacht – und keiner davon war ein Feature.',
+        'Was ist der Unterschied zwischen einem Programmierer und einem Zauberer? Der Zauberer macht Fehler verschwinden – der Programmierer nennt sie Features.',
+        'Wie nennt man einen schlafenden Programmierer? Ein Ruhesystem.',
+        'Was sagt ein JavaScript-Entwickler, wenn er Hunger hat? Ich brauche ein Objekt zum Essen!',
+        'Warum ging der Entwickler zum Arzt? Weil er einen Stack Overflow hatte.',
+        'Was ist ein Algorithmus? Ein Wort, das Informatiker benutzen, wenn sie keine Lust haben zu erklären was sie tun.',
+        'Wie viele Programmierer braucht man, um eine Glühbirne zu wechseln? Keinen – das ist ein Hardware-Problem.',
+        'Was macht ein Informatiker auf dem Bauernhof? Er debuggt die Hühner.',
+        'Was hat ein Pirat mit einem Programmierer gemeinsam? Beide lieben das Arrrray!',
+        'Warum ist WLAN wie eine gute Ehe? Wenn das Signal schwach ist, geht man woanders hin.',
     ];
+    const SPRUECHE = [
+        'Glaube an dich selbst – du bist großartiger als du denkst!',
+        'Jeder Tag ist eine neue Chance, etwas zu verändern.',
+        'Fehler sind Beweise dafür, dass du es versucht hast.',
+        'Das Geheimnis des Vorankommens ist, anzufangen.',
+        'Träume groß, arbeite hart, bleib bescheiden.',
+        'Erfolg ist die Summe kleiner Anstrengungen, die jeden Tag wiederholt werden.',
+        'Der beste Zeitpunkt, etwas zu pflanzen, war vor 20 Jahren. Der zweitbeste ist jetzt.',
+        'Es ist nicht wichtig, wie langsam du gehst, solange du nicht stehst.',
+    ];
+    const EINHEITEN = {
+        'km in m':           (v) => v+'km = **'+(v*1000)+' m**',
+        'm in km':           (v) => v+' m = **'+(v/1000)+' km**',
+        'meilen in km':      (v) => v+' Meilen = **'+(Math.round(v*1.60934*100)/100)+' km**',
+        'km in meilen':      (v) => v+' km = **'+(Math.round(v/1.60934*100)/100)+' Meilen**',
+        'cm in inch':        (v) => v+' cm = **'+(Math.round(v/2.54*100)/100)+' Inch**',
+        'inch in cm':        (v) => v+' Inch = **'+(Math.round(v*2.54*100)/100)+' cm**',
+        'meter in feet':     (v) => v+' m = **'+(Math.round(v*3.28084*100)/100)+' Feet**',
+        'feet in meter':     (v) => v+' Feet = **'+(Math.round(v/3.28084*100)/100)+' m**',
+        'kg in pfund':       (v) => v+' kg = **'+(Math.round(v*2.20462*100)/100)+' Pfund**',
+        'pfund in kg':       (v) => v+' Pfund = **'+(Math.round(v/2.20462*100)/100)+' kg**',
+        'kg in gramm':       (v) => v+' kg = **'+(v*1000)+' g**',
+        'gramm in kg':       (v) => v+' g = **'+(v/1000)+' kg**',
+        'celsius in fahrenheit': (v) => v+'°C = **'+(Math.round((v*9/5+32)*100)/100)+'°F**',
+        'fahrenheit in celsius': (v) => v+'°F = **'+(Math.round(((v-32)*5/9)*100)/100)+'°C**',
+        'celsius in kelvin': (v) => v+'°C = **'+(Math.round((v+273.15)*100)/100)+' K**',
+        'kelvin in celsius': (v) => v+' K = **'+(Math.round((v-273.15)*100)/100)+'°C**',
+        'liter in ml':       (v) => v+' L = **'+(v*1000)+' ml**',
+        'ml in liter':       (v) => v+' ml = **'+(v/1000)+' L**',
+        'ha in m2':          (v) => v+' ha = **'+(v*10000)+' m²**',
+        'm2 in ha':          (v) => v+' m² = **'+(v/10000)+' ha**',
+        'stunden in minuten': (v) => v+' h = **'+(v*60)+' min**',
+        'minuten in sekunden': (v) => v+' min = **'+(v*60)+' s**',
+        'tage in stunden':   (v) => v+' Tage = **'+(v*24)+' Stunden**',
+        'jahre in tage':     (v) => v+' Jahre ≈ **'+(v*365)+' Tage**',
+        'km in cm':          (v) => v+' km = **'+(v*100000)+' cm**',
+        'bar in pascal':     (v) => v+' bar = **'+(v*100000)+' Pa**',
+        'joule in kalorien': (v) => v+' J = **'+(Math.round(v/4.184*100)/100)+' kcal**',
+    };
+    const CAPS = {
+        'deutschland':'Berlin','frankreich':'Paris','spanien':'Madrid','italien':'Rom',
+        'england':'London','grossbritannien':'London','großbritannien':'London',
+        'österreich':'Wien','osterreich':'Wien','schweiz':'Bern',
+        'usa':'Washington D.C.','vereinigte staaten':'Washington D.C.',
+        'japan':'Tokio','china':'Peking','russland':'Moskau',
+        'brasilien':'Brasília','kanada':'Ottawa','australien':'Canberra',
+        'indien':'Neu-Delhi','türkei':'Ankara','turkei':'Ankara',
+        'griechenland':'Athen','portugal':'Lissabon','niederlande':'Amsterdam',
+        'belgien':'Brüssel','schweden':'Stockholm','norwegen':'Oslo',
+        'dänemark':'Kopenhagen','danemark':'Kopenhagen','finnland':'Helsinki',
+        'polen':'Warschau','ungarn':'Budapest','tschechien':'Prag',
+        'slowakei':'Bratislava','slowenien':'Ljubljana','kroatien':'Zagreb',
+        'serbien':'Belgrad','rumänien':'Bukarest','rumanien':'Bukarest',
+        'bulgarien':'Sofia','ukraine':'Kiew','weissrussland':'Minsk','belarus':'Minsk',
+        'moldau':'Chișinău','litauen':'Vilnius','lettland':'Riga','estland':'Tallinn',
+        'mexiko':'Mexiko-Stadt','argentinien':'Buenos Aires','chile':'Santiago',
+        'peru':'Lima','kolumbien':'Bogotá','venezuela':'Caracas','ecuador':'Quito',
+        'bolivien':'Sucre','paraguay':'Asunción','uruguay':'Montevideo',
+        'südafrika':'Pretoria','sudafrika':'Pretoria','ägypten':'Kairo','agypten':'Kairo',
+        'nigeria':'Abuja','kenia':'Nairobi','ghana':'Accra','äthiopien':'Addis Abeba',
+        'marokko':'Rabat','algerien':'Algier','tunesien':'Tunis','libyen':'Tripolis',
+        'saudi-arabien':'Riad','iran':'Teheran','irak':'Bagdad','israel':'Jerusalem',
+        'türkei':'Ankara','syrien':'Damaskus','jordanien':'Amman','libanon':'Beirut',
+        'südkorea':'Seoul','nordkorea':'Pjöngjang','vietnam':'Hanoi','thailand':'Bangkok',
+        'indonesien':'Jakarta','pakistan':'Islamabad','bangladesh':'Dhaka',
+        'myanmar':'Naypyidaw','philippinen':'Manila','malaysia':'Kuala Lumpur',
+        'singapur':'Singapur','neuseeland':'Wellington','kuba':'Havanna',
+        'irland':'Dublin','island':'Reykjavik','luxemburg':'Luxemburg',
+        'malta':'Valletta','zypern':'Nikosia','monaco':'Monaco',
+        'liechtenstein':'Vaduz','andorra':'Andorra la Vella','vatikan':'Vatikanstadt',
+        'san marino':'San Marino','kasachstan':'Nursultan','usbekistan':'Taschkent',
+        'georgien':'Tiflis','armenien':'Jerewan','aserbaidschan':'Baku',
+    };
+    const LAENDER_INFO = {
+        'deutschland':    { e:'~84 Mio.', f:'357.114 km²', w:'Euro (€)', s:'Deutsch',           h:'Berlin' },
+        'frankreich':     { e:'~68 Mio.', f:'643.801 km²', w:'Euro (€)', s:'Französisch',        h:'Paris' },
+        'usa':            { e:'~335 Mio.',f:'9.833.517 km²',w:'US-Dollar ($)',s:'Englisch',       h:'Washington D.C.' },
+        'japan':          { e:'~124 Mio.',f:'377.975 km²', w:'Yen (¥)',     s:'Japanisch',        h:'Tokio' },
+        'china':          { e:'~1,4 Mrd.',f:'9.596.960 km²',w:'Renminbi',  s:'Mandarin',         h:'Peking' },
+        'brasilien':      { e:'~215 Mio.',f:'8.515.767 km²',w:'Real (R$)', s:'Portugiesisch',    h:'Brasília' },
+        'russland':       { e:'~143 Mio.',f:'17.098.242 km²',w:'Rubel (₽)',s:'Russisch',         h:'Moskau' },
+        'indien':         { e:'~1,4 Mrd.',f:'3.287.263 km²',w:'Rupie (₹)', s:'Hindi, Englisch',  h:'Neu-Delhi' },
+        'österreich':     { e:'~9 Mio.',  f:'83.871 km²',  w:'Euro (€)',   s:'Deutsch',          h:'Wien' },
+        'schweiz':        { e:'~8,7 Mio.',f:'41.285 km²',  w:'CHF',        s:'DE/FR/IT/Rätorom.',h:'Bern' },
+        'großbritannien': { e:'~67 Mio.', f:'243.610 km²', w:'Pfund (£)',  s:'Englisch',         h:'London' },
+        'kanada':         { e:'~38 Mio.', f:'9.984.670 km²',w:'CAD',       s:'Englisch/Französisch',h:'Ottawa' },
+        'australien':     { e:'~26 Mio.', f:'7.692.024 km²',w:'AUD',       s:'Englisch',         h:'Canberra' },
+        'spanien':        { e:'~47 Mio.', f:'505.990 km²', w:'Euro (€)',   s:'Spanisch',         h:'Madrid' },
+        'italien':        { e:'~60 Mio.', f:'301.340 km²', w:'Euro (€)',   s:'Italienisch',      h:'Rom' },
+    };
+    const GESCHICHTE = {
+        'erster weltkrieg':      '**Erster Weltkrieg (1914–1918):** Ausgelöst durch das Attentat auf Erzherzog Franz Ferdinand in Sarajevo. Vier Jahre Grabenkrieg. Ende mit dem Waffenstillstand am 11.11.1918.',
+        'zweiter weltkrieg':     '**Zweiter Weltkrieg (1939–1945):** Begann mit dem deutschen Überfall auf Polen. Endete mit der Kapitulation Deutschlands am 8.5.1945 und Japans am 2.9.1945.',
+        'mondlandung':           '**Mondlandung 1969:** Am 20. Juli 1969 betrat Neil Armstrong als erster Mensch den Mond. Mission: Apollo 11. „One small step for man, one giant leap for mankind."',
+        'mauerfall':             '**Berliner Mauerfall (9.11.1989):** Die DDR öffnete die Grenzen. Die Mauer (seit 1961) trennte Ost- und Westberlin. Symbol für das Ende des Kalten Krieges.',
+        'französische revolution':'**Französische Revolution (1789–1799):** Sturm auf die Bastille am 14. Juli 1789. Abschaffung der Monarchie. Motto: Freiheit, Gleichheit, Brüderlichkeit.',
+        'römisches reich':       '**Römisches Reich:** Entstand ca. 27 v.Chr. unter Augustus. Größte Ausdehnung unter Trajan (117 n.Chr.). Das Weströmische Reich fiel 476 n.Chr.',
+        'industrielle revolution':'**Industrielle Revolution (ca. 1760–1840):** Begann in England. Dampfmaschine (Watt, 1769) als Schlüsselereignis. Übergang zu industrieller Produktion.',
+        'kalter krieg':          '**Kalter Krieg (1947–1991):** Geopolitische Spannung zwischen USA/NATO und UdSSR/Warschauer Pakt. Kein direkter Krieg, aber Rüstungswettlauf, Raumfahrt-Wettstreit, Kuba-Krise.',
+        'weimarer republik':     '**Weimarer Republik (1919–1933):** Erste demokratische Republik in Deutschland nach dem 1. WK. Scheiterte mit Hitlers Machtergreifung am 30.1.1933.',
+    };
+    const WISSENSCHAFT = {
+        'photosynthese':         '**Photosynthese:** Pflanzen wandeln Sonnenlicht + CO₂ + H₂O in Zucker + O₂ um.\nFormel: 6CO₂ + 6H₂O + Licht → C₆H₁₂O₆ + 6O₂',
+        'relativitätstheorie':   '**Relativitätstheorie (Einstein):** E = mc² – Energie = Masse × Lichtgeschwindigkeit². Spezielle (1905): Zeit läuft für bewegte Objekte langsamer. Allgemeine (1915): Masse krümmt Raumzeit.',
+        'evolution':             '**Evolutionstheorie (Darwin, 1859):** Arten entwickeln sich durch natürliche Selektion. Vorteilhafte Eigenschaften vererben sich häufiger.',
+        'gravitation':           '**Gravitation:** Jede Masse zieht jede andere an. Newtons Gesetz: F = G×m₁×m₂/r². Einstein: Masse krümmt Raumzeit → Objekte folgen dieser Krümmung.',
+        'atom':                  '**Atom:** Kleinste Einheit eines Elements. Kern: Protonen + Neutronen. Hülle: Elektronen. Durchmesser: ~0,1 nm.',
+        'dna':                   '**DNA:** Träger der Erbinformation. Doppelhelix aus 4 Basen (A, T, G, C). Entdeckt 1953 von Watson & Crick. Enthält die Baupläne für alle Proteine.',
+        'periodensystem':        '**Periodensystem:** 118 Elemente, geordnet nach Ordnungszahl. Erstellt 1869 von Mendeleev. Gruppen (Spalten) haben ähnliche chemische Eigenschaften.',
+        'quantenmechanik':       '**Quantenmechanik:** Physik des Sehr-Kleinen. Welle-Teilchen-Dualismus. Heisenbergsche Unschärferelation: Ort und Impuls nicht gleichzeitig exakt messbar.',
+        'osmose':                '**Osmose:** Wanderung von Wasser durch eine halbdurchlässige Membran vom niedrigeren zum höheren Konzentrations-Bereich. Grundlage vieler biologischer Prozesse.',
+        'thermodynamik':         '**Thermodynamik:** Lehre von Wärme und Energie. 1. Hauptsatz: Energie bleibt erhalten. 2. Hauptsatz: Entropie (Unordnung) nimmt immer zu.',
+    };
 
-    function mathHandler(match) {
-        try {
-            const raw = (match[1] || match[0]).replace(/[^\d\s\+\-\*\/\(\)\.]/g, '').trim();
-            if (!raw || raw.length > 100) return null;
-            const result = Function('return (' + raw + ')')();
-            if (typeof result !== 'number' || !isFinite(result)) return null;
-            const rounded = Math.round(result * 1e10) / 1e10;
-            return 'Das Ergebnis ist: **' + rounded + '**';
-        } catch(e) { return null; }
-    }
-
-    function powHandler(match) {
-        const base = parseFloat(match[1]), exp = parseInt(match[2]);
-        const r = Math.pow(base, exp);
-        return '**' + base + '^' + exp + ' = ' + r + '**';
-    }
-
-    function sqrtHandler(match) {
-        const n = parseFloat(match[1]);
-        if (n < 0) return 'Die Wurzel aus einer negativen Zahl ist nicht reell!';
-        const r = Math.sqrt(n);
-        return 'Die Wurzel aus ' + n + ' ist: **' + (Math.round(r*1e6)/1e6) + '**';
-    }
-
-    function percentHandler(match) {
-        const p = parseFloat((match[1]||'').replace(',','.'));
-        const v = parseFloat((match[2]||'').replace(',','.'));
-        if (isNaN(p)||isNaN(v)) return null;
-        const r = Math.round(v * p / 100 * 100) / 100;
-        return '**' + p + '% von ' + v + ' = ' + r + '**';
-    }
-
-    function capitalHandler(match) {
-        const CAPS = {
-            'deutschland':'Berlin','frankreich':'Paris','spanien':'Madrid',
-            'italien':'Rom','england':'London','grossbritannien':'London',
-            'österreich':'Wien','osterreich':'Wien','schweiz':'Bern',
-            'usa':'Washington D.C.','japan':'Tokio','china':'Peking',
-            'russland':'Moskau','brasilien':'Brasilia','kanada':'Ottawa',
-            'australien':'Canberra','indien':'Neu-Delhi','türkei':'Ankara',
-            'turkei':'Ankara','griechenland':'Athen','portugal':'Lissabon',
-            'niederlande':'Amsterdam','belgien':'Brüssel','schweden':'Stockholm',
-            'norwegen':'Oslo','dänemark':'Kopenhagen','danemark':'Kopenhagen',
-            'finnland':'Helsinki','polen':'Warschau','ungarn':'Budapest',
-            'tschechien':'Prag','rumänien':'Bukarest','rumanien':'Bukarest',
-            'ukraine':'Kiew','kroatien':'Zagreb','serbien':'Belgrad',
-            'mexiko':'Mexiko-Stadt','argentinien':'Buenos Aires',
-        };
-        const land = (match[1]||'').trim().toLowerCase()
-            .replace(/ä/g,'a').replace(/ö/g,'o').replace(/ü/g,'u').replace(/ß/g,'ss');
-        const landOrig = (match[1]||'').trim().toLowerCase();
-        const result = CAPS[landOrig] || CAPS[land];
-        if (result) return 'Die Hauptstadt von ' + (match[1]||'').trim() + ' ist **' + result + '**.';
-        return null;
-    }
-
-    function getRemainingUses() {
+    function getTokensUsed() {
         const now = Date.now();
         const reset = parseInt(localStorage.getItem(RESET_KEY)||'0');
         if (now > reset) {
-            localStorage.setItem(LIMIT_KEY,'0');
+            localStorage.setItem(TOKEN_KEY,'0');
             localStorage.setItem(RESET_KEY, String(now + 3600000));
         }
-        return MAX_USES - parseInt(localStorage.getItem(LIMIT_KEY)||'0');
+        return parseInt(localStorage.getItem(TOKEN_KEY)||'0');
     }
-
-    function consumeUse() {
-        localStorage.setItem(LIMIT_KEY, String(parseInt(localStorage.getItem(LIMIT_KEY)||'0') + 1));
-    }
+    function getRemainingTokens() { return MAX_TOKENS - getTokensUsed(); }
+    function consumeTokens(n) { localStorage.setItem(TOKEN_KEY, String(getTokensUsed() + n)); }
 
     function updateLimitInfo() {
         const el = document.getElementById('villoai-limit-info');
+        const bar = document.getElementById('villoai-token-bar');
         if (!el) return;
-        const rem = getRemainingUses();
+        const rem = getRemainingTokens();
+        const pct = Math.max(0, rem/MAX_TOKENS*100);
+        if (bar) { bar.style.width = pct+'%'; bar.style.background = pct>50?'#4caf50':pct>20?'#ff9800':'#f44336'; }
         el.textContent = rem > 0
-            ? 'Noch ' + rem + ' von ' + MAX_USES + ' Anfragen diese Stunde'
-            : 'Stündliches Limit erreicht.';
+            ? '\u{1F4AA} ' + rem.toLocaleString('de-DE') + ' / ' + MAX_TOKENS.toLocaleString('de-DE') + ' Tokens verbleibend'
+            : '\u23F3 Token-Limit erreicht. Neue Tokens in < 1h!';
     }
 
     function addMessage(text, role) {
         const chat = document.getElementById('villoai-chat');
         if (!chat) return;
+        const wrap = document.createElement('div');
+        wrap.style.cssText = 'display:flex; align-items:flex-end; gap:6px; ' + (role==='user'?'flex-direction:row-reverse;':'flex-direction:row;');
+        const avatar = document.createElement('div');
+        avatar.style.cssText = 'width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; ' + (role==='user'?'background:var(--primary,#075e54); color:#fff;':'background:#e0e0e0; color:#000;');
+        avatar.textContent = role==='user'?'👤':'🤖';
         const div = document.createElement('div');
-        const isUser = role === 'user';
-        div.style.cssText = 'padding:10px 14px; border-radius:14px; max-width:85%; font-size:14px; line-height:1.5; word-break:break-word;' +
-            (isUser ? 'align-self:flex-end; background:var(--primary,#075e54); color:#fff; border-bottom-right-radius:4px;'
-                    : 'align-self:flex-start; background:var(--bg,#f0f0f0); color:var(--text-color,#000); border-bottom-left-radius:4px;');
+        div.style.cssText = 'padding:10px 14px; border-radius:16px; max-width:82%; font-size:14px; line-height:1.6; word-break:break-word; ' +
+            (role==='user'
+                ? 'background:var(--primary,#075e54); color:#fff; border-bottom-right-radius:4px;'
+                : 'background:var(--bg,#f0f2f5); color:var(--text-color,#000); border-bottom-left-radius:4px;');
         div.innerHTML = text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-        chat.appendChild(div);
+        wrap.appendChild(avatar);
+        wrap.appendChild(div);
+        chat.appendChild(wrap);
         chat.scrollTop = chat.scrollHeight;
     }
 
-    function getAnswer(question) {
-        const q = question.trim();
-        for (const entry of QA_POOL) {
-            const m = q.match(entry.rx);
-            if (m) {
-                const ans = entry.fn(m);
-                if (ans) return ans;
-            }
+    function showTyping() {
+        const chat = document.getElementById('villoai-chat');
+        if (!chat) return;
+        const wrap = document.createElement('div');
+        wrap.id = 'villoai-typing';
+        wrap.style.cssText = 'display:flex; align-items:flex-end; gap:6px;';
+        wrap.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:14px;">🤖</div><div style="padding:10px 16px;border-radius:16px;border-bottom-left-radius:4px;background:var(--bg,#f0f2f5);font-size:18px;letter-spacing:3px;">···</div>';
+        chat.appendChild(wrap);
+        chat.scrollTop = chat.scrollHeight;
+    }
+    function removeTyping() { const e = document.getElementById('villoai-typing'); if(e) e.remove(); }
+
+    function convertHandler(q) {
+        const m = q.match(/(\d+[\.,]?\d*)\s+([a-z\u00e4\u00f6\u00fc\u00df\u00b2\s]+?)\s+in\s+([a-z\u00e4\u00f6\u00fc\u00df\u00b2\s]+?)[\?\.\!]?$/i);
+        if (!m) return null;
+        const val = parseFloat(m[1].replace(',','.'));
+        const from = m[2].trim().toLowerCase().replace(/\s+/g,' ');
+        const to   = m[3].trim().toLowerCase().replace(/\s+/g,' ');
+        const key  = from + ' in ' + to;
+        if (EINHEITEN[key]) return EINHEITEN[key](val);
+        // Temperatur-Synonyme
+        if ((from.includes('grad c')||from==='celsius') && to.includes('fahr')) return EINHEITEN['celsius in fahrenheit'](val);
+        if ((from.includes('grad f')||from==='fahrenheit') && to.includes('celsius')) return EINHEITEN['fahrenheit in celsius'](val);
+        return null;
+    }
+
+    function isPrime(n) {
+        if (n<2) return false; if (n===2) return true; if (n%2===0) return false;
+        for(let i=3;i<=Math.sqrt(n);i+=2) if(n%i===0) return false;
+        return true;
+    }
+    function factorial(n) {
+        if (n>20) return null;
+        let r=1; for(let i=2;i<=n;i++) r*=i; return r;
+    }
+    function gcd(a,b) { return b===0?a:gcd(b,a%b); }
+    function lcm(a,b) { return (a*b)/gcd(a,b); }
+    function fibonacci(n) {
+        if(n>70) return null;
+        let a=0,b=1;
+        for(let i=0;i<n-1;i++){let c=a+b;a=b;b=c;}
+        return n===0?0:b;
+    }
+
+    function mathHandler(expr) {
+        try {
+            const raw = expr.replace(/[^\d\s\+\-\*\/\(\)\.%]/g,'').trim();
+            if (!raw||raw.length>200) return null;
+            const r = Function('return ('+raw+')')();
+            if (typeof r!=='number'||!isFinite(r)) return null;
+            return 'Das Ergebnis ist: **'+(Math.round(r*1e10)/1e10)+'**';
+        } catch(e) { return null; }
+    }
+
+    function getAnswer(q) {
+        const ql = q.toLowerCase().trim();
+
+        // Mathe: reiner Ausdruck
+        if (/^[\d\s\+\-\*\/\(\)\.%]+$/.test(q.trim())) {
+            const a = mathHandler(q); if(a) return a;
         }
-        // Einfache Mathe-Erkennung als Fallback
-        if (/^[\d\s\+\-\*\/\(\)\.]+$/.test(q)) {
-            const ans = mathHandler([q, q]);
-            if (ans) return ans;
+        let m;
+
+        // Rechne ...
+        m = q.match(/rechne?\s+([\s\S]+)/i);
+        if (m) { const a = mathHandler(m[1]); if(a) return a; }
+
+        // Potenz
+        m = q.match(/(\d+[\.,]?\d*)\s*\^+\s*(\d+)/);
+        if (m) { const b=parseFloat(m[1]),e=parseInt(m[2]); return '**'+b+'^'+e+' = '+Math.pow(b,e)+'**'; }
+
+        // Wurzel
+        m = q.match(/(?:wurzel|sqrt)\s*(?:aus\s+)?(\d+[\.,]?\d*)/i);
+        if (m) { const n=parseFloat(m[1].replace(',','.')); return n<0?'Wurzel aus negativer Zahl ist nicht reell!':'√'+n+' = **'+(Math.round(Math.sqrt(n)*1e8)/1e8)+'**'; }
+
+        // Kubikwurzel
+        m = q.match(/kubikwurzel\s*(?:aus\s+)?(\d+[\.,]?\d*)/i);
+        if (m) { const n=parseFloat(m[1].replace(',','.')); return '∛'+n+' = **'+(Math.round(Math.cbrt(n)*1e6)/1e6)+'**'; }
+
+        // Fakultät
+        m = q.match(/(?:fakultät\s+(?:von\s+)?)?(\d+)\s*!/i);
+        if (!m) m = q.match(/fakultät\s+(?:von\s+)?(\d+)/i);
+        if (m) { const n=parseInt(m[1]); const r=factorial(n); return r===null?n+'! ist zu groß (max. 20!)':n+'! = **'+r+'**'; }
+
+        // Primzahl
+        m = q.match(/ist\s+(\d+)\s+(?:eine?\s+)?primzahl/i);
+        if (!m) m = q.match(/primzahl.*?(\d+)/i);
+        if (m) { const n=parseInt(m[1]); return isPrime(n)?'**'+n+' ist eine Primzahl.** ✅':'**'+n+' ist keine Primzahl.** ❌ Sie ist durch '+(n===0||n===1?'keine Primzahl':'mehrere Zahlen')+' teilbar.'; }
+
+        // Primfaktoren
+        m = q.match(/primfaktor(?:en|isierung)?\s+(?:von\s+)?(\d+)/i);
+        if (m) {
+            let n=parseInt(m[1]), factors=[];
+            for(let i=2;i*i<=n;i++) while(n%i===0){factors.push(i);n/=i;}
+            if(n>1) factors.push(n);
+            return 'Primfaktorzerlegung von '+m[1]+': **'+factors.join(' × ')+'**';
         }
-        return 'Das weiss ich leider nicht. Ich kann Rechenaufgaben lösen und einfache Fragen auf Deutsch beantworten. Versuche es anders!';
+
+        // GGT & KGV
+        m = q.match(/(?:ggt|ggT|gr[öo]ßter\s+gemeinsamer\s+teiler)\s+(?:von\s+)?(\d+)\s+und\s+(\d+)/i);
+        if (m) { return 'GGT('+m[1]+', '+m[2]+') = **'+gcd(parseInt(m[1]),parseInt(m[2]))+'**'; }
+        m = q.match(/(?:kgv|kgV|kleinstes\s+gemeinsames\s+vielfaches)\s+(?:von\s+)?(\d+)\s+und\s+(\d+)/i);
+        if (m) { return 'KGV('+m[1]+', '+m[2]+') = **'+lcm(parseInt(m[1]),parseInt(m[2]))+'**'; }
+
+        // Fibonacci
+        m = q.match(/fibonacci\s+(?:von\s+|nummer\s+|zahl\s+|#)?(\d+)/i);
+        if (!m) m = q.match(/(\d+)\.\s*fibonacci/i);
+        if (m) { const n=parseInt(m[1]); const r=fibonacci(n); return r===null?'Zu groß! (max. n=70)':'Die '+n+'. Fibonacci-Zahl ist **'+r+'**.'; }
+
+        // Logarithmus
+        m = q.match(/log(?:arithmus)?\s+(?:von\s+)?(\d+[\.,]?\d*)(?:\s+zur\s+basis\s+(\d+))?/i);
+        if (m) {
+            const x=parseFloat(m[1].replace(',','.')), base=m[2]?parseFloat(m[2]):10;
+            const r = Math.log(x)/Math.log(base);
+            return 'log'+( m[2]?'_'+m[2]:'')+' ('+x+') = **'+(Math.round(r*1e6)/1e6)+'**';
+        }
+        m = q.match(/ln\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
+        if (m) { const x=parseFloat(m[1].replace(',','.')); return 'ln('+x+') = **'+(Math.round(Math.log(x)*1e8)/1e8)+'**'; }
+
+        // Sinus/Kosinus/Tangens
+        m = q.match(/(?:sin|sinus)\s+(\d+[\.,]?\d*)\s*°?/i);
+        if (m) { const deg=parseFloat(m[1].replace(',','.')); return 'sin('+deg+'°) = **'+(Math.round(Math.sin(deg*Math.PI/180)*1e6)/1e6)+'**'; }
+        m = q.match(/(?:cos|kosinus)\s+(\d+[\.,]?\d*)\s*°?/i);
+        if (m) { const deg=parseFloat(m[1].replace(',','.')); return 'cos('+deg+'°) = **'+(Math.round(Math.cos(deg*Math.PI/180)*1e6)/1e6)+'**'; }
+        m = q.match(/(?:tan|tangens)\s+(\d+[\.,]?\d*)\s*°?/i);
+        if (m) { const deg=parseFloat(m[1].replace(',','.')); return 'tan('+deg+'°) = **'+(Math.round(Math.tan(deg*Math.PI/180)*1e6)/1e6)+'**'; }
+
+        // Umfang/Fläche/Volumen
+        m = q.match(/umfang\s+(?:eines?\s+)?kreis(?:es)?\s+(?:mit\s+)?(?:radius|r)\s*=?\s*(\d+[\.,]?\d*)/i);
+        if (m) { const r=parseFloat(m[1].replace(',','.')); return 'Umfang = 2π×r = **'+(Math.round(2*Math.PI*r*100)/100)+'**'; }
+        m = q.match(/fl[äa]che\s+(?:eines?\s+)?kreis(?:es)?\s+(?:mit\s+)?(?:radius|r)\s*=?\s*(\d+[\.,]?\d*)/i);
+        if (m) { const r=parseFloat(m[1].replace(',','.')); return 'Fläche = π×r² = **'+(Math.round(Math.PI*r*r*100)/100)+'**'; }
+        m = q.match(/fl[äa]che\s+(?:eines?\s+)?(?:rechteck|quadrat).*?(\d+[\.,]?\d*)\s*(?:×|x|mal|\*|und)\s*(\d+[\.,]?\d*)/i);
+        if (m) { const a=parseFloat(m[1].replace(',','.')),b=parseFloat(m[2].replace(',','.')); return 'Fläche = '+a+' × '+b+' = **'+(a*b)+'**'; }
+
+        // Prozent
+        m = q.match(/(\d+[\.,]?\d*)\s*%\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
+        if (!m) m = q.match(/(\d+[\.,]?\d*)\s+prozent\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
+        if (m) { const p=parseFloat(m[1].replace(',','.')),v=parseFloat(m[2].replace(',','.')); return p+'% von '+v+' = **'+(Math.round(v*p/100*100)/100)+'**'; }
+        m = q.match(/wie\s+viel\s+(?:sind|ist)\s+(\d+)\s*%\s*(mehr|weniger)\s+(?:als\s+)?(\d+[\.,]?\d*)/i);
+        if (m) { const p=parseInt(m[1]),pm=m[2]==='mehr'?1:-1,v=parseFloat(m[3].replace(',','.')); return v+(m[2]==='mehr'?' + ':' − ')+p+'% = **'+(Math.round(v*(1+pm*p/100)*100)/100)+'**'; }
+
+        // Umrechnung
+        const conv = convertHandler(q);
+        if (conv) return conv;
+
+        // Zeit & Datum
+        if (/wie\s+sp[aä]t|wie\s+viel\s+uhr|aktuelle\s+uhrzeit/i.test(q))
+            return '🕐 Es ist **'+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr**.';
+        if (/welch[ens]*\s+tag|was\s+ist\s+heute|heutiges\s+datum|welches\s+datum/i.test(q))
+            return '📅 Heute ist **'+new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'**.';
+        if (/welche[rn]?\s+wochentag/i.test(q))
+            return '📅 Heute ist **'+new Date().toLocaleDateString('de-DE',{weekday:'long'})+'**.';
+        if (/wie\s+viele\s+tage\s+(?:hat|im)\s+(januar|februar|m[äa]rz|april|mai|juni|juli|august|september|oktober|november|dezember)/i.test(q)) {
+            const MONATE = {januar:31,februar:28,märz:28,marz:28,april:30,mai:31,juni:30,juli:31,august:31,september:30,oktober:31,november:30,dezember:31};
+            const key = q.match(/(januar|februar|m[äa]rz|april|mai|juni|juli|august|september|oktober|november|dezember)/i)[1].toLowerCase().replace('ä','a');
+            return 'Der '+key.charAt(0).toUpperCase()+key.slice(1)+' hat **'+(MONATE[key]||'?')+' Tage** (Februar im Schaltjahr: 29).';
+        }
+        m = q.match(/wie\s+viele\s+tage\s+(?:noch\s+)?bis\s+(?:zum?\s+)?(\d{1,2})[\.\/\-](\d{1,2})(?:[\.\/\-](\d{4}))?/i);
+        if (m) {
+            const now=new Date(),d=parseInt(m[1]),mo=parseInt(m[2]),y=m[3]?parseInt(m[3]):now.getFullYear();
+            let target=new Date(y,mo-1,d);
+            if(target<now) target.setFullYear(target.getFullYear()+1);
+            return '📅 Noch **'+Math.ceil((target-now)/(86400000))+' Tage** bis zum '+d+'.'+mo+'.'+target.getFullYear()+'.';
+        }
+
+        // Hauptstadt
+        m = q.match(/(?:hauptstadt\s+von\s+|was\s+ist\s+die\s+hauptstadt\s+(?:von\s+)?)([a-z\u00e4\u00f6\u00fc\u00df\s\-]+?)[\?\.\!]?$/i);
+        if (m) {
+            const land=(m[1]||'').trim().toLowerCase();
+            const alt=land.replace(/\u00e4/g,'a').replace(/\u00f6/g,'o').replace(/\u00fc/g,'u').replace(/\u00df/g,'ss');
+            const cap=CAPS[land]||CAPS[alt];
+            return cap ? '🏙️ Die Hauptstadt von **'+(m[1]||'').trim()+'** ist **'+cap+'**.' : 'Die Hauptstadt kenne ich leider nicht. Frag z.B.: „Hauptstadt von Japan?"';
+        }
+
+        // Länder-Info
+        m = q.match(/(?:infos?\s+[üu]ber|erz[äa]hl\s+mir\s+[üu]ber|was\s+wei[sß]t\s+du\s+[üu]ber)\s+([a-z\u00e4\u00f6\u00fc\u00df\s]+?)[\?\.\!]?$/i);
+        if (m) {
+            const key=(m[1]||'').trim().toLowerCase();
+            const alt=key.replace(/\u00e4/g,'a').replace(/\u00f6/g,'o').replace(/\u00fc/g,'u').replace(/\u00df/g,'ss');
+            const info=LAENDER_INFO[key]||LAENDER_INFO[alt];
+            if (info) return '🌍 **'+(m[1]||'').trim()+'**\n\n🏙️ Hauptstadt: '+info.h+'\n👥 Einwohner: '+info.e+'\n📐 Fläche: '+info.f+'\n💰 Währung: '+info.w+'\n🗣️ Sprache: '+info.s;
+        }
+
+        // Geschichte & Wissenschaft
+        for (const [key, val] of Object.entries(GESCHICHTE)) { if (ql.includes(key)) return '📖 '+val; }
+        for (const [key, val] of Object.entries(WISSENSCHAFT)) { if (ql.includes(key)) return '🔬 '+val; }
+
+        // Zufallszahl / Würfeln
+        m = q.match(/zwischen\s+(\d+)\s+und\s+(\d+)/i);
+        if (m && /würfel|zufäll|random/i.test(q)) {
+            const lo=parseInt(m[1]),hi=parseInt(m[2]);
+            return '🎲 **'+( Math.floor(Math.random()*(hi-lo+1))+lo)+'**';
+        }
+        if (/würfel|w[ue]rfle/i.test(q)) return '🎲 Ich würfle: **'+(Math.floor(Math.random()*6)+1)+'** (W6)';
+        if (/zuf[äa]llige?\s+zahl|random\s+zahl/i.test(q)) {
+            m = q.match(/(\d+)\s*bis\s*(\d+)/);
+            return '🎲 **'+(m ? Math.floor(Math.random()*(parseInt(m[2])-parseInt(m[1])+1))+parseInt(m[1]) : Math.floor(Math.random()*100)+1)+'**';
+        }
+
+        // Sprüche & Witze
+        if (/spruch|zitat|motivat/i.test(q)) return '💬 '+SPRUECHE[Math.floor(Math.random()*SPRUECHE.length)];
+        if (/witz|joke|lach|lustig|komisch/i.test(q)) return '😄 '+WITZE[Math.floor(Math.random()*WITZE.length)];
+
+        // Allgemeinwissen
+        const FAKTEN = [
+            [/wie\s+schnell\s+ist\s+licht/i,           '💡 Lichtgeschwindigkeit: **299.792.458 m/s** (~300.000 km/s). Licht umrundet die Erde ca. 7,5× pro Sekunde!'],
+            [/wie\s+gro[sß]\s+ist\s+die\s+erde/i,      '🌍 Erde: Durchmesser **12.742 km**, Umfang **40.075 km**, Fläche **510,1 Mio. km²**.'],
+            [/wie\s+weit.*?(sonne|mond)/i,              '☀️ Sonne: **149,6 Mio. km**. 🌕 Mond: **384.400 km**.'],
+            [/wie\s+alt.*?erde/i,                       '🌍 Die Erde ist ca. **4,54 Milliarden Jahre** alt.'],
+            [/mount\s+everest/i,                        '⛰️ Mount Everest: **8.849 m** (Nepal/China). Höchster Berg der Welt. Erstbesteigung 1953.'],
+            [/marianengraben/i,                         '🌊 Marianengraben: **10.994 m** tief – tiefste Stelle der Weltmeere (Pazifik).'],
+            [/wie\s+viele\s+planeten/i,                 '🪐 8 Planeten: Merkur, Venus, **Erde**, Mars, Jupiter, Saturn, Uranus, Neptun.'],
+            [/wie\s+schnell\s+dreht.*?erde/i,           '🌍 Die Erde dreht sich mit ca. **1.670 km/h** am Äquator um die eigene Achse. Einmal in 24 Stunden.'],
+            [/wie\s+hei[sß]\s+die\s+fl[äa]che.*?wasser/i, '🌊 Die Weltmeere bedecken ca. **71%** der Erdoberfläche – ~361 Mio. km².'],
+            [/wer\s+hat.*?glühbirne\s+erfunden/i,       '💡 Thomas **Edison** (1879). Heinrich Göbel 1854 frühe Variante.'],
+            [/wer\s+hat.*?google\s+gegr[üu]ndet/i,      '🔍 **Larry Page** & **Sergey Brin** (1998, Stanford).'],
+            [/wer\s+hat.*?microsoft\s+gegr[üu]ndet/i,   '💻 **Bill Gates** & **Paul Allen** (1975).'],
+            [/wer\s+hat.*?apple\s+gegr[üu]ndet/i,       '🍎 **Steve Jobs**, Steve Wozniak & Ronald Wayne (1976).'],
+            [/pythagor/i,                                '📐 Satz des Pythagoras: **a² + b² = c²** (c = Hypotenuse im rechtwinkligen Dreieck).'],
+            [/was\s+ist\s+co2/i,                         '🌿 CO₂ (Kohlendioxid): 1 Kohlenstoff + 2 Sauerstoff. Treibhausgas, entsteht bei Verbrennung & Atmung.'],
+            [/was\s+ist.*?klimawandel/i,                 '🌡️ Klimawandel: Erderwärmung durch menschl. CO₂-Ausstoß. Folgen: Extremwetter, Gletscherschmelze, Meeresspiegel-Anstieg.'],
+            [/was\s+ist.*?python/i,                      '🐍 Python: Programmiersprache (1991, Guido van Rossum). Simpel, vielseitig – KI, Daten, Web.'],
+            [/was\s+ist.*?internet/i,                    '🌐 Internet: Weltweites Computernetzwerk. Entstanden aus ARPANET (Ende 1960er). Heute >5 Mrd. Nutzer.'],
+        ];
+        for (const [rx, ans] of FAKTEN) { if(rx.test(q)) return ans; }
+
+        // Selfref
+        if (/wie\s+hei[sß]t\s+du|wer\s+bist\s+du/i.test(q)) return 'Ich bin **VilloAI** – der KI-Assistent von VilloChat! 🤖';
+        if (/wer\s+hat\s+dich\s+(gemacht|entwickelt|gebaut|erstellt|programmiert)/i.test(q)) return 'Ich wurde vom **VilloChat-Team** entwickelt und in Version 6.0 eingeführt. 👨‍💻';
+        if (/was\s+ist\s+villoch?at/i.test(q)) return '💬 **VilloChat** ist eine Echtzeit-Chat-App mit Gruppen, Stories, KI und vielem mehr!';
+        if (/was\s+kannst\s+du|hilf?\s+mir|was\s+weißt\s+du|fähigkeiten|funktionen/i.test(q))
+            return '🤖 **VilloAI kann:**\n\n🧮 **Mathe:** Rechnen, Potenzen, Wurzeln, Primzahlen, Fibonacci, log, sin/cos/tan, Flächen\n🔄 **Umrechnung:** km↔m, °C↔°F, kg↔Pfund, Liter↔ml, Stunden↔Minuten, 25+ Einheiten\n🌍 **Geografie:** Hauptstädte (80+), Länder-Infos\n📅 **Zeit:** Uhrzeit, Datum, Wochentag, Countdown\n📖 **Geschichte:** WK I+II, Mauerfall, Mondlandung, Römer…\n🔬 **Wissenschaft:** DNA, Photosynthese, Relativitätstheorie…\n😄 **Unterhaltung:** Witze, Sprüche, Zufallszahlen, Würfeln\n\nAlles auf **Deutsch**!';
+        if (/hallo|hi\b|hey\b|guten\s+(morgen|tag|abend|nacht)/i.test(q)) return 'Hallo! 👋 Wie kann ich dir helfen? Tippe **„Was kannst du?"** für eine Übersicht!';
+        if (/danke|vielen?\s+dank|thx|merci/i.test(q)) return 'Gern geschehen! 😊';
+        if (/tsch[üu]ss|auf\s+wiedersehen|bye|ciao|tschaui/i.test(q)) return 'Tschüss! Komm gerne wieder! 👋';
+        if (/\bpi\b|kreiszahl/i.test(q)) return '🔢 π = **3,14159265358979323846...**';
+        if (/eulersche\s+zahl|\be\s*=/i.test(q)) return '🔢 e = **2,71828182845904523536...**';
+        if (/goldener?\s+schnitt/i.test(q)) return '🔢 Goldener Schnitt φ (Phi) = **1,6180339887...** – ästhetisches Verhältnis in Natur und Kunst.';
+        if (/wie\s+geht\s+(es\s+)?dir/i.test(q)) return 'Als KI habe ich keine Gefühle – aber ich bin bereit, dir zu helfen! 😊';
+        if (/wie\s+alt\s+bist\s+du/i.test(q)) return 'Ich bin mit **VilloChat 6.0** gestartet – noch ganz frisch! 🤖';
+
+        return '🤖 Das weiß ich leider nicht. Tippe **„Was kannst du?"** für eine Übersicht meiner Fähigkeiten!';
     }
 
     window.openVilloAI = function() {
@@ -11590,9 +11871,9 @@ window.fmtDate = fmtDate;
         updateLimitInfo();
         const chat = document.getElementById('villoai-chat');
         if (chat && chat.children.length === 0) {
-            addMessage('Hallo! Ich bin VilloAI - dein KI-Assistent. Stelle mir eine Frage auf Deutsch oder lass mich rechnen!', 'ai');
+            addMessage('Hallo! Ich bin **VilloAI** – dein KI-Assistent. 🤖\n\n🧮 Rechne, Hauptstädte abfragen, Einheiten umrechnen, Geschichte lernen und vieles mehr – alles auf **Deutsch**!\n\nTippe **„Was kannst du?"** für eine vollständige Übersicht.', 'ai');
         }
-        setTimeout(() => { const inp = document.getElementById('villoai-input'); if (inp) inp.focus(); }, 100);
+        setTimeout(() => { const inp = document.getElementById('villoai-input'); if(inp) inp.focus(); }, 100);
     };
 
     window.closeVilloAI = function() {
@@ -11605,16 +11886,24 @@ window.fmtDate = fmtDate;
         if (!inp) return;
         const q = inp.value.trim();
         if (!q) return;
-        if (getRemainingUses() <= 0) {
-            addMessage('Du hast das stündliche Limit erreicht. Bitte warte eine Stunde.', 'ai');
+        const rem = getRemainingTokens();
+        if (rem <= 0) {
+            addMessage('⏳ Token-Limit (**'+MAX_TOKENS.toLocaleString('de-DE')+' Tokens/h**) erreicht.\nNeue Tokens in weniger als einer Stunde!', 'ai');
+            inp.value = '';
+            return;
+        }
+        if (q.length > rem) {
+            addMessage('⚠️ Deine Anfrage ('+q.length+' Tokens) übersteigt dein Restlimit ('+rem+' Tokens).', 'ai');
             inp.value = '';
             return;
         }
         addMessage(q, 'user');
         inp.value = '';
-        consumeUse();
+        showTyping();
+        const answer = getAnswer(q);
+        consumeTokens(q.length + answer.replace(/\*\*/g,'').length);
         updateLimitInfo();
-        setTimeout(() => addMessage(getAnswer(q), 'ai'), 250);
+        setTimeout(() => { removeTyping(); addMessage(answer, 'ai'); }, 200 + Math.min(q.length * 2, 500));
     };
 
     document.addEventListener('click', function(e) {
@@ -11624,25 +11913,32 @@ window.fmtDate = fmtDate;
 })();
 
 
+
 </script>
 
     <!-- VilloAI Modal -->
-    <div id="villoai-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.6); z-index:99998; justify-content:center; align-items:flex-end;">
-        <div style="background:var(--white,#fff); border-radius:20px 20px 0 0; width:100%; max-width:600px; padding:20px; max-height:80vh; display:flex; flex-direction:column; box-shadow:0 -4px 30px rgba(0,0,0,0.2);">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
+    <div id="villoai-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.65); z-index:99998; justify-content:center; align-items:flex-end;">
+        <div style="background:var(--white,#fff); border-radius:20px 20px 0 0; width:100%; max-width:620px; padding:16px 20px 20px; max-height:82vh; display:flex; flex-direction:column; box-shadow:0 -6px 40px rgba(0,0,0,0.25);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
                 <div style="display:flex; align-items:center; gap:10px;">
-                    <span style="font-size:26px;">🤖</span>
+                    <span style="font-size:28px; line-height:1;">🤖</span>
                     <div>
-                        <div style="font-weight:700; font-size:16px;">VilloAI</div>
-                        <div style="font-size:11px; color:#999;" id="villoai-limit-info">Lade…</div>
+                        <div style="font-weight:700; font-size:16px; color:var(--text-color,#000);">VilloAI</div>
+                        <div style="font-size:11px; color:#888;" id="villoai-limit-info">Lade…</div>
                     </div>
                 </div>
-                <button onclick="closeVilloAI()" style="background:transparent; border:none; font-size:22px; cursor:pointer; color:#999;">✕</button>
+                <button onclick="closeVilloAI()" style="background:transparent; border:none; font-size:22px; cursor:pointer; color:#bbb; line-height:1;">✕</button>
             </div>
-            <div id="villoai-chat" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; min-height:120px; max-height:45vh; margin-bottom:12px;"></div>
-            <div style="display:flex; gap:8px;">
-                <input id="villoai-input" type="text" placeholder="Frage stellen…" style="flex:1; padding:10px 14px; border:1px solid var(--border-color,#ddd); border-radius:10px; font-size:14px; background:var(--bg,#f5f5f5); color:var(--text-color,#000);" onkeydown="if(event.key==='Enter') sendVilloAI()">
-                <button onclick="sendVilloAI()" style="padding:10px 18px; background:var(--primary,#075e54); color:#fff; border:none; border-radius:10px; font-size:14px; cursor:pointer; font-weight:600;">Senden</button>
+            <!-- Token-Balken -->
+            <div style="height:4px; background:#e0e0e0; border-radius:2px; margin-bottom:12px; overflow:hidden;">
+                <div id="villoai-token-bar" style="height:100%; width:100%; background:#4caf50; border-radius:2px; transition:width 0.4s, background 0.4s;"></div>
+            </div>
+            <div id="villoai-chat" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; min-height:120px; max-height:48vh; margin-bottom:12px; padding-right:2px;"></div>
+            <div style="display:flex; gap:8px; align-items:flex-end;">
+                <input id="villoai-input" type="text" placeholder="Frage stellen oder rechnen lassen…" maxlength="500"
+                    style="flex:1; padding:11px 14px; border:1.5px solid var(--border-color,#ddd); border-radius:12px; font-size:14px; background:var(--bg,#f5f5f5); color:var(--text-color,#000); outline:none;"
+                    onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendVilloAI();}">
+                <button onclick="sendVilloAI()" style="padding:11px 20px; background:var(--primary,#075e54); color:#fff; border:none; border-radius:12px; font-size:14px; cursor:pointer; font-weight:600; white-space:nowrap; flex-shrink:0;">Senden ➤</button>
             </div>
         </div>
     </div>
