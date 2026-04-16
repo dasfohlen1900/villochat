@@ -2300,6 +2300,7 @@
                 <div style="text-align:center; margin-bottom:15px;">
                     <div id="info-avatar" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
                     <h3 id="info-username" style="margin:0 0 4px 0;"></h3>
+                    <p id="info-contact-id" style="font-size:11px; color:var(--primary); font-family:monospace; letter-spacing:0.5px; margin:0 0 2px;"></p>
                     <p id="info-status-text" style="color:#888; font-size:13px; margin:0 0 4px;"></p>
                     <p id="info-online-status" style="font-size:13px; margin:0;"></p>
                 </div>
@@ -2644,7 +2645,8 @@
                 <div style="text-align:center; margin-bottom:20px;">
                     <div id="my-profile-avatar" style="width:90px; height:90px; border-radius:50%; margin:0 auto 12px; display:flex; align-items:center; justify-content:center; font-size:40px; font-weight:bold; color:white; cursor:pointer;" onclick="openSettings()" title="In Einstellungen ändern"></div>
                     <h3 id="my-profile-name" style="margin:0 0 4px 0;"></h3>
-                    <p id="my-profile-status" style="color:#999; font-size:14px; margin:0 0 8px;"></p>
+                    <p id="my-profile-status" style="color:#999; font-size:14px; margin:0 0 4px;"></p>
+                    <p id="my-profile-contact-id" style="font-size:11px; color:var(--primary); font-family:monospace; letter-spacing:0.5px; margin:0 0 4px; cursor:pointer; user-select:all;" title="Klicken zum Kopieren"></p>
                     <span style="font-size:12px; color:var(--primary); cursor:pointer;" onclick="closeOverlay('my-profile-overlay'); openSettings();" data-i18n="btn_edit_profile">✏️ Bearbeiten</span>
                 </div>
 
@@ -3073,7 +3075,7 @@
                 </div>
             </div>
             <div style="padding:10px; display:flex; gap:5px; background:var(--bg);">
-                <input type="text" id="search-input" placeholder="User suchen..." data-i18n-placeholder="ph_search_user" style="margin:0;">
+                <input type="text" id="search-input" placeholder="User oder ID suchen..." data-i18n-placeholder="ph_search_user" style="margin:0;">
                 <button id="btn-search" style="width:50px; margin:0;">+</button>
             </div>
             <!-- STORIES BAR -->
@@ -3308,6 +3310,29 @@ const auth = getAuth(app);
 const db = getDatabase(app);
 
 let myUsername = "", activeChatId = null, activeContactName = null, currentMode = 'login', chatRef = null, typingRef = null;
+
+/* ------------------------------ */
+/* CONTACT ID GENERATOR */
+/* ------------------------------ */
+const ID_CHARS = "A7K19X3M8Q2R5T6V4WZYC";
+function generateContactId() {
+    const seg = () => Array.from({length:5}, () => ID_CHARS[Math.floor(Math.random()*ID_CHARS.length)]).join('');
+    return `${seg()}-${seg()}-${seg()}-${ID_CHARS[Math.floor(Math.random()*ID_CHARS.length)]}`;
+}
+function formatContactId(raw) {
+    // Accepts with or without dashes, normalise to XXXXX-XXXXX-XXXXX-X
+    if(!raw) return '';
+    const clean = raw.replace(/-/g,'').toUpperCase();
+    if(clean.length !== 16) return raw;
+    return `${clean.slice(0,5)}-${clean.slice(5,10)}-${clean.slice(10,15)}-${clean.slice(15)}`;
+}
+async function getOrCreateMyContactId() {
+    const snap = await get(ref(db, `accounts/${myUsername}/contactId`));
+    if(snap.exists()) return snap.val();
+    const newId = generateContactId();
+    await set(ref(db, `accounts/${myUsername}/contactId`), newId);
+    return newId;
+}
 let replyingTo = null;
 let unreadCounts = {};
 
@@ -5290,7 +5315,8 @@ document.getElementById('btn-auth').onclick = async () => {
             return;
         }
         const hint = document.getElementById('v-pin-hint').value.trim();
-        await set(ref(db, 'accounts/' + u), { username: u, pin: p, id: u.toLowerCase(), ...(hint ? { pinHint: hint } : {}) });
+        const newContactId = generateContactId();
+        await set(ref(db, 'accounts/' + u), { username: u, pin: p, id: u.toLowerCase(), contactId: newContactId, ...(hint ? { pinHint: hint } : {}) });
         showNotification(t('notif_registered'), "success");
         return;
     } else {
@@ -5317,6 +5343,14 @@ function showApp() {
     document.getElementById('auth-area').style.display = 'none';
     document.getElementById('chat-area').style.display = 'flex';
     document.getElementById('my-name-display').innerText = myUsername;
+
+    // Bestehende Accounts ohne ID automatisch eine zuweisen
+    get(ref(db, `accounts/${myUsername}/contactId`)).then(snap => {
+        if(!snap.exists()) {
+            const newId = generateContactId();
+            set(ref(db, `accounts/${myUsername}/contactId`), newId);
+        }
+    });
 
     // TOS → Ban → Pending Warning prüfen
     const _u = myUsername;
@@ -5544,6 +5578,21 @@ document.getElementById('btn-search').onclick = async () => {
     document.getElementById('search-overlay').style.display = 'flex';
 
     const results = new Map(); // username → data
+
+    // 0) Suche nach Kontakt-ID (Format XXXXX-XXXXX-XXXXX-X)
+    const idPattern = /^[A7K19X3M8Q2R5T6V4WZYC]{5}-[A7K19X3M8Q2R5T6V4WZYC]{5}-[A7K19X3M8Q2R5T6V4WZYC]{5}-[A7K19X3M8Q2R5T6V4WZYC]$/i;
+    if(idPattern.test(s.toUpperCase()) || s.replace(/-/g,'').length === 16) {
+        const normId = s.toUpperCase();
+        const allSnap = await get(ref(db, 'accounts'));
+        if(allSnap.exists()) {
+            allSnap.forEach(child => {
+                const d = child.val();
+                if(d.contactId && formatContactId(d.contactId).toUpperCase() === formatContactId(normId).toUpperCase() && d.username !== myUsername) {
+                    results.set(d.username, d);
+                }
+            });
+        }
+    }
 
     // 1) Exakter Lookup
     const exactSnap = await get(ref(db, `accounts/${s}`));
@@ -8519,6 +8568,16 @@ window.openMyProfile = async () => {
     
     document.getElementById('my-profile-name').textContent = myUsername;
     
+    // Contact ID anzeigen
+    get(ref(db, `accounts/${myUsername}/contactId`)).then(snap => {
+        const el = document.getElementById('my-profile-contact-id');
+        const cid = snap.exists() ? snap.val() : null;
+        el.textContent = cid ? '🪪 ' + formatContactId(cid) : '';
+        el.onclick = cid ? () => {
+            navigator.clipboard?.writeText(formatContactId(cid)).then(() => showNotification('✅ ID kopiert', 'success')).catch(()=>{});
+        } : null;
+    });
+    
     // Status
     const savedStatus = localStorage.getItem('villo_status') || '';
     document.getElementById('my-profile-status').textContent = savedStatus ? `💬 "${savedStatus}"` : t('notif_status_saved');
@@ -9691,6 +9750,11 @@ window.openUserInfo = async (contactName) => {
     document.getElementById('info-username').textContent = contactName;
     document.getElementById('info-alias').textContent = displayName;
     document.getElementById('info-online-status').textContent = '—';
+    const cidEl = document.getElementById('info-contact-id');
+    cidEl.textContent = '';
+    get(ref(db, `accounts/${contactName}/contactId`)).then(snap => {
+        cidEl.textContent = snap.exists() ? '🪪 ' + formatContactId(snap.val()) : '';
+    });
     document.getElementById('info-status-text').textContent = '';
     
     // Reset stats to loading state
