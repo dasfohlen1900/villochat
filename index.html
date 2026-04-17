@@ -11505,141 +11505,16 @@ window.fmtDate = fmtDate;
 // =============================================
 
 // =============================================
-// VILLOAI – KI-Assistent (nur Deutsch)
-// Token-Limit: 15.000 Tokens/Stunde (1 Zeichen = 1 Token)
+// VILLOAI – KI-Assistent (nur Deutsch) | Günter 1.1 | BETA
+// Token-Limit: 15.000 Tokens/Stunde
 // =============================================
 (function() {
     const TOKEN_KEY  = 'villoai_tokens';
     const RESET_KEY  = 'villoai_reset';
     const MAX_TOKENS = 15000;
-    const WITZE = [
-        'Warum können Programmierer nicht kochen? Weil sie immer nur Bugs essen!',
-        'Was sagt ein Informatiker, wenn er im Fahrstuhl steckt? Die Cloud hängt!',
-        'Warum hat der Programmierer seinen Job verloren? Er hat zu viele Fehler gemacht – und keiner davon war ein Feature.',
-        'Was ist der Unterschied zwischen einem Programmierer und einem Zauberer? Der Zauberer macht Fehler verschwinden – der Programmierer nennt sie Features.',
-        'Wie nennt man einen schlafenden Programmierer? Ein Ruhesystem.',
-        'Was sagt ein JavaScript-Entwickler, wenn er Hunger hat? Ich brauche ein Objekt zum Essen!',
-        'Warum ging der Entwickler zum Arzt? Weil er einen Stack Overflow hatte.',
-        'Was ist ein Algorithmus? Ein Wort, das Informatiker benutzen, wenn sie keine Lust haben zu erklären was sie tun.',
-        'Wie viele Programmierer braucht man, um eine Glühbirne zu wechseln? Keinen – das ist ein Hardware-Problem.',
-        'Was macht ein Informatiker auf dem Bauernhof? Er debuggt die Hühner.',
-        'Was hat ein Pirat mit einem Programmierer gemeinsam? Beide lieben das Arrrray!',
-        'Warum ist WLAN wie eine gute Ehe? Wenn das Signal schwach ist, geht man woanders hin.',
-    ];
-    const SPRUECHE = [
-        'Glaube an dich selbst – du bist großartiger als du denkst!',
-        'Jeder Tag ist eine neue Chance, etwas zu verändern.',
-        'Fehler sind Beweise dafür, dass du es versucht hast.',
-        'Das Geheimnis des Vorankommens ist, anzufangen.',
-        'Träume groß, arbeite hart, bleib bescheiden.',
-        'Erfolg ist die Summe kleiner Anstrengungen, die jeden Tag wiederholt werden.',
-        'Der beste Zeitpunkt, etwas zu pflanzen, war vor 20 Jahren. Der zweitbeste ist jetzt.',
-        'Es ist nicht wichtig, wie langsam du gehst, solange du nicht stehst.',
-    ];
-    const EINHEITEN = {
-        'km in m':           (v) => v+'km = **'+(v*1000)+' m**',
-        'm in km':           (v) => v+' m = **'+(v/1000)+' km**',
-        'meilen in km':      (v) => v+' Meilen = **'+(Math.round(v*1.60934*100)/100)+' km**',
-        'km in meilen':      (v) => v+' km = **'+(Math.round(v/1.60934*100)/100)+' Meilen**',
-        'cm in inch':        (v) => v+' cm = **'+(Math.round(v/2.54*100)/100)+' Inch**',
-        'inch in cm':        (v) => v+' Inch = **'+(Math.round(v*2.54*100)/100)+' cm**',
-        'meter in feet':     (v) => v+' m = **'+(Math.round(v*3.28084*100)/100)+' Feet**',
-        'feet in meter':     (v) => v+' Feet = **'+(Math.round(v/3.28084*100)/100)+' m**',
-        'kg in pfund':       (v) => v+' kg = **'+(Math.round(v*2.20462*100)/100)+' Pfund**',
-        'pfund in kg':       (v) => v+' Pfund = **'+(Math.round(v/2.20462*100)/100)+' kg**',
-        'kg in gramm':       (v) => v+' kg = **'+(v*1000)+' g**',
-        'gramm in kg':       (v) => v+' g = **'+(v/1000)+' kg**',
-        'celsius in fahrenheit': (v) => v+'°C = **'+(Math.round((v*9/5+32)*100)/100)+'°F**',
-        'fahrenheit in celsius': (v) => v+'°F = **'+(Math.round(((v-32)*5/9)*100)/100)+'°C**',
-        'celsius in kelvin': (v) => v+'°C = **'+(Math.round((v+273.15)*100)/100)+' K**',
-        'kelvin in celsius': (v) => v+' K = **'+(Math.round((v-273.15)*100)/100)+'°C**',
-        'liter in ml':       (v) => v+' L = **'+(v*1000)+' ml**',
-        'ml in liter':       (v) => v+' ml = **'+(v/1000)+' L**',
-        'ha in m2':          (v) => v+' ha = **'+(v*10000)+' m²**',
-        'm2 in ha':          (v) => v+' m² = **'+(v/10000)+' ha**',
-        'stunden in minuten': (v) => v+' h = **'+(v*60)+' min**',
-        'minuten in sekunden': (v) => v+' min = **'+(v*60)+' s**',
-        'tage in stunden':   (v) => v+' Tage = **'+(v*24)+' Stunden**',
-        'jahre in tage':     (v) => v+' Jahre ≈ **'+(v*365)+' Tage**',
-        'km in cm':          (v) => v+' km = **'+(v*100000)+' cm**',
-        'bar in pascal':     (v) => v+' bar = **'+(v*100000)+' Pa**',
-        'joule in kalorien': (v) => v+' J = **'+(Math.round(v/4.184*100)/100)+' kcal**',
-    };
-    const CAPS = {
-        'deutschland':'Berlin','frankreich':'Paris','spanien':'Madrid','italien':'Rom',
-        'england':'London','grossbritannien':'London','großbritannien':'London',
-        'österreich':'Wien','osterreich':'Wien','schweiz':'Bern',
-        'usa':'Washington D.C.','vereinigte staaten':'Washington D.C.',
-        'japan':'Tokio','china':'Peking','russland':'Moskau',
-        'brasilien':'Brasília','kanada':'Ottawa','australien':'Canberra',
-        'indien':'Neu-Delhi','türkei':'Ankara','turkei':'Ankara',
-        'griechenland':'Athen','portugal':'Lissabon','niederlande':'Amsterdam',
-        'belgien':'Brüssel','schweden':'Stockholm','norwegen':'Oslo',
-        'dänemark':'Kopenhagen','danemark':'Kopenhagen','finnland':'Helsinki',
-        'polen':'Warschau','ungarn':'Budapest','tschechien':'Prag',
-        'slowakei':'Bratislava','slowenien':'Ljubljana','kroatien':'Zagreb',
-        'serbien':'Belgrad','rumänien':'Bukarest','rumanien':'Bukarest',
-        'bulgarien':'Sofia','ukraine':'Kiew','weissrussland':'Minsk','belarus':'Minsk',
-        'moldau':'Chișinău','litauen':'Vilnius','lettland':'Riga','estland':'Tallinn',
-        'mexiko':'Mexiko-Stadt','argentinien':'Buenos Aires','chile':'Santiago',
-        'peru':'Lima','kolumbien':'Bogotá','venezuela':'Caracas','ecuador':'Quito',
-        'bolivien':'Sucre','paraguay':'Asunción','uruguay':'Montevideo',
-        'südafrika':'Pretoria','sudafrika':'Pretoria','ägypten':'Kairo','agypten':'Kairo',
-        'nigeria':'Abuja','kenia':'Nairobi','ghana':'Accra','äthiopien':'Addis Abeba',
-        'marokko':'Rabat','algerien':'Algier','tunesien':'Tunis','libyen':'Tripolis',
-        'saudi-arabien':'Riad','iran':'Teheran','irak':'Bagdad','israel':'Jerusalem',
-        'türkei':'Ankara','syrien':'Damaskus','jordanien':'Amman','libanon':'Beirut',
-        'südkorea':'Seoul','nordkorea':'Pjöngjang','vietnam':'Hanoi','thailand':'Bangkok',
-        'indonesien':'Jakarta','pakistan':'Islamabad','bangladesh':'Dhaka',
-        'myanmar':'Naypyidaw','philippinen':'Manila','malaysia':'Kuala Lumpur',
-        'singapur':'Singapur','neuseeland':'Wellington','kuba':'Havanna',
-        'irland':'Dublin','island':'Reykjavik','luxemburg':'Luxemburg',
-        'malta':'Valletta','zypern':'Nikosia','monaco':'Monaco',
-        'liechtenstein':'Vaduz','andorra':'Andorra la Vella','vatikan':'Vatikanstadt',
-        'san marino':'San Marino','kasachstan':'Nursultan','usbekistan':'Taschkent',
-        'georgien':'Tiflis','armenien':'Jerewan','aserbaidschan':'Baku',
-    };
-    const LAENDER_INFO = {
-        'deutschland':    { e:'~84 Mio.', f:'357.114 km²', w:'Euro (€)', s:'Deutsch',           h:'Berlin' },
-        'frankreich':     { e:'~68 Mio.', f:'643.801 km²', w:'Euro (€)', s:'Französisch',        h:'Paris' },
-        'usa':            { e:'~335 Mio.',f:'9.833.517 km²',w:'US-Dollar ($)',s:'Englisch',       h:'Washington D.C.' },
-        'japan':          { e:'~124 Mio.',f:'377.975 km²', w:'Yen (¥)',     s:'Japanisch',        h:'Tokio' },
-        'china':          { e:'~1,4 Mrd.',f:'9.596.960 km²',w:'Renminbi',  s:'Mandarin',         h:'Peking' },
-        'brasilien':      { e:'~215 Mio.',f:'8.515.767 km²',w:'Real (R$)', s:'Portugiesisch',    h:'Brasília' },
-        'russland':       { e:'~143 Mio.',f:'17.098.242 km²',w:'Rubel (₽)',s:'Russisch',         h:'Moskau' },
-        'indien':         { e:'~1,4 Mrd.',f:'3.287.263 km²',w:'Rupie (₹)', s:'Hindi, Englisch',  h:'Neu-Delhi' },
-        'österreich':     { e:'~9 Mio.',  f:'83.871 km²',  w:'Euro (€)',   s:'Deutsch',          h:'Wien' },
-        'schweiz':        { e:'~8,7 Mio.',f:'41.285 km²',  w:'CHF',        s:'DE/FR/IT/Rätorom.',h:'Bern' },
-        'großbritannien': { e:'~67 Mio.', f:'243.610 km²', w:'Pfund (£)',  s:'Englisch',         h:'London' },
-        'kanada':         { e:'~38 Mio.', f:'9.984.670 km²',w:'CAD',       s:'Englisch/Französisch',h:'Ottawa' },
-        'australien':     { e:'~26 Mio.', f:'7.692.024 km²',w:'AUD',       s:'Englisch',         h:'Canberra' },
-        'spanien':        { e:'~47 Mio.', f:'505.990 km²', w:'Euro (€)',   s:'Spanisch',         h:'Madrid' },
-        'italien':        { e:'~60 Mio.', f:'301.340 km²', w:'Euro (€)',   s:'Italienisch',      h:'Rom' },
-    };
-    const GESCHICHTE = {
-        'erster weltkrieg':      '**Erster Weltkrieg (1914–1918):** Ausgelöst durch das Attentat auf Erzherzog Franz Ferdinand in Sarajevo. Vier Jahre Grabenkrieg. Ende mit dem Waffenstillstand am 11.11.1918.',
-        'zweiter weltkrieg':     '**Zweiter Weltkrieg (1939–1945):** Begann mit dem deutschen Überfall auf Polen. Endete mit der Kapitulation Deutschlands am 8.5.1945 und Japans am 2.9.1945.',
-        'mondlandung':           '**Mondlandung 1969:** Am 20. Juli 1969 betrat Neil Armstrong als erster Mensch den Mond. Mission: Apollo 11. „One small step for man, one giant leap for mankind."',
-        'mauerfall':             '**Berliner Mauerfall (9.11.1989):** Die DDR öffnete die Grenzen. Die Mauer (seit 1961) trennte Ost- und Westberlin. Symbol für das Ende des Kalten Krieges.',
-        'französische revolution':'**Französische Revolution (1789–1799):** Sturm auf die Bastille am 14. Juli 1789. Abschaffung der Monarchie. Motto: Freiheit, Gleichheit, Brüderlichkeit.',
-        'römisches reich':       '**Römisches Reich:** Entstand ca. 27 v.Chr. unter Augustus. Größte Ausdehnung unter Trajan (117 n.Chr.). Das Weströmische Reich fiel 476 n.Chr.',
-        'industrielle revolution':'**Industrielle Revolution (ca. 1760–1840):** Begann in England. Dampfmaschine (Watt, 1769) als Schlüsselereignis. Übergang zu industrieller Produktion.',
-        'kalter krieg':          '**Kalter Krieg (1947–1991):** Geopolitische Spannung zwischen USA/NATO und UdSSR/Warschauer Pakt. Kein direkter Krieg, aber Rüstungswettlauf, Raumfahrt-Wettstreit, Kuba-Krise.',
-        'weimarer republik':     '**Weimarer Republik (1919–1933):** Erste demokratische Republik in Deutschland nach dem 1. WK. Scheiterte mit Hitlers Machtergreifung am 30.1.1933.',
-    };
-    const WISSENSCHAFT = {
-        'photosynthese':         '**Photosynthese:** Pflanzen wandeln Sonnenlicht + CO₂ + H₂O in Zucker + O₂ um.\nFormel: 6CO₂ + 6H₂O + Licht → C₆H₁₂O₆ + 6O₂',
-        'relativitätstheorie':   '**Relativitätstheorie (Einstein):** E = mc² – Energie = Masse × Lichtgeschwindigkeit². Spezielle (1905): Zeit läuft für bewegte Objekte langsamer. Allgemeine (1915): Masse krümmt Raumzeit.',
-        'evolution':             '**Evolutionstheorie (Darwin, 1859):** Arten entwickeln sich durch natürliche Selektion. Vorteilhafte Eigenschaften vererben sich häufiger.',
-        'gravitation':           '**Gravitation:** Jede Masse zieht jede andere an. Newtons Gesetz: F = G×m₁×m₂/r². Einstein: Masse krümmt Raumzeit → Objekte folgen dieser Krümmung.',
-        'atom':                  '**Atom:** Kleinste Einheit eines Elements. Kern: Protonen + Neutronen. Hülle: Elektronen. Durchmesser: ~0,1 nm.',
-        'dna':                   '**DNA:** Träger der Erbinformation. Doppelhelix aus 4 Basen (A, T, G, C). Entdeckt 1953 von Watson & Crick. Enthält die Baupläne für alle Proteine.',
-        'periodensystem':        '**Periodensystem:** 118 Elemente, geordnet nach Ordnungszahl. Erstellt 1869 von Mendeleev. Gruppen (Spalten) haben ähnliche chemische Eigenschaften.',
-        'quantenmechanik':       '**Quantenmechanik:** Physik des Sehr-Kleinen. Welle-Teilchen-Dualismus. Heisenbergsche Unschärferelation: Ort und Impuls nicht gleichzeitig exakt messbar.',
-        'osmose':                '**Osmose:** Wanderung von Wasser durch eine halbdurchlässige Membran vom niedrigeren zum höheren Konzentrations-Bereich. Grundlage vieler biologischer Prozesse.',
-        'thermodynamik':         '**Thermodynamik:** Lehre von Wärme und Energie. 1. Hauptsatz: Energie bleibt erhalten. 2. Hauptsatz: Entropie (Unordnung) nimmt immer zu.',
-    };
+    const MODEL_NAME = 'Günter 1.1';
 
+    // ── Token-Verwaltung ──────────────────────────────────────────
     function getTokensUsed() {
         const now = Date.now();
         const reset = parseInt(localStorage.getItem(RESET_KEY)||'0');
@@ -11660,303 +11535,608 @@ window.fmtDate = fmtDate;
         const pct = Math.max(0, rem/MAX_TOKENS*100);
         if (bar) { bar.style.width = pct+'%'; bar.style.background = pct>50?'#4caf50':pct>20?'#ff9800':'#f44336'; }
         el.textContent = rem > 0
-            ? '\u{1F4AA} ' + rem.toLocaleString('de-DE') + ' / ' + MAX_TOKENS.toLocaleString('de-DE') + ' Tokens verbleibend'
-            : '\u23F3 Token-Limit erreicht. Neue Tokens in < 1h!';
+            ? '\u{1F4AA} ' + rem.toLocaleString('de-DE') + ' / ' + MAX_TOKENS.toLocaleString('de-DE') + ' Tokens'
+            : '\u23F3 Limit erreicht – neue Tokens in < 1h!';
     }
 
+    // ── Chat UI ──────────────────────────────────────────────────
     function addMessage(text, role) {
         const chat = document.getElementById('villoai-chat');
         if (!chat) return;
         const wrap = document.createElement('div');
-        wrap.style.cssText = 'display:flex; align-items:flex-end; gap:6px; ' + (role==='user'?'flex-direction:row-reverse;':'flex-direction:row;');
+        wrap.style.cssText = 'display:flex;align-items:flex-end;gap:6px;' + (role==='user'?'flex-direction:row-reverse;':'');
         const avatar = document.createElement('div');
-        avatar.style.cssText = 'width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; ' + (role==='user'?'background:var(--primary,#075e54); color:#fff;':'background:#e0e0e0; color:#000;');
+        avatar.style.cssText = 'width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;'
+            + (role==='user'?'background:var(--primary,#075e54);color:#fff;':'background:#e0e0e0;color:#000;');
         avatar.textContent = role==='user'?'👤':'🤖';
         const div = document.createElement('div');
-        div.style.cssText = 'padding:10px 14px; border-radius:16px; max-width:82%; font-size:14px; line-height:1.6; word-break:break-word; ' +
-            (role==='user'
-                ? 'background:var(--primary,#075e54); color:#fff; border-bottom-right-radius:4px;'
-                : 'background:var(--bg,#f0f2f5); color:var(--text-color,#000); border-bottom-left-radius:4px;');
+        div.style.cssText = 'padding:10px 14px;border-radius:16px;max-width:82%;font-size:14px;line-height:1.6;word-break:break-word;'
+            + (role==='user'
+                ? 'background:var(--primary,#075e54);color:#fff;border-bottom-right-radius:4px;'
+                : 'background:var(--bg,#f0f2f5);color:var(--text-color,#000);border-bottom-left-radius:4px;');
         div.innerHTML = text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-        wrap.appendChild(avatar);
-        wrap.appendChild(div);
+        wrap.appendChild(avatar); wrap.appendChild(div);
         chat.appendChild(wrap);
         chat.scrollTop = chat.scrollHeight;
     }
-
     function showTyping() {
         const chat = document.getElementById('villoai-chat');
         if (!chat) return;
         const wrap = document.createElement('div');
         wrap.id = 'villoai-typing';
-        wrap.style.cssText = 'display:flex; align-items:flex-end; gap:6px;';
+        wrap.style.cssText = 'display:flex;align-items:flex-end;gap:6px;';
         wrap.innerHTML = '<div style="width:28px;height:28px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:14px;">🤖</div><div style="padding:10px 16px;border-radius:16px;border-bottom-left-radius:4px;background:var(--bg,#f0f2f5);font-size:18px;letter-spacing:3px;">···</div>';
         chat.appendChild(wrap);
         chat.scrollTop = chat.scrollHeight;
     }
     function removeTyping() { const e = document.getElementById('villoai-typing'); if(e) e.remove(); }
 
-    function convertHandler(q) {
-        const m = q.match(/(\d+[\.,]?\d*)\s+([a-z\u00e4\u00f6\u00fc\u00df\u00b2\s]+?)\s+in\s+([a-z\u00e4\u00f6\u00fc\u00df\u00b2\s]+?)[\?\.\!]?$/i);
-        if (!m) return null;
-        const val = parseFloat(m[1].replace(',','.'));
-        const from = m[2].trim().toLowerCase().replace(/\s+/g,' ');
-        const to   = m[3].trim().toLowerCase().replace(/\s+/g,' ');
-        const key  = from + ' in ' + to;
-        if (EINHEITEN[key]) return EINHEITEN[key](val);
-        // Temperatur-Synonyme
-        if ((from.includes('grad c')||from==='celsius') && to.includes('fahr')) return EINHEITEN['celsius in fahrenheit'](val);
-        if ((from.includes('grad f')||from==='fahrenheit') && to.includes('celsius')) return EINHEITEN['fahrenheit in celsius'](val);
+    // ── Intelligenter Satz-Erkenner (NLP-Kernmodul) ──────────────
+    // Normalisiert natürliche Sprache: Synonyme, Tippfehler, Umformulierungen
+    function normalize(q) {
+        return q.toLowerCase()
+            .replace(/\bist\s+(das|die|der|ein|eine)\b/g, '')
+            .replace(/\bkann\s+ich\b/g, '')
+            .replace(/\bbitte\b/g, '')
+            .replace(/\bkannst\s+du\b/g, '')
+            .replace(/\bsagst\s+du\s+mir\b/g, '')
+            .replace(/\bwas\s+ist\b/g, '')
+            .replace(/\bwieviel[e]?\b/g, 'wie viel')
+            .replace(/\bwieviele\b/g, 'wie viele')
+            .replace(/\bkm\/h\b/g, 'kilometer pro stunde')
+            .replace(/[?!.,;:]+$/, '')
+            .trim();
+    }
+
+    // Extrahiert Zahlen aus Text (auch "dreizehn", "zwanzig" etc.)
+    function parseGermanNumber(s) {
+        const words = {
+            'null':0,'ein':1,'eine':1,'eins':1,'zwei':2,'drei':3,'vier':4,'fünf':5,'sechs':6,
+            'sieben':7,'acht':8,'neun':9,'zehn':10,'elf':11,'zwölf':12,'dreizehn':13,
+            'vierzehn':14,'fünfzehn':15,'sechzehn':16,'siebzehn':17,'achtzehn':18,'neunzehn':19,
+            'zwanzig':20,'dreißig':30,'vierzig':40,'fünfzig':50,'sechzig':60,'siebzig':70,
+            'achtzig':80,'neunzig':90,'hundert':100,'tausend':1000,'million':1000000
+        };
+        s = s.trim().toLowerCase().replace(',','.');
+        if (!isNaN(parseFloat(s))) return parseFloat(s);
+        if (words[s] !== undefined) return words[s];
         return null;
     }
 
+    // Intent-Erkennung: gibt { intent, slots } zurück
+    function detectIntent(raw) {
+        const q = normalize(raw);
+        const n = (idx=0) => {
+            const nums = [...q.matchAll(/(\d+[\.,]?\d*)/g)].map(m=>parseFloat(m[1].replace(',','.')));
+            return nums[idx] ?? null;
+        };
+
+        // ── GRUSS ──
+        if (/^(hallo|hi|hey|moin|servus|guten\s+(morgen|tag|abend|nacht)|grüß\s+gott|grüezi|salut)\b/.test(q))
+            return { intent: 'gruss' };
+
+        // ── DANKE / VERABSCHIEDUNG ──
+        if (/\b(danke|vielen\s+dank|dankeschön|thx|merci)\b/.test(q)) return { intent: 'danke' };
+        if (/\b(tschüss|bye|ciao|auf\s+wiedersehen|tschaui|bis\s+dann)\b/.test(q)) return { intent: 'tschuss' };
+
+        // ── SELBSTBEZUG ──
+        if (/wie\s+(heißt|heiß|nennst)\s+du\s+dich|wer\s+bist\s+du|dein\s+name/.test(q)) return { intent: 'name' };
+        if (/wer\s+hat\s+dich\s+(gemacht|entwickelt|gebaut|erstellt|programmiert)/.test(q)) return { intent: 'entwickler' };
+        if (/was\s+ist\s+villoch?at|was\s+ist\s+villo\s+chat/.test(q)) return { intent: 'villochat' };
+        if (/wie\s+alt\s+bist\s+du/.test(q)) return { intent: 'alter_ai' };
+        if (/wie\s+geht\s+(es\s+)?(dir|es\s+dir)/.test(q)) return { intent: 'befinden' };
+        if (/was\s+kannst\s+du|was\s+weißt\s+du|zeig\s+(mir\s+)?deine\s+(fähigkeiten|funktionen)|hilfe|was\s+machst\s+du/.test(q)) return { intent: 'hilfe' };
+        if (/welches\s+modell|was\s+für\s+ein\s+modell|welche\s+(version|ki|ai)|günter/.test(q)) return { intent: 'modell' };
+
+        // ── MATHE: reiner Ausdruck ──
+        if (/^[\d\s\+\-\*\/\(\)\.%\^]+$/.test(raw.trim()) && raw.trim().length > 0) return { intent: 'mathe_expr', expr: raw.trim() };
+
+        // ── MATHE: verbal ──
+        let m;
+        m = raw.match(/(?:rechne?|berechne?|ergebnis\s+von|wie\s+viel\s+(?:ist|ergibt|macht))\s*([\s\S]+)/i);
+        if (m) return { intent: 'mathe_expr', expr: m[1] };
+
+        // Potenz
+        m = raw.match(/(\d+[\.,]?\d*)\s*[\^hoch]+\s*(\d+)/i);
+        if (!m) m = raw.match(/(\d+[\.,]?\d*)\s+(?:hoch|potenz)\s+(\d+)/i);
+        if (m) return { intent: 'potenz', base: parseFloat(m[1].replace(',','.')), exp: parseInt(m[2]) };
+
+        // Wurzel
+        m = raw.match(/(?:wurzel|sqrt|quadratwurzel)\s*(?:aus\s+)?(\d+[\.,]?\d*)/i);
+        if (m) return { intent: 'wurzel', n: parseFloat(m[1].replace(',','.')) };
+        m = raw.match(/(\d+[\.,]?\d*)\s*(?:hoch\s+)?(?:0[,.]5|½)/i);
+        if (m) return { intent: 'wurzel', n: parseFloat(m[1].replace(',','.')) };
+
+        // Kubikwurzel
+        m = raw.match(/kubikwurzel\s*(?:aus\s+)?(\d+[\.,]?\d*)/i);
+        if (m) return { intent: 'kubikwurzel', n: parseFloat(m[1].replace(',','.')) };
+
+        // Fakultät
+        m = raw.match(/(\d+)\s*!/);
+        if (!m) m = raw.match(/fakultät\s+(?:von\s+)?(\d+)/i);
+        if (m) return { intent: 'fakultaet', n: parseInt(m[1]) };
+
+        // Primzahl
+        m = raw.match(/(?:ist\s+)?(\d+)\s+(?:eine?\s+)?primzahl/i);
+        if (!m) m = raw.match(/primzahl.*?(\d+)/i);
+        if (m) return { intent: 'primzahl', n: parseInt(m[1]) };
+
+        // Primfaktoren
+        m = raw.match(/primfaktor(?:en|isierung)?\s+(?:von\s+)?(\d+)/i);
+        if (m) return { intent: 'primfaktoren', n: parseInt(m[1]) };
+
+        // GGT / KGV
+        m = raw.match(/(?:ggt|größter\s+gemeinsamer\s+teiler)\s+(?:von\s+)?(\d+)\s+und\s+(\d+)/i);
+        if (m) return { intent: 'ggt', a: parseInt(m[1]), b: parseInt(m[2]) };
+        m = raw.match(/(?:kgv|kleinstes\s+gemeinsames\s+vielfaches)\s+(?:von\s+)?(\d+)\s+und\s+(\d+)/i);
+        if (m) return { intent: 'kgv', a: parseInt(m[1]), b: parseInt(m[2]) };
+
+        // Fibonacci
+        m = raw.match(/fibonacci\s+(?:von\s+|nummer\s+|zahl\s+|#)?(\d+)/i);
+        if (!m) m = raw.match(/(\d+)\.\s*fibonacci/i);
+        if (m) return { intent: 'fibonacci', n: parseInt(m[1]) };
+
+        // Log / ln
+        m = raw.match(/log(?:arithmus)?\s+(?:von\s+)?(\d+[\.,]?\d*)(?:\s+zur\s+basis\s+(\d+))?/i);
+        if (m) return { intent: 'log', x: parseFloat(m[1].replace(',','.')), base: m[2]?parseFloat(m[2]):10 };
+        m = raw.match(/ln\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
+        if (m) return { intent: 'ln', x: parseFloat(m[1].replace(',','.')) };
+
+        // Trig
+        m = raw.match(/(?:sin|sinus)\s+(\d+[\.,]?\d*)\s*°?/i);
+        if (m) return { intent: 'trig', fn:'sin', deg: parseFloat(m[1].replace(',','.')) };
+        m = raw.match(/(?:cos|kosinus)\s+(\d+[\.,]?\d*)\s*°?/i);
+        if (m) return { intent: 'trig', fn:'cos', deg: parseFloat(m[1].replace(',','.')) };
+        m = raw.match(/(?:tan|tangens)\s+(\d+[\.,]?\d*)\s*°?/i);
+        if (m) return { intent: 'trig', fn:'tan', deg: parseFloat(m[1].replace(',','.')) };
+
+        // Geometrie
+        m = raw.match(/umfang\s+(?:eines?\s+)?kreis(?:es)?\s+(?:mit\s+)?(?:radius|r)\s*=?\s*(\d+[\.,]?\d*)/i);
+        if (m) return { intent: 'kreis_umfang', r: parseFloat(m[1].replace(',','.')) };
+        m = raw.match(/fl[äa]che\s+(?:eines?\s+)?kreis(?:es)?\s+(?:mit\s+)?(?:radius|r)\s*=?\s*(\d+[\.,]?\d*)/i);
+        if (m) return { intent: 'kreis_flaeche', r: parseFloat(m[1].replace(',','.')) };
+        m = raw.match(/fl[äa]che\s+(?:eines?\s+)?(?:rechteck|quadrat).*?(\d+[\.,]?\d*)\s*(?:[×x*]|mal|und)\s*(\d+[\.,]?\d*)/i);
+        if (m) return { intent: 'rechteck', a: parseFloat(m[1].replace(',','.')), b: parseFloat(m[2].replace(',','.')) };
+
+        // Prozent
+        m = raw.match(/(\d+[\.,]?\d*)\s*%\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
+        if (!m) m = raw.match(/(\d+[\.,]?\d*)\s+prozent\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
+        if (m) return { intent: 'prozent', p: parseFloat(m[1].replace(',','.')), v: parseFloat(m[2].replace(',','.')) };
+
+        // Einheiten-Umrechnung (erweitertes Matching)
+        m = raw.match(/(\d+[\.,]?\d*)\s+([\wäöüÄÖÜß²³\/\s]+?)\s+(?:in|zu|nach|als|→|->)\s+([\wäöüÄÖÜß²³\/\s]+?)[\?\.!]?$/i);
+        if (m) return { intent: 'umrechnung', val: parseFloat(m[1].replace(',','.')), from: m[2].trim().toLowerCase(), to: m[3].trim().toLowerCase() };
+
+        // Zeit & Datum
+        if (/wie\s+sp[aä]t|wie\s+viel\s+uhr|aktuelle\s+uhrzeit|uhr\s+ist\s+es/.test(q)) return { intent: 'uhrzeit' };
+        if (/welch[ens]*\s+tag|heutiges\s+datum|welches\s+datum|was\s+ist\s+heute/.test(q)) return { intent: 'datum' };
+        if (/welche[rn]?\s+wochentag|was\s+ist\s+heute\s+für\s+ein/.test(q)) return { intent: 'wochentag' };
+        m = raw.match(/wie\s+viele\s+tage\s+(?:hat|im)\s+(januar|februar|m[äa]rz|april|mai|juni|juli|august|september|oktober|november|dezember)/i);
+        if (m) return { intent: 'monatstage', monat: m[1].toLowerCase() };
+        m = raw.match(/(?:wie\s+viele?\s+tage|wie\s+lange)\s+(?:noch\s+)?bis\s+(?:zum?\s+)?(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{4}))?/i);
+        if (m) return { intent: 'countdown', d: parseInt(m[1]), mo: parseInt(m[2]), y: m[3]?parseInt(m[3]):null };
+
+        // Hauptstadt
+        m = raw.match(/hauptstadt\s+(?:von\s+)?([a-zäöüÄÖÜß\s\-]+?)[\?\.!]?$/i);
+        if (!m) m = raw.match(/(?:was\s+ist\s+die\s+hauptstadt\s+(?:von\s+)?)([a-zäöüÄÖÜß\s\-]+?)[\?\.!]?$/i);
+        if (m) return { intent: 'hauptstadt', land: m[1].trim() };
+
+        // Länder-Info
+        m = raw.match(/(?:infos?\s+über|erzähl\s+mir\s+über|was\s+weißt\s+du\s+über|zeig\s+mir)\s+([a-zäöüÄÖÜß\s]+?)[\?\.!]?$/i);
+        if (m) return { intent: 'laenderinfo', land: m[1].trim() };
+
+        // Zufallszahl / Würfeln
+        if (/würfel|wurfle|würfle/i.test(raw)) {
+            m = raw.match(/zwischen\s+(\d+)\s+und\s+(\d+)/i);
+            if (m) return { intent: 'wuerfeln', lo: parseInt(m[1]), hi: parseInt(m[2]) };
+            return { intent: 'wuerfeln', lo:1, hi:6 };
+        }
+        if (/zufäll|random\s+zahl/i.test(raw)) {
+            m = raw.match(/(\d+)\s*(?:und|bis)\s*(\d+)/);
+            return { intent: 'zufall', lo: m?parseInt(m[1]):1, hi: m?parseInt(m[2]):100 };
+        }
+
+        // Witz & Spruch
+        if (/witz|joke|lach|lustig|komisch/i.test(raw)) return { intent: 'witz' };
+        if (/spruch|zitat|motivat/i.test(raw)) return { intent: 'spruch' };
+
+        // Geschichte (Schlüsselbegriffe)
+        const GESCH_KEYS = ['erster weltkrieg','zweiter weltkrieg','wk1','wk2','wk i','wk ii','1. weltkrieg','2. weltkrieg',
+            'mondlandung','mauerfall','berliner mauer','französische revolution','franzosische revolution',
+            'römisches reich','romisches reich','industrielle revolution','kalter krieg','weimarer republik'];
+        for (const k of GESCH_KEYS) { if (q.includes(k)) return { intent: 'geschichte', key: k }; }
+
+        // Wissenschaft
+        const WISS_KEYS = ['photosynthese','relativitätstheorie','relativitatstheorie','evolution','gravitation',
+            'atom','dna','periodensystem','quantenmechanik','osmose','thermodynamik'];
+        for (const k of WISS_KEYS) { if (q.includes(k)) return { intent: 'wissenschaft', key: k }; }
+
+        // Allgemeinwissen (Fragen-Erkennung durch Schlüsselphrasen)
+        const WISSEN_PATTERNS = [
+            [/wie\s+schnell\s+ist\s+(das\s+)?licht/i,          'licht'],
+            [/wie\s+gro[sß]\s+ist\s+die\s+erde/i,             'erde_groesse'],
+            [/wie\s+weit.*?(sonne|mond)/i,                     'entfernung'],
+            [/wie\s+alt.*?erde/i,                              'erde_alter'],
+            [/mount\s+everest/i,                               'everest'],
+            [/marianengraben/i,                                'marian'],
+            [/wie\s+viele\s+planeten/i,                        'planeten'],
+            [/wie\s+schnell\s+dreht.*?erde/i,                  'erdrotation'],
+            [/wer\s+hat.*?glühbirne\s+erfunden/i,              'gluehbirne'],
+            [/wer\s+hat.*?google\s+gegr/i,                     'google'],
+            [/wer\s+hat.*?microsoft\s+gegr/i,                  'microsoft'],
+            [/wer\s+hat.*?apple\s+gegr/i,                      'apple'],
+            [/pythagor/i,                                       'pythagoras'],
+            [/was\s+ist\s+co2/i,                               'co2'],
+            [/klimawandel/i,                                    'klima'],
+            [/was\s+ist.*?python/i,                             'python'],
+            [/was\s+ist.*?internet/i,                           'internet'],
+            [/\bpi\b|kreiszahl/i,                               'pi'],
+            [/eulersche\s+zahl|\be\s*=/i,                      'euler_e'],
+            [/goldener?\s+schnitt/i,                            'goldener_schnitt'],
+        ];
+        for (const [rx, key] of WISSEN_PATTERNS) {
+            if (rx.test(raw)) return { intent: 'wissen', key };
+        }
+
+        return { intent: 'unbekannt' };
+    }
+
+    // ── Antwort-Generator ─────────────────────────────────────────
+    const WITZE = [
+        'Warum können Programmierer nicht kochen? Weil sie immer nur Bugs essen!',
+        'Was sagt ein Informatiker, wenn er im Fahrstuhl steckt? Die Cloud hängt!',
+        'Warum hat der Programmierer seinen Job verloren? Er hat zu viele Fehler gemacht – und keiner davon war ein Feature.',
+        'Was ist der Unterschied zwischen einem Programmierer und einem Zauberer? Der Zauberer macht Fehler verschwinden – der Programmierer nennt sie Features.',
+        'Wie nennt man einen schlafenden Programmierer? Ein Ruhesystem.',
+        'Warum ging der Entwickler zum Arzt? Weil er einen Stack Overflow hatte.',
+        'Was ist ein Algorithmus? Ein Wort, das Informatiker benutzen, wenn sie keine Lust haben zu erklären was sie tun.',
+        'Wie viele Programmierer braucht man, um eine Glühbirne zu wechseln? Keinen – das ist ein Hardware-Problem.',
+        'Was hat ein Pirat mit einem Programmierer gemeinsam? Beide lieben das Arrrray!',
+    ];
+    const SPRUECHE = [
+        'Glaube an dich selbst – du bist großartiger als du denkst!',
+        'Jeder Tag ist eine neue Chance, etwas zu verändern.',
+        'Fehler sind Beweise dafür, dass du es versucht hast.',
+        'Das Geheimnis des Vorankommens ist, anzufangen.',
+        'Träume groß, arbeite hart, bleib bescheiden.',
+        'Der beste Zeitpunkt, etwas zu pflanzen, war vor 20 Jahren. Der zweitbeste ist jetzt.',
+    ];
+    const EINHEITEN = {
+        'km in m':               v => v+'km = **'+(v*1000)+' m**',
+        'm in km':               v => v+' m = **'+(v/1000)+' km**',
+        'meilen in km':          v => v+' Meilen = **'+(Math.round(v*1.60934*100)/100)+' km**',
+        'km in meilen':          v => v+' km = **'+(Math.round(v/1.60934*100)/100)+' Meilen**',
+        'cm in inch':            v => v+' cm = **'+(Math.round(v/2.54*100)/100)+' Inch**',
+        'inch in cm':            v => v+' Inch = **'+(Math.round(v*2.54*100)/100)+' cm**',
+        'meter in feet':         v => v+' m = **'+(Math.round(v*3.28084*100)/100)+' Feet**',
+        'feet in meter':         v => v+' Feet = **'+(Math.round(v/3.28084*100)/100)+' m**',
+        'kg in pfund':           v => v+' kg = **'+(Math.round(v*2.20462*100)/100)+' Pfund**',
+        'pfund in kg':           v => v+' Pfund = **'+(Math.round(v/2.20462*100)/100)+' kg**',
+        'kg in gramm':           v => v+' kg = **'+(v*1000)+' g**',
+        'gramm in kg':           v => v+' g = **'+(v/1000)+' kg**',
+        'celsius in fahrenheit': v => v+'°C = **'+(Math.round((v*9/5+32)*100)/100)+'°F**',
+        'fahrenheit in celsius': v => v+'°F = **'+(Math.round(((v-32)*5/9)*100)/100)+'°C**',
+        'celsius in kelvin':     v => v+'°C = **'+(Math.round((v+273.15)*100)/100)+' K**',
+        'kelvin in celsius':     v => v+' K = **'+(Math.round((v-273.15)*100)/100)+'°C**',
+        'liter in ml':           v => v+' L = **'+(v*1000)+' ml**',
+        'ml in liter':           v => v+' ml = **'+(v/1000)+' L**',
+        'ha in m2':              v => v+' ha = **'+(v*10000)+' m²**',
+        'm2 in ha':              v => v+' m² = **'+(v/10000)+' ha**',
+        'stunden in minuten':    v => v+' h = **'+(v*60)+' min**',
+        'minuten in sekunden':   v => v+' min = **'+(v*60)+' s**',
+        'tage in stunden':       v => v+' Tage = **'+(v*24)+' Stunden**',
+        'jahre in tage':         v => v+' Jahre ≈ **'+(v*365)+' Tage**',
+        'bar in pascal':         v => v+' bar = **'+(v*100000)+' Pa**',
+        'joule in kalorien':     v => v+' J = **'+(Math.round(v/4.184*100)/100)+' kcal**',
+        'kilometer in meter':    v => v+' km = **'+(v*1000)+' m**',
+        'meter in kilometer':    v => v+' m = **'+(v/1000)+' km**',
+        'kilogramm in gramm':    v => v+' kg = **'+(v*1000)+' g**',
+        'gramm in kilogramm':    v => v+' g = **'+(v/1000)+' kg**',
+        'grad celsius in grad fahrenheit': v => v+'°C = **'+(Math.round((v*9/5+32)*100)/100)+'°F**',
+    };
+    const CAPS = {
+        'deutschland':'Berlin','frankreich':'Paris','spanien':'Madrid','italien':'Rom',
+        'england':'London','großbritannien':'London','grossbritannien':'London','uk':'London',
+        'österreich':'Wien','osterreich':'Wien','schweiz':'Bern',
+        'usa':'Washington D.C.','vereinigte staaten':'Washington D.C.','vereinigte staaten von america':'Washington D.C.',
+        'japan':'Tokio','china':'Peking','russland':'Moskau','kanada':'Ottawa',
+        'australien':'Canberra','indien':'Neu-Delhi','türkei':'Ankara','turkei':'Ankara',
+        'griechenland':'Athen','portugal':'Lissabon','niederlande':'Amsterdam',
+        'belgien':'Brüssel','schweden':'Stockholm','norwegen':'Oslo',
+        'dänemark':'Kopenhagen','danemark':'Kopenhagen','finnland':'Helsinki',
+        'polen':'Warschau','ungarn':'Budapest','tschechien':'Prag',
+        'slowakei':'Bratislava','kroatien':'Zagreb','serbien':'Belgrad',
+        'rumänien':'Bukarest','rumanien':'Bukarest','bulgarien':'Sofia',
+        'ukraine':'Kiew','litauen':'Vilnius','lettland':'Riga','estland':'Tallinn',
+        'mexiko':'Mexiko-Stadt','argentinien':'Buenos Aires','chile':'Santiago',
+        'peru':'Lima','kolumbien':'Bogotá','brasilien':'Brasília','venezuela':'Caracas',
+        'südafrika':'Pretoria','sudafrika':'Pretoria','ägypten':'Kairo','agypten':'Kairo',
+        'nigeria':'Abuja','kenia':'Nairobi','marokko':'Rabat','tunesien':'Tunis',
+        'saudi-arabien':'Riad','iran':'Teheran','irak':'Bagdad','israel':'Jerusalem',
+        'syrien':'Damaskus','jordanien':'Amman','südkorea':'Seoul','nordkorea':'Pjöngjang',
+        'vietnam':'Hanoi','thailand':'Bangkok','indonesien':'Jakarta','pakistan':'Islamabad',
+        'philippinen':'Manila','malaysia':'Kuala Lumpur','neuseeland':'Wellington',
+        'irland':'Dublin','island':'Reykjavik','luxemburg':'Luxemburg',
+    };
+    const LAENDER_INFO = {
+        'deutschland':    { e:'~84 Mio.',  f:'357.114 km²',    w:'Euro (€)',       s:'Deutsch',             h:'Berlin' },
+        'frankreich':     { e:'~68 Mio.',  f:'643.801 km²',    w:'Euro (€)',       s:'Französisch',         h:'Paris' },
+        'usa':            { e:'~335 Mio.', f:'9.833.517 km²',  w:'US-Dollar ($)',  s:'Englisch',            h:'Washington D.C.' },
+        'japan':          { e:'~124 Mio.', f:'377.975 km²',    w:'Yen (¥)',        s:'Japanisch',           h:'Tokio' },
+        'china':          { e:'~1,4 Mrd.', f:'9.596.960 km²',  w:'Renminbi',       s:'Mandarin',            h:'Peking' },
+        'brasilien':      { e:'~215 Mio.', f:'8.515.767 km²',  w:'Real (R$)',      s:'Portugiesisch',       h:'Brasília' },
+        'russland':       { e:'~143 Mio.', f:'17.098.242 km²', w:'Rubel (₽)',      s:'Russisch',            h:'Moskau' },
+        'österreich':     { e:'~9 Mio.',   f:'83.871 km²',     w:'Euro (€)',       s:'Deutsch',             h:'Wien' },
+        'schweiz':        { e:'~8,7 Mio.', f:'41.285 km²',     w:'CHF',            s:'DE/FR/IT/Rätorom.',   h:'Bern' },
+        'großbritannien': { e:'~67 Mio.',  f:'243.610 km²',    w:'Pfund (£)',      s:'Englisch',            h:'London' },
+        'kanada':         { e:'~38 Mio.',  f:'9.984.670 km²',  w:'CAD',            s:'Englisch/Französisch',h:'Ottawa' },
+        'australien':     { e:'~26 Mio.',  f:'7.692.024 km²',  w:'AUD',            s:'Englisch',            h:'Canberra' },
+        'spanien':        { e:'~47 Mio.',  f:'505.990 km²',    w:'Euro (€)',       s:'Spanisch',            h:'Madrid' },
+        'italien':        { e:'~60 Mio.',  f:'301.340 km²',    w:'Euro (€)',       s:'Italienisch',         h:'Rom' },
+        'indien':         { e:'~1,4 Mrd.', f:'3.287.263 km²',  w:'Rupie (₹)',      s:'Hindi, Englisch',     h:'Neu-Delhi' },
+    };
+    const GESCHICHTE = {
+        'erster weltkrieg':          '**Erster Weltkrieg (1914–1918):** Ausgelöst durch das Attentat auf Erzherzog Franz Ferdinand. Vier Jahre Stellungskrieg, ~17 Mio. Tote. Ende: Waffenstillstand 11.11.1918.',
+        '1. weltkrieg':              '**Erster Weltkrieg (1914–1918):** Ausgelöst durch das Attentat auf Erzherzog Franz Ferdinand. Vier Jahre Stellungskrieg, ~17 Mio. Tote. Ende: Waffenstillstand 11.11.1918.',
+        'wk1':                       '**Erster Weltkrieg (1914–1918):** Ausgelöst durch das Attentat auf Erzherzog Franz Ferdinand. Vier Jahre Stellungskrieg. Ende: 11.11.1918.',
+        'wk i':                      '**Erster Weltkrieg (1914–1918):** Ausgelöst durch das Attentat auf Erzherzog Franz Ferdinand. Vier Jahre Stellungskrieg. Ende: 11.11.1918.',
+        'zweiter weltkrieg':         '**Zweiter Weltkrieg (1939–1945):** Begann mit dem deutschen Überfall auf Polen (1.9.1939). ~70–85 Mio. Tote. Kapitulation Deutschlands: 8.5.1945.',
+        '2. weltkrieg':              '**Zweiter Weltkrieg (1939–1945):** Begann mit dem deutschen Überfall auf Polen (1.9.1939). ~70–85 Mio. Tote. Kapitulation Deutschlands: 8.5.1945.',
+        'wk2':                       '**Zweiter Weltkrieg (1939–1945):** Begann mit dem deutschen Überfall auf Polen. Ende: 8.5.1945 (Europa), 2.9.1945 (Japan).',
+        'wk ii':                     '**Zweiter Weltkrieg (1939–1945):** Begann mit dem deutschen Überfall auf Polen. Ende: 8.5.1945 (Europa), 2.9.1945 (Japan).',
+        'mondlandung':               '**Mondlandung 1969:** Am 20. Juli 1969 betrat Neil Armstrong als erster Mensch den Mond – Mission Apollo 11.',
+        'mauerfall':                 '**Berliner Mauerfall (9.11.1989):** Die DDR öffnete die Grenzen. Die Mauer (seit 1961) trennte Ost- und Westberlin. Symbol für das Ende des Kalten Krieges.',
+        'berliner mauer':            '**Berliner Mauer:** Gebaut ab 13.8.1961, gefallen 9.11.1989. 155 km Länge, teilte Berlin 28 Jahre lang.',
+        'französische revolution':   '**Französische Revolution (1789–1799):** Sturm auf die Bastille am 14. Juli 1789. Motto: Freiheit, Gleichheit, Brüderlichkeit.',
+        'franzosische revolution':   '**Französische Revolution (1789–1799):** Sturm auf die Bastille am 14. Juli 1789. Motto: Freiheit, Gleichheit, Brüderlichkeit.',
+        'römisches reich':           '**Römisches Reich:** Entstand ca. 27 v.Chr. unter Augustus. Größte Ausdehnung unter Trajan (117 n.Chr.). Das Weströmische Reich fiel 476 n.Chr.',
+        'romisches reich':           '**Römisches Reich:** Entstand ca. 27 v.Chr. unter Augustus. Größte Ausdehnung unter Trajan (117 n.Chr.). Fiel 476 n.Chr.',
+        'industrielle revolution':   '**Industrielle Revolution (ca. 1760–1840):** Begann in England. Dampfmaschine (Watt, 1769) als Schlüsselereignis.',
+        'kalter krieg':              '**Kalter Krieg (1947–1991):** Geopolitische Spannung zwischen USA/NATO und UdSSR. Kein direkter Krieg, aber Rüstungswettlauf, Kuba-Krise (1962) und Raumfahrtwettstreit.',
+        'weimarer republik':         '**Weimarer Republik (1919–1933):** Erste demokratische Republik in Deutschland. Scheiterte mit Hitlers Machtergreifung am 30.1.1933.',
+    };
+    const WISSENSCHAFT = {
+        'photosynthese':         '**Photosynthese:** Pflanzen wandeln Sonnenlicht + CO₂ + H₂O in Zucker + O₂ um.\nFormel: 6CO₂ + 6H₂O + Licht → C₆H₁₂O₆ + 6O₂',
+        'relativitätstheorie':   '**Relativitätstheorie (Einstein):** E = mc² – Energie = Masse × Lichtgeschwindigkeit². Spezielle (1905): Zeit läuft für bewegte Objekte langsamer.',
+        'relativitatstheorie':   '**Relativitätstheorie (Einstein):** E = mc² – Energie = Masse × Lichtgeschwindigkeit². Spezielle (1905): Zeit läuft für bewegte Objekte langsamer.',
+        'evolution':             '**Evolutionstheorie (Darwin, 1859):** Arten entwickeln sich durch natürliche Selektion. Vorteilhafte Eigenschaften vererben sich häufiger.',
+        'gravitation':           '**Gravitation:** Jede Masse zieht jede andere an. F = G×m₁×m₂/r². Einstein: Masse krümmt Raumzeit.',
+        'atom':                  '**Atom:** Kleinste Einheit eines Elements. Kern: Protonen + Neutronen. Hülle: Elektronen. Durchmesser: ~0,1 nm.',
+        'dna':                   '**DNA:** Träger der Erbinformation. Doppelhelix aus 4 Basen (A, T, G, C). Entdeckt 1953 von Watson & Crick.',
+        'periodensystem':        '**Periodensystem:** 118 Elemente, geordnet nach Ordnungszahl. Erstellt 1869 von Mendeleev.',
+        'quantenmechanik':       '**Quantenmechanik:** Physik des Sehr-Kleinen. Welle-Teilchen-Dualismus. Heisenbergsche Unschärferelation.',
+        'osmose':                '**Osmose:** Wanderung von Wasser durch eine halbdurchlässige Membran vom niedrigeren zum höheren Konzentrationsbereich.',
+        'thermodynamik':         '**Thermodynamik:** 1. Hauptsatz: Energie bleibt erhalten. 2. Hauptsatz: Entropie nimmt immer zu.',
+    };
+    const WISSEN_DB = {
+        'licht':           '💡 Lichtgeschwindigkeit: **299.792.458 m/s** (~300.000 km/s). Licht umrundet die Erde ca. 7,5× pro Sekunde!',
+        'erde_groesse':    '🌍 Erde: Durchmesser **12.742 km**, Umfang **40.075 km**, Fläche **510,1 Mio. km²**.',
+        'entfernung':      '☀️ Sonne: **149,6 Mio. km**. 🌕 Mond: **384.400 km**.',
+        'erde_alter':      '🌍 Die Erde ist ca. **4,54 Milliarden Jahre** alt.',
+        'everest':         '⛰️ Mount Everest: **8.849 m** (Nepal/China). Höchster Berg der Welt. Erstbesteigung 1953 durch Hillary & Tenzing.',
+        'marian':          '🌊 Marianengraben: **10.994 m** tief – tiefste Stelle der Weltmeere (Pazifik).',
+        'planeten':        '🪐 8 Planeten: Merkur, Venus, **Erde**, Mars, Jupiter, Saturn, Uranus, Neptun.',
+        'erdrotation':     '🌍 Die Erde dreht sich mit ca. **1.670 km/h** am Äquator. Einmal in ~24 Stunden.',
+        'gluehbirne':      '💡 Thomas **Edison** (1879) erfand die erste praktische Glühbirne.',
+        'google':          '🔍 **Larry Page** & **Sergey Brin** gründeten Google 1998 in Stanford.',
+        'microsoft':       '💻 **Bill Gates** & **Paul Allen** gründeten Microsoft 1975.',
+        'apple':           '🍎 **Steve Jobs**, Steve Wozniak & Ronald Wayne gründeten Apple 1976.',
+        'pythagoras':      '📐 Satz des Pythagoras: **a² + b² = c²** (c = Hypotenuse im rechtwinkligen Dreieck).',
+        'co2':             '🌿 CO₂ (Kohlendioxid): 1 Kohlenstoff + 2 Sauerstoff. Wichtigstes Treibhausgas.',
+        'klima':           '🌡️ Klimawandel: Erderwärmung durch CO₂-Ausstoß. Folgen: Extremwetter, Gletscherschmelze.',
+        'python':          '🐍 Python: Programmiersprache (1991, Guido van Rossum). Beliebt für KI, Daten & Web.',
+        'internet':        '🌐 Internet: Weltweites Computernetzwerk, entstanden aus ARPANET (Ende 1960er). Heute >5 Mrd. Nutzer.',
+        'pi':              '🔢 π = **3,14159265358979323846...**',
+        'euler_e':         '🔢 e = **2,71828182845904523536...**',
+        'goldener_schnitt':'🔢 Goldener Schnitt φ (Phi) = **1,6180339887...** – ästhetisches Verhältnis in Natur und Kunst.',
+    };
+
     function isPrime(n) {
-        if (n<2) return false; if (n===2) return true; if (n%2===0) return false;
+        if(n<2) return false; if(n===2) return true; if(n%2===0) return false;
         for(let i=3;i<=Math.sqrt(n);i+=2) if(n%i===0) return false;
         return true;
     }
-    function factorial(n) {
-        if (n>20) return null;
-        let r=1; for(let i=2;i<=n;i++) r*=i; return r;
-    }
+    function factorial(n) { if(n>20) return null; let r=1; for(let i=2;i<=n;i++) r*=i; return r; }
     function gcd(a,b) { return b===0?a:gcd(b,a%b); }
     function lcm(a,b) { return (a*b)/gcd(a,b); }
-    function fibonacci(n) {
-        if(n>70) return null;
-        let a=0,b=1;
-        for(let i=0;i<n-1;i++){let c=a+b;a=b;b=c;}
-        return n===0?0:b;
-    }
+    function fibonacci(n) { if(n>70) return null; let a=0,b=1; for(let i=0;i<n-1;i++){let c=a+b;a=b;b=c;} return n===0?0:b; }
 
-    function mathHandler(expr) {
+    function evalMath(expr) {
         try {
-            const raw = expr.replace(/[^\d\s\+\-\*\/\(\)\.%]/g,'').trim();
-            if (!raw||raw.length>200) return null;
-            const r = Function('return ('+raw+')')();
-            if (typeof r!=='number'||!isFinite(r)) return null;
-            return 'Das Ergebnis ist: **'+(Math.round(r*1e10)/1e10)+'**';
+            const clean = expr.replace(/[^\d\s\+\-\*\/\(\)\.\^%]/g,'').trim();
+            if(!clean||clean.length>200) return null;
+            const withPow = clean.replace(/(\d+[\.,]?\d*)\s*\^\s*(\d+)/g, 'Math.pow($1,$2)');
+            const r = Function('return ('+withPow+')')();
+            if(typeof r!=='number'||!isFinite(r)) return null;
+            return '**'+(Math.round(r*1e10)/1e10)+'**';
         } catch(e) { return null; }
     }
 
-    function getAnswer(q) {
-        const ql = q.toLowerCase().trim();
-
-        // Mathe: reiner Ausdruck
-        if (/^[\d\s\+\-\*\/\(\)\.%]+$/.test(q.trim())) {
-            const a = mathHandler(q); if(a) return a;
-        }
-        let m;
-
-        // Rechne ...
-        m = q.match(/rechne?\s+([\s\S]+)/i);
-        if (m) { const a = mathHandler(m[1]); if(a) return a; }
-
-        // Potenz
-        m = q.match(/(\d+[\.,]?\d*)\s*\^+\s*(\d+)/);
-        if (m) { const b=parseFloat(m[1]),e=parseInt(m[2]); return '**'+b+'^'+e+' = '+Math.pow(b,e)+'**'; }
-
-        // Wurzel
-        m = q.match(/(?:wurzel|sqrt)\s*(?:aus\s+)?(\d+[\.,]?\d*)/i);
-        if (m) { const n=parseFloat(m[1].replace(',','.')); return n<0?'Wurzel aus negativer Zahl ist nicht reell!':'√'+n+' = **'+(Math.round(Math.sqrt(n)*1e8)/1e8)+'**'; }
-
-        // Kubikwurzel
-        m = q.match(/kubikwurzel\s*(?:aus\s+)?(\d+[\.,]?\d*)/i);
-        if (m) { const n=parseFloat(m[1].replace(',','.')); return '∛'+n+' = **'+(Math.round(Math.cbrt(n)*1e6)/1e6)+'**'; }
-
-        // Fakultät
-        m = q.match(/(?:fakultät\s+(?:von\s+)?)?(\d+)\s*!/i);
-        if (!m) m = q.match(/fakultät\s+(?:von\s+)?(\d+)/i);
-        if (m) { const n=parseInt(m[1]); const r=factorial(n); return r===null?n+'! ist zu groß (max. 20!)':n+'! = **'+r+'**'; }
-
-        // Primzahl
-        m = q.match(/ist\s+(\d+)\s+(?:eine?\s+)?primzahl/i);
-        if (!m) m = q.match(/primzahl.*?(\d+)/i);
-        if (m) { const n=parseInt(m[1]); return isPrime(n)?'**'+n+' ist eine Primzahl.** ✅':'**'+n+' ist keine Primzahl.** ❌ Sie ist durch '+(n===0||n===1?'keine Primzahl':'mehrere Zahlen')+' teilbar.'; }
-
-        // Primfaktoren
-        m = q.match(/primfaktor(?:en|isierung)?\s+(?:von\s+)?(\d+)/i);
-        if (m) {
-            let n=parseInt(m[1]), factors=[];
-            for(let i=2;i*i<=n;i++) while(n%i===0){factors.push(i);n/=i;}
-            if(n>1) factors.push(n);
-            return 'Primfaktorzerlegung von '+m[1]+': **'+factors.join(' × ')+'**';
-        }
-
-        // GGT & KGV
-        m = q.match(/(?:ggt|ggT|gr[öo]ßter\s+gemeinsamer\s+teiler)\s+(?:von\s+)?(\d+)\s+und\s+(\d+)/i);
-        if (m) { return 'GGT('+m[1]+', '+m[2]+') = **'+gcd(parseInt(m[1]),parseInt(m[2]))+'**'; }
-        m = q.match(/(?:kgv|kgV|kleinstes\s+gemeinsames\s+vielfaches)\s+(?:von\s+)?(\d+)\s+und\s+(\d+)/i);
-        if (m) { return 'KGV('+m[1]+', '+m[2]+') = **'+lcm(parseInt(m[1]),parseInt(m[2]))+'**'; }
-
-        // Fibonacci
-        m = q.match(/fibonacci\s+(?:von\s+|nummer\s+|zahl\s+|#)?(\d+)/i);
-        if (!m) m = q.match(/(\d+)\.\s*fibonacci/i);
-        if (m) { const n=parseInt(m[1]); const r=fibonacci(n); return r===null?'Zu groß! (max. n=70)':'Die '+n+'. Fibonacci-Zahl ist **'+r+'**.'; }
-
-        // Logarithmus
-        m = q.match(/log(?:arithmus)?\s+(?:von\s+)?(\d+[\.,]?\d*)(?:\s+zur\s+basis\s+(\d+))?/i);
-        if (m) {
-            const x=parseFloat(m[1].replace(',','.')), base=m[2]?parseFloat(m[2]):10;
-            const r = Math.log(x)/Math.log(base);
-            return 'log'+( m[2]?'_'+m[2]:'')+' ('+x+') = **'+(Math.round(r*1e6)/1e6)+'**';
-        }
-        m = q.match(/ln\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
-        if (m) { const x=parseFloat(m[1].replace(',','.')); return 'ln('+x+') = **'+(Math.round(Math.log(x)*1e8)/1e8)+'**'; }
-
-        // Sinus/Kosinus/Tangens
-        m = q.match(/(?:sin|sinus)\s+(\d+[\.,]?\d*)\s*°?/i);
-        if (m) { const deg=parseFloat(m[1].replace(',','.')); return 'sin('+deg+'°) = **'+(Math.round(Math.sin(deg*Math.PI/180)*1e6)/1e6)+'**'; }
-        m = q.match(/(?:cos|kosinus)\s+(\d+[\.,]?\d*)\s*°?/i);
-        if (m) { const deg=parseFloat(m[1].replace(',','.')); return 'cos('+deg+'°) = **'+(Math.round(Math.cos(deg*Math.PI/180)*1e6)/1e6)+'**'; }
-        m = q.match(/(?:tan|tangens)\s+(\d+[\.,]?\d*)\s*°?/i);
-        if (m) { const deg=parseFloat(m[1].replace(',','.')); return 'tan('+deg+'°) = **'+(Math.round(Math.tan(deg*Math.PI/180)*1e6)/1e6)+'**'; }
-
-        // Umfang/Fläche/Volumen
-        m = q.match(/umfang\s+(?:eines?\s+)?kreis(?:es)?\s+(?:mit\s+)?(?:radius|r)\s*=?\s*(\d+[\.,]?\d*)/i);
-        if (m) { const r=parseFloat(m[1].replace(',','.')); return 'Umfang = 2π×r = **'+(Math.round(2*Math.PI*r*100)/100)+'**'; }
-        m = q.match(/fl[äa]che\s+(?:eines?\s+)?kreis(?:es)?\s+(?:mit\s+)?(?:radius|r)\s*=?\s*(\d+[\.,]?\d*)/i);
-        if (m) { const r=parseFloat(m[1].replace(',','.')); return 'Fläche = π×r² = **'+(Math.round(Math.PI*r*r*100)/100)+'**'; }
-        m = q.match(/fl[äa]che\s+(?:eines?\s+)?(?:rechteck|quadrat).*?(\d+[\.,]?\d*)\s*(?:×|x|mal|\*|und)\s*(\d+[\.,]?\d*)/i);
-        if (m) { const a=parseFloat(m[1].replace(',','.')),b=parseFloat(m[2].replace(',','.')); return 'Fläche = '+a+' × '+b+' = **'+(a*b)+'**'; }
-
-        // Prozent
-        m = q.match(/(\d+[\.,]?\d*)\s*%\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
-        if (!m) m = q.match(/(\d+[\.,]?\d*)\s+prozent\s+(?:von\s+)?(\d+[\.,]?\d*)/i);
-        if (m) { const p=parseFloat(m[1].replace(',','.')),v=parseFloat(m[2].replace(',','.')); return p+'% von '+v+' = **'+(Math.round(v*p/100*100)/100)+'**'; }
-        m = q.match(/wie\s+viel\s+(?:sind|ist)\s+(\d+)\s*%\s*(mehr|weniger)\s+(?:als\s+)?(\d+[\.,]?\d*)/i);
-        if (m) { const p=parseInt(m[1]),pm=m[2]==='mehr'?1:-1,v=parseFloat(m[3].replace(',','.')); return v+(m[2]==='mehr'?' + ':' − ')+p+'% = **'+(Math.round(v*(1+pm*p/100)*100)/100)+'**'; }
-
-        // Umrechnung
-        const conv = convertHandler(q);
-        if (conv) return conv;
-
-        // Zeit & Datum
-        if (/wie\s+sp[aä]t|wie\s+viel\s+uhr|aktuelle\s+uhrzeit/i.test(q))
-            return '🕐 Es ist **'+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr**.';
-        if (/welch[ens]*\s+tag|was\s+ist\s+heute|heutiges\s+datum|welches\s+datum/i.test(q))
-            return '📅 Heute ist **'+new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'**.';
-        if (/welche[rn]?\s+wochentag/i.test(q))
-            return '📅 Heute ist **'+new Date().toLocaleDateString('de-DE',{weekday:'long'})+'**.';
-        if (/wie\s+viele\s+tage\s+(?:hat|im)\s+(januar|februar|m[äa]rz|april|mai|juni|juli|august|september|oktober|november|dezember)/i.test(q)) {
-            const MONATE = {januar:31,februar:28,märz:28,marz:28,april:30,mai:31,juni:30,juli:31,august:31,september:30,oktober:31,november:30,dezember:31};
-            const key = q.match(/(januar|februar|m[äa]rz|april|mai|juni|juli|august|september|oktober|november|dezember)/i)[1].toLowerCase().replace('ä','a');
-            return 'Der '+key.charAt(0).toUpperCase()+key.slice(1)+' hat **'+(MONATE[key]||'?')+' Tage** (Februar im Schaltjahr: 29).';
-        }
-        m = q.match(/wie\s+viele\s+tage\s+(?:noch\s+)?bis\s+(?:zum?\s+)?(\d{1,2})[\.\/\-](\d{1,2})(?:[\.\/\-](\d{4}))?/i);
-        if (m) {
-            const now=new Date(),d=parseInt(m[1]),mo=parseInt(m[2]),y=m[3]?parseInt(m[3]):now.getFullYear();
-            let target=new Date(y,mo-1,d);
-            if(target<now) target.setFullYear(target.getFullYear()+1);
-            return '📅 Noch **'+Math.ceil((target-now)/(86400000))+' Tage** bis zum '+d+'.'+mo+'.'+target.getFullYear()+'.';
-        }
-
-        // Hauptstadt
-        m = q.match(/(?:hauptstadt\s+von\s+|was\s+ist\s+die\s+hauptstadt\s+(?:von\s+)?)([a-z\u00e4\u00f6\u00fc\u00df\s\-]+?)[\?\.\!]?$/i);
-        if (m) {
-            const land=(m[1]||'').trim().toLowerCase();
-            const alt=land.replace(/\u00e4/g,'a').replace(/\u00f6/g,'o').replace(/\u00fc/g,'u').replace(/\u00df/g,'ss');
-            const cap=CAPS[land]||CAPS[alt];
-            return cap ? '🏙️ Die Hauptstadt von **'+(m[1]||'').trim()+'** ist **'+cap+'**.' : 'Die Hauptstadt kenne ich leider nicht. Frag z.B.: „Hauptstadt von Japan?"';
-        }
-
-        // Länder-Info
-        m = q.match(/(?:infos?\s+[üu]ber|erz[äa]hl\s+mir\s+[üu]ber|was\s+wei[sß]t\s+du\s+[üu]ber)\s+([a-z\u00e4\u00f6\u00fc\u00df\s]+?)[\?\.\!]?$/i);
-        if (m) {
-            const key=(m[1]||'').trim().toLowerCase();
-            const alt=key.replace(/\u00e4/g,'a').replace(/\u00f6/g,'o').replace(/\u00fc/g,'u').replace(/\u00df/g,'ss');
-            const info=LAENDER_INFO[key]||LAENDER_INFO[alt];
-            if (info) return '🌍 **'+(m[1]||'').trim()+'**\n\n🏙️ Hauptstadt: '+info.h+'\n👥 Einwohner: '+info.e+'\n📐 Fläche: '+info.f+'\n💰 Währung: '+info.w+'\n🗣️ Sprache: '+info.s;
-        }
-
-        // Geschichte & Wissenschaft
-        for (const [key, val] of Object.entries(GESCHICHTE)) { if (ql.includes(key)) return '📖 '+val; }
-        for (const [key, val] of Object.entries(WISSENSCHAFT)) { if (ql.includes(key)) return '🔬 '+val; }
-
-        // Zufallszahl / Würfeln
-        m = q.match(/zwischen\s+(\d+)\s+und\s+(\d+)/i);
-        if (m && /würfel|zufäll|random/i.test(q)) {
-            const lo=parseInt(m[1]),hi=parseInt(m[2]);
-            return '🎲 **'+( Math.floor(Math.random()*(hi-lo+1))+lo)+'**';
-        }
-        if (/würfel|w[ue]rfle/i.test(q)) return '🎲 Ich würfle: **'+(Math.floor(Math.random()*6)+1)+'** (W6)';
-        if (/zuf[äa]llige?\s+zahl|random\s+zahl/i.test(q)) {
-            m = q.match(/(\d+)\s*bis\s*(\d+)/);
-            return '🎲 **'+(m ? Math.floor(Math.random()*(parseInt(m[2])-parseInt(m[1])+1))+parseInt(m[1]) : Math.floor(Math.random()*100)+1)+'**';
-        }
-
-        // Sprüche & Witze
-        if (/spruch|zitat|motivat/i.test(q)) return '💬 '+SPRUECHE[Math.floor(Math.random()*SPRUECHE.length)];
-        if (/witz|joke|lach|lustig|komisch/i.test(q)) return '😄 '+WITZE[Math.floor(Math.random()*WITZE.length)];
-
-        // Allgemeinwissen
-        const FAKTEN = [
-            [/wie\s+schnell\s+ist\s+licht/i,           '💡 Lichtgeschwindigkeit: **299.792.458 m/s** (~300.000 km/s). Licht umrundet die Erde ca. 7,5× pro Sekunde!'],
-            [/wie\s+gro[sß]\s+ist\s+die\s+erde/i,      '🌍 Erde: Durchmesser **12.742 km**, Umfang **40.075 km**, Fläche **510,1 Mio. km²**.'],
-            [/wie\s+weit.*?(sonne|mond)/i,              '☀️ Sonne: **149,6 Mio. km**. 🌕 Mond: **384.400 km**.'],
-            [/wie\s+alt.*?erde/i,                       '🌍 Die Erde ist ca. **4,54 Milliarden Jahre** alt.'],
-            [/mount\s+everest/i,                        '⛰️ Mount Everest: **8.849 m** (Nepal/China). Höchster Berg der Welt. Erstbesteigung 1953.'],
-            [/marianengraben/i,                         '🌊 Marianengraben: **10.994 m** tief – tiefste Stelle der Weltmeere (Pazifik).'],
-            [/wie\s+viele\s+planeten/i,                 '🪐 8 Planeten: Merkur, Venus, **Erde**, Mars, Jupiter, Saturn, Uranus, Neptun.'],
-            [/wie\s+schnell\s+dreht.*?erde/i,           '🌍 Die Erde dreht sich mit ca. **1.670 km/h** am Äquator um die eigene Achse. Einmal in 24 Stunden.'],
-            [/wie\s+hei[sß]\s+die\s+fl[äa]che.*?wasser/i, '🌊 Die Weltmeere bedecken ca. **71%** der Erdoberfläche – ~361 Mio. km².'],
-            [/wer\s+hat.*?glühbirne\s+erfunden/i,       '💡 Thomas **Edison** (1879). Heinrich Göbel 1854 frühe Variante.'],
-            [/wer\s+hat.*?google\s+gegr[üu]ndet/i,      '🔍 **Larry Page** & **Sergey Brin** (1998, Stanford).'],
-            [/wer\s+hat.*?microsoft\s+gegr[üu]ndet/i,   '💻 **Bill Gates** & **Paul Allen** (1975).'],
-            [/wer\s+hat.*?apple\s+gegr[üu]ndet/i,       '🍎 **Steve Jobs**, Steve Wozniak & Ronald Wayne (1976).'],
-            [/pythagor/i,                                '📐 Satz des Pythagoras: **a² + b² = c²** (c = Hypotenuse im rechtwinkligen Dreieck).'],
-            [/was\s+ist\s+co2/i,                         '🌿 CO₂ (Kohlendioxid): 1 Kohlenstoff + 2 Sauerstoff. Treibhausgas, entsteht bei Verbrennung & Atmung.'],
-            [/was\s+ist.*?klimawandel/i,                 '🌡️ Klimawandel: Erderwärmung durch menschl. CO₂-Ausstoß. Folgen: Extremwetter, Gletscherschmelze, Meeresspiegel-Anstieg.'],
-            [/was\s+ist.*?python/i,                      '🐍 Python: Programmiersprache (1991, Guido van Rossum). Simpel, vielseitig – KI, Daten, Web.'],
-            [/was\s+ist.*?internet/i,                    '🌐 Internet: Weltweites Computernetzwerk. Entstanden aus ARPANET (Ende 1960er). Heute >5 Mrd. Nutzer.'],
-        ];
-        for (const [rx, ans] of FAKTEN) { if(rx.test(q)) return ans; }
-
-        // Selfref
-        if (/wie\s+hei[sß]t\s+du|wer\s+bist\s+du/i.test(q)) return 'Ich bin **VilloAI** – der KI-Assistent von VilloChat! 🤖';
-        if (/wer\s+hat\s+dich\s+(gemacht|entwickelt|gebaut|erstellt|programmiert)/i.test(q)) return 'Ich wurde vom **VilloChat-Team** entwickelt und in Version 6.0 eingeführt. 👨‍💻';
-        if (/was\s+ist\s+villoch?at/i.test(q)) return '💬 **VilloChat** ist eine Echtzeit-Chat-App mit Gruppen, Stories, KI und vielem mehr!';
-        if (/was\s+kannst\s+du|hilf?\s+mir|was\s+weißt\s+du|fähigkeiten|funktionen/i.test(q))
-            return '🤖 **VilloAI kann:**\n\n🧮 **Mathe:** Rechnen, Potenzen, Wurzeln, Primzahlen, Fibonacci, log, sin/cos/tan, Flächen\n🔄 **Umrechnung:** km↔m, °C↔°F, kg↔Pfund, Liter↔ml, Stunden↔Minuten, 25+ Einheiten\n🌍 **Geografie:** Hauptstädte (80+), Länder-Infos\n📅 **Zeit:** Uhrzeit, Datum, Wochentag, Countdown\n📖 **Geschichte:** WK I+II, Mauerfall, Mondlandung, Römer…\n🔬 **Wissenschaft:** DNA, Photosynthese, Relativitätstheorie…\n😄 **Unterhaltung:** Witze, Sprüche, Zufallszahlen, Würfeln\n\nAlles auf **Deutsch**!';
-        if (/hallo|hi\b|hey\b|guten\s+(morgen|tag|abend|nacht)/i.test(q)) return 'Hallo! 👋 Wie kann ich dir helfen? Tippe **„Was kannst du?"** für eine Übersicht!';
-        if (/danke|vielen?\s+dank|thx|merci/i.test(q)) return 'Gern geschehen! 😊';
-        if (/tsch[üu]ss|auf\s+wiedersehen|bye|ciao|tschaui/i.test(q)) return 'Tschüss! Komm gerne wieder! 👋';
-        if (/\bpi\b|kreiszahl/i.test(q)) return '🔢 π = **3,14159265358979323846...**';
-        if (/eulersche\s+zahl|\be\s*=/i.test(q)) return '🔢 e = **2,71828182845904523536...**';
-        if (/goldener?\s+schnitt/i.test(q)) return '🔢 Goldener Schnitt φ (Phi) = **1,6180339887...** – ästhetisches Verhältnis in Natur und Kunst.';
-        if (/wie\s+geht\s+(es\s+)?dir/i.test(q)) return 'Als KI habe ich keine Gefühle – aber ich bin bereit, dir zu helfen! 😊';
-        if (/wie\s+alt\s+bist\s+du/i.test(q)) return 'Ich bin mit **VilloChat 6.0** gestartet – noch ganz frisch! 🤖';
-
-        return '🤖 Das weiß ich leider nicht. Tippe **„Was kannst du?"** für eine Übersicht meiner Fähigkeiten!';
+    function convertUnits(val, from, to) {
+        const key = from + ' in ' + to;
+        if(EINHEITEN[key]) return EINHEITEN[key](val);
+        // Normalisiere Synonyme
+        const synonyms = {
+            'kilometer':'km','kilogramm':'kg','liter':'l','gramm':'g','sekunden':'s','minuten':'min',
+            'stunden':'stunden','grad celsius':'celsius','grad fahrenheit':'fahrenheit',
+            'zentimeter':'cm','millimeter':'mm','zentiliter':'ml'
+        };
+        const nFrom = synonyms[from]||from;
+        const nTo   = synonyms[to]||to;
+        const nKey  = nFrom + ' in ' + nTo;
+        if(EINHEITEN[nKey]) return EINHEITEN[nKey](val);
+        return null;
     }
 
+    function getAnswer(raw) {
+        const intent = detectIntent(raw);
+
+        switch(intent.intent) {
+            case 'gruss':
+                return 'Hallo! 👋 Wie kann ich dir helfen?\nTippe **„Was kannst du?"** für eine Übersicht!';
+            case 'danke':
+                return 'Gern geschehen! 😊';
+            case 'tschuss':
+                return 'Tschüss! Komm gerne wieder! 👋';
+            case 'name':
+                return 'Ich bin **VilloAI**, betrieben von **'+MODEL_NAME+'**. 🤖';
+            case 'entwickler':
+                return 'Ich wurde vom **VilloChat-Team** entwickelt und in Version 6.0 eingeführt. 👨‍💻';
+            case 'villochat':
+                return '💬 **VilloChat** ist eine Echtzeit-Chat-App mit Gruppen, Stories, KI und vielem mehr!';
+            case 'alter_ai':
+                return 'Ich bin mit **VilloChat 6.0** gestartet – noch ganz frisch! 🤖';
+            case 'befinden':
+                return 'Als KI habe ich keine Gefühle, aber ich bin bereit, dir zu helfen! 😊';
+            case 'modell':
+                return '🤖 Ich laufe auf **'+MODEL_NAME+'** – entwickelt von VilloChat. ⚡';
+            case 'hilfe':
+                return '🤖 **VilloAI ('+MODEL_NAME+') kann:**\n\n🧮 **Mathe:** Rechnen, Potenzen, Wurzeln, Primzahlen, Fibonacci, log, sin/cos/tan, Flächen\n🔄 **Umrechnung:** km↔m, °C↔°F, kg↔Pfund, Liter↔ml, 30+ Einheiten\n🌍 **Geografie:** Hauptstädte (80+), Länder-Infos\n📅 **Zeit:** Uhrzeit, Datum, Wochentag, Countdown\n📖 **Geschichte:** WK I+II, Mauerfall, Mondlandung...\n🔬 **Wissenschaft:** DNA, Photosynthese, Relativitätstheorie...\n😄 **Unterhaltung:** Witze, Sprüche, Würfeln\n\nAlles auf **Deutsch**!';
+
+            case 'mathe_expr': {
+                const r = evalMath(intent.expr);
+                return r ? 'Das Ergebnis ist: '+r : '🤖 Das konnte ich leider nicht berechnen. Schreibe z.B.: **„rechne 5 * 12"**';
+            }
+            case 'potenz':
+                return intent.base+' hoch '+intent.exp+' = **'+Math.pow(intent.base,intent.exp)+'**';
+            case 'wurzel': {
+                if(intent.n<0) return 'Wurzel aus einer negativen Zahl ist nicht reell!';
+                return '√'+intent.n+' = **'+(Math.round(Math.sqrt(intent.n)*1e8)/1e8)+'**';
+            }
+            case 'kubikwurzel':
+                return '∛'+intent.n+' = **'+(Math.round(Math.cbrt(intent.n)*1e6)/1e6)+'**';
+            case 'fakultaet': {
+                const r = factorial(intent.n);
+                return r===null ? intent.n+'! ist zu groß (max. 20!)' : intent.n+'! = **'+r+'**';
+            }
+            case 'primzahl':
+                return isPrime(intent.n)
+                    ? '**'+intent.n+' ist eine Primzahl.** ✅'
+                    : '**'+intent.n+' ist keine Primzahl.** ❌';
+            case 'primfaktoren': {
+                let n=intent.n, factors=[];
+                for(let i=2;i*i<=n;i++) while(n%i===0){factors.push(i);n/=i;}
+                if(n>1) factors.push(n);
+                return 'Primfaktorzerlegung von '+intent.n+': **'+factors.join(' × ')+'**';
+            }
+            case 'ggt':
+                return 'GGT('+intent.a+', '+intent.b+') = **'+gcd(intent.a,intent.b)+'**';
+            case 'kgv':
+                return 'KGV('+intent.a+', '+intent.b+') = **'+lcm(intent.a,intent.b)+'**';
+            case 'fibonacci': {
+                const r = fibonacci(intent.n);
+                return r===null ? 'Zu groß! (max. n=70)' : 'Die '+intent.n+'. Fibonacci-Zahl ist **'+r+'**.';
+            }
+            case 'log': {
+                const r = Math.log(intent.x)/Math.log(intent.base);
+                return 'log'+(intent.base!==10?'_'+intent.base:'')+' ('+intent.x+') = **'+(Math.round(r*1e6)/1e6)+'**';
+            }
+            case 'ln':
+                return 'ln('+intent.x+') = **'+(Math.round(Math.log(intent.x)*1e8)/1e8)+'**';
+            case 'trig': {
+                const rad = intent.deg * Math.PI / 180;
+                const r = intent.fn==='sin'?Math.sin(rad):intent.fn==='cos'?Math.cos(rad):Math.tan(rad);
+                return intent.fn+'('+intent.deg+'°) = **'+(Math.round(r*1e6)/1e6)+'**';
+            }
+            case 'kreis_umfang':
+                return 'Umfang = 2π×r = **'+(Math.round(2*Math.PI*intent.r*100)/100)+'**';
+            case 'kreis_flaeche':
+                return 'Fläche = π×r² = **'+(Math.round(Math.PI*intent.r*intent.r*100)/100)+'**';
+            case 'rechteck':
+                return 'Fläche = '+intent.a+' × '+intent.b+' = **'+(intent.a*intent.b)+'**';
+            case 'prozent':
+                return intent.p+'% von '+intent.v+' = **'+(Math.round(intent.v*intent.p/100*100)/100)+'**';
+            case 'umrechnung': {
+                const r = convertUnits(intent.val, intent.from, intent.to);
+                return r || '🤖 Diese Einheit kenne ich leider nicht. Versuche z.B. **„100 km in Meilen"**.';
+            }
+            case 'uhrzeit':
+                return '🕐 Es ist **'+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'})+' Uhr**.';
+            case 'datum':
+                return '📅 Heute ist **'+new Date().toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'**.';
+            case 'wochentag':
+                return '📅 Heute ist **'+new Date().toLocaleDateString('de-DE',{weekday:'long'})+'**.';
+            case 'monatstage': {
+                const M = {januar:31,februar:28,marz:28,april:30,mai:31,juni:30,juli:31,august:31,september:30,oktober:31,november:30,dezember:31};
+                const k = intent.monat.replace('ä','a').replace('ä','a');
+                return 'Der '+intent.monat.charAt(0).toUpperCase()+intent.monat.slice(1)+' hat **'+(M[k]||'?')+' Tage** (Februar im Schaltjahr: 29).';
+            }
+            case 'countdown': {
+                const now=new Date(), y=intent.y||now.getFullYear();
+                let target=new Date(y,intent.mo-1,intent.d);
+                if(target<now) target.setFullYear(target.getFullYear()+1);
+                return '📅 Noch **'+Math.ceil((target-now)/86400000)+' Tage** bis zum '+intent.d+'.'+intent.mo+'.'+target.getFullYear()+'.';
+            }
+            case 'hauptstadt': {
+                const k = intent.land.toLowerCase();
+                const alt = k.replace(/ä/g,'a').replace(/ö/g,'o').replace(/ü/g,'u').replace(/ß/g,'ss');
+                const cap = CAPS[k]||CAPS[alt];
+                return cap
+                    ? '🏙️ Die Hauptstadt von **'+intent.land+'** ist **'+cap+'**.'
+                    : 'Diese Hauptstadt kenne ich leider nicht. Frag z.B.: **„Hauptstadt von Japan?"**';
+            }
+            case 'laenderinfo': {
+                const k = intent.land.toLowerCase();
+                const alt = k.replace(/ä/g,'a').replace(/ö/g,'o').replace(/ü/g,'u').replace(/ß/g,'ss');
+                const info = LAENDER_INFO[k]||LAENDER_INFO[alt];
+                return info
+                    ? '🌍 **'+intent.land+'**\n\n🏙️ Hauptstadt: '+info.h+'\n👥 Einwohner: '+info.e+'\n📐 Fläche: '+info.f+'\n💰 Währung: '+info.w+'\n🗣️ Sprache: '+info.s
+                    : 'Zu diesem Land habe ich leider keine Details.';
+            }
+            case 'geschichte': {
+                const val = GESCHICHTE[intent.key];
+                return val ? '📖 '+val : '📖 Dazu habe ich leider keine Infos.';
+            }
+            case 'wissenschaft': {
+                const val = WISSENSCHAFT[intent.key];
+                return val ? '🔬 '+val : '🔬 Dazu habe ich leider keine Infos.';
+            }
+            case 'wissen': {
+                const val = WISSEN_DB[intent.key];
+                return val || '🤖 Das weiß ich leider nicht.';
+            }
+            case 'wuerfeln':
+                return '🎲 Ich würfle: **'+(Math.floor(Math.random()*(intent.hi-intent.lo+1))+intent.lo)+'**'+(intent.hi===6?' (W6)':' ('+intent.lo+'–'+intent.hi+')');
+            case 'zufall':
+                return '🎲 Zufallszahl: **'+(Math.floor(Math.random()*(intent.hi-intent.lo+1))+intent.lo)+'**';
+            case 'witz':
+                return '😄 '+WITZE[Math.floor(Math.random()*WITZE.length)];
+            case 'spruch':
+                return '💬 '+SPRUECHE[Math.floor(Math.random()*SPRUECHE.length)];
+            default:
+                return '🤖 Das weiß ich leider nicht. Tippe **„Was kannst du?"** für eine Übersicht!';
+        }
+    }
+
+    // ── Öffnen / Schließen / Senden ──────────────────────────────
     window.openVilloAI = function() {
         const ov = document.getElementById('villoai-overlay');
-        if (ov) ov.style.display = 'flex';
+        if(ov) ov.style.display = 'flex';
         updateLimitInfo();
         const chat = document.getElementById('villoai-chat');
-        if (chat && chat.children.length === 0) {
-            addMessage('Hallo! Ich bin **VilloAI** – dein KI-Assistent. 🤖\n\n🧮 Rechne, Hauptstädte abfragen, Einheiten umrechnen, Geschichte lernen und vieles mehr – alles auf **Deutsch**!\n\nTippe **„Was kannst du?"** für eine vollständige Übersicht.', 'ai');
+        if(chat && chat.children.length === 0) {
+            addMessage('Hallo! Ich bin **VilloAI**, betrieben von **'+MODEL_NAME+'**. 🤖\n\n🧮 Rechne, frag nach Hauptstädten, lass Einheiten umrechnen und vieles mehr!\n\nTippe **„Was kannst du?"** für eine vollständige Übersicht.', 'ai');
         }
         setTimeout(() => { const inp = document.getElementById('villoai-input'); if(inp) inp.focus(); }, 100);
     };
 
     window.closeVilloAI = function() {
         const ov = document.getElementById('villoai-overlay');
-        if (ov) ov.style.display = 'none';
+        if(ov) ov.style.display = 'none';
     };
 
     window.sendVilloAI = function() {
         const inp = document.getElementById('villoai-input');
-        if (!inp) return;
+        if(!inp) return;
         const q = inp.value.trim();
-        if (!q) return;
+        if(!q) return;
         const rem = getRemainingTokens();
-        if (rem <= 0) {
-            addMessage('⏳ Token-Limit (**'+MAX_TOKENS.toLocaleString('de-DE')+' Tokens/h**) erreicht.\nNeue Tokens in weniger als einer Stunde!', 'ai');
+        if(rem <= 0) {
+            addMessage('⏳ Token-Limit (**'+MAX_TOKENS.toLocaleString('de-DE')+' Tokens/h**) erreicht. Neue Tokens in weniger als einer Stunde!', 'ai');
             inp.value = '';
             return;
         }
-        if (q.length > rem) {
+        if(q.length > rem) {
             addMessage('⚠️ Deine Anfrage ('+q.length+' Tokens) übersteigt dein Restlimit ('+rem+' Tokens).', 'ai');
             inp.value = '';
             return;
@@ -11967,12 +12147,13 @@ window.fmtDate = fmtDate;
         const answer = getAnswer(q);
         consumeTokens(q.length + answer.replace(/\*\*/g,'').length);
         updateLimitInfo();
-        setTimeout(() => { removeTyping(); addMessage(answer, 'ai'); }, 200 + Math.min(q.length * 2, 500));
+        const delay = 300 + Math.min(q.length * 3, 700);
+        setTimeout(() => { removeTyping(); addMessage(answer, 'ai'); }, delay);
     };
 
     document.addEventListener('click', function(e) {
         const ov = document.getElementById('villoai-overlay');
-        if (ov && e.target === ov) window.closeVilloAI();
+        if(ov && e.target === ov) window.closeVilloAI();
     });
 })();
 
@@ -11983,21 +12164,52 @@ window.fmtDate = fmtDate;
     <!-- VilloAI Modal -->
     <div id="villoai-overlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.65); z-index:99998; justify-content:center; align-items:flex-end;">
         <div style="background:var(--white,#fff); border-radius:20px 20px 0 0; width:100%; max-width:620px; padding:16px 20px 20px; max-height:82vh; display:flex; flex-direction:column; box-shadow:0 -6px 40px rgba(0,0,0,0.25);">
+
+            <!-- Header -->
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span style="font-size:28px; line-height:1;">🤖</span>
                     <div>
-                        <div style="font-weight:700; font-size:16px; color:var(--text-color,#000);">VilloAI</div>
-                        <div style="font-size:11px; color:#888;" id="villoai-limit-info">Lade…</div>
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <span style="font-weight:700; font-size:16px; color:var(--text-color,#000);">VilloAI</span>
+                            <span style="font-size:10px; font-weight:700; background:linear-gradient(135deg,#ff6b35,#f7c59f); color:#fff; padding:2px 7px; border-radius:20px; letter-spacing:0.5px; text-transform:uppercase;">BETA</span>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:5px; margin-top:2px;">
+                            <span style="font-size:11px; color:#888;" id="villoai-limit-info">Lade…</span>
+                        </div>
                     </div>
                 </div>
-                <button onclick="closeVilloAI()" style="background:transparent; border:none; font-size:22px; cursor:pointer; color:#bbb; line-height:1;">✕</button>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <!-- Modellauswahl -->
+                    <div style="position:relative;">
+                        <select id="villoai-model-select" style="font-size:11px; border:1px solid var(--border-color,#ddd); border-radius:8px; padding:4px 8px; background:var(--bg,#f5f5f5); color:var(--text-color,#000); cursor:pointer; appearance:none; padding-right:20px;">
+                            <option value="gunter1.1">Günter 1.1</option>
+                        </select>
+                        <span style="position:absolute; right:6px; top:50%; transform:translateY(-50%); font-size:9px; pointer-events:none; opacity:0.5;">▼</span>
+                    </div>
+                    <button onclick="closeVilloAI()" style="background:transparent; border:none; font-size:22px; cursor:pointer; color:#bbb; line-height:1;">✕</button>
+                </div>
             </div>
+
+            <!-- Modell-Info-Zeile -->
+            <div style="font-size:11px; color:#aaa; margin-bottom:8px; display:flex; align-items:center; gap:4px;">
+                <span>⚡</span>
+                <span id="villoai-model-label">Günter 1.1</span>
+                <span style="margin:0 4px; opacity:0.4;">•</span>
+                <span style="background:linear-gradient(135deg,#ff6b35,#f7c59f); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-weight:600;">BETA</span>
+                <span style="margin:0 4px; opacity:0.4;">•</span>
+                <span>Nur Deutsch</span>
+            </div>
+
             <!-- Token-Balken -->
-            <div style="height:4px; background:#e0e0e0; border-radius:2px; margin-bottom:12px; overflow:hidden;">
+            <div style="height:3px; background:#e0e0e0; border-radius:2px; margin-bottom:12px; overflow:hidden;">
                 <div id="villoai-token-bar" style="height:100%; width:100%; background:#4caf50; border-radius:2px; transition:width 0.4s, background 0.4s;"></div>
             </div>
+
+            <!-- Chat -->
             <div id="villoai-chat" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; min-height:120px; max-height:48vh; margin-bottom:12px; padding-right:2px;"></div>
+
+            <!-- Eingabe -->
             <div style="display:flex; gap:8px; align-items:flex-end;">
                 <input id="villoai-input" type="text" placeholder="Frage stellen oder rechnen lassen…" maxlength="500"
                     style="flex:1; padding:11px 14px; border:1.5px solid var(--border-color,#ddd); border-radius:12px; font-size:14px; background:var(--bg,#f5f5f5); color:var(--text-color,#000); outline:none;"
