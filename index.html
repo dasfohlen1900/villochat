@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
-    <title>VilloChat - Version 6.0</title>
+    <title>VilloChat - Version 7.0</title>
     
     <!-- Standard Favicon (multiple formats for compatibility) -->
     <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABMLAAATCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
@@ -74,6 +74,7 @@
             --msg-received: #1f2c33;
             --border-color: #2d3a41;
             --input-bg: #2a3942;
+            --my-bubble-color: #005c4b;
         }
 
         /* Dark Mode — extended rules */
@@ -270,13 +271,219 @@
         @media (min-width: 768px) {
             #chat-area { display: flex !important; position: relative; }
             #sidebar { position: relative; width: var(--sidebar-width); min-width: 250px; max-width: 600px; transform: none !important; border-right: 1px solid var(--border-color); }
-            #main-chat { position: relative; width: calc(100% - var(--sidebar-width)); left: 0; transform: none !important; }
+            #main-chat { position: relative; width: calc(100% - var(--sidebar-width)); left: 0; transform: none !important; transition: width 0.3s ease; }
+            #main-chat.thread-open { width: calc(100% - var(--sidebar-width) - 360px); }
             .back-btn { display: none; }
             
             /* Focus mode */
             body.focus-mode #sidebar { display: none; }
             body.focus-mode #main-chat { width: 100%; }
+            body.focus-mode #main-chat.thread-open { width: calc(100% - 360px); }
         }
+
+        /* Thread Panel (Discord-style side channel) */
+        #thread-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 360px;
+            height: 100vh;
+            background: var(--white);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            box-shadow: -4px 0 20px rgba(0,0,0,0.12);
+        }
+        #thread-panel.open {
+            transform: translateX(0);
+        }
+        #thread-panel-header {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            background: var(--white);
+        }
+        #thread-panel-title {
+            font-size: 15px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+        #thread-panel-orig {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+            background: var(--bg-alt, var(--bg));
+            font-size: 13px;
+        }
+        #thread-panel-orig .tp-orig-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.45;
+            margin-bottom: 5px;
+        }
+        #thread-panel-orig .tp-orig-sender {
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+        #thread-panel-orig .tp-orig-text {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 7px 10px;
+            border-left: 3px solid var(--accent);
+            font-size: 13px;
+            word-break: break-word;
+            max-height: 80px;
+            overflow: hidden;
+            color: var(--text-color);
+        }
+        body.dark-mode #thread-panel { background: var(--white); }
+        body.dark-mode #thread-panel-header { background: var(--white); }
+        body.dark-mode #thread-panel-orig { background: var(--bg); }
+        body.dark-mode #thread-panel-input-area { background: var(--white); }
+        #thread-panel-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .tp-msg {
+            display: flex;
+            flex-direction: column;
+            max-width: 88%;
+            word-break: break-word;
+        }
+        .tp-msg.tp-sent { align-self: flex-end; }
+        .tp-msg.tp-recv { align-self: flex-start; }
+        .tp-bubble {
+            padding: 7px 11px;
+            border-radius: 14px;
+            font-size: 13px;
+            line-height: 1.45;
+            color: var(--text-color);
+        }
+        .tp-sent .tp-bubble {
+            background: var(--my-bubble-color, #dcf8c6);
+            color: #111;
+            border-bottom-right-radius: 4px;
+        }
+        .tp-recv .tp-bubble {
+            background: #e9e9e9;
+            color: #111;
+            border-bottom-left-radius: 4px;
+        }
+        body.dark-mode .tp-sent .tp-bubble {
+            background: #005c4b !important;
+            color: #e9edef !important;
+        }
+        body.dark-mode .tp-recv .tp-bubble {
+            background: #2a3942 !important;
+            color: #e9edef !important;
+        }
+        .tp-meta {
+            font-size: 10px;
+            opacity: 0.45;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .tp-sent .tp-meta { justify-content: flex-end; }
+        .tp-sender-name {
+            font-size: 10px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+        #thread-panel-input-area {
+            padding: 10px 12px;
+            border-top: 1px solid var(--border-color);
+            flex-shrink: 0;
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            background: var(--white);
+        }
+        #thread-panel-input {
+            flex: 1;
+            resize: none;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            padding: 8px 14px;
+            font-size: 13px;
+            background: var(--bg);
+            color: var(--text-color);
+            outline: none;
+            max-height: 100px;
+            overflow-y: auto;
+            font-family: inherit;
+            line-height: 1.4;
+        }
+        #thread-panel-send-btn {
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            cursor: pointer;
+        }
+        #thread-panel-reply-count {
+            padding: 5px 14px;
+            font-size: 11px;
+            opacity: 0.45;
+            flex-shrink: 0;
+            border-top: 1px solid var(--border-color);
+        }
+        /* Thread reply badge under message in group chat */
+        .msg-thread-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #075e54;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 12px;
+            background: rgba(7, 94, 84, 0.12);
+            transition: background 0.15s;
+            width: fit-content;
+        }
+        .msg-thread-badge:hover {
+            background: rgba(7, 94, 84, 0.22);
+        }
+        body.dark-mode .msg-thread-badge {
+            color: #25d366;
+            background: rgba(37, 211, 102, 0.12);
+        }
+        body.dark-mode .msg-thread-badge:hover {
+            background: rgba(37, 211, 102, 0.22);
+        }
+        /* Thread button in message menu */
+        .msg-thread-btn {
+            font-size: 12px;
+            opacity: 0;
+            margin-left: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .msg:hover .msg-thread-btn { opacity: 0.55; }
+        .msg-thread-btn:hover { opacity: 1 !important; }
         
         /* Resize handle */
         #resize-handle {
@@ -308,6 +515,74 @@
             z-index: 30; 
         }
         .header h2 { font-family: var(--text-heading); font-size: 20px; margin: 0; flex-grow: 1; }
+
+        /* App Switcher */
+        #app-switcher-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            flex-grow: 1;
+        }
+        #app-switcher-arrow {
+            font-size: 11px;
+            opacity: 0.5;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: opacity 0.15s, background 0.15s;
+            line-height: 1;
+            margin-left: 2px;
+            user-select: none;
+        }
+        #app-switcher-arrow:hover { opacity: 1; background: var(--border-color); }
+        #app-switcher-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+            min-width: 200px;
+            z-index: 999;
+            overflow: hidden;
+            padding: 6px 0;
+        }
+        #app-switcher-dropdown.open { display: block; }
+        .app-switcher-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.12s;
+            color: var(--text-color);
+        }
+        .app-switcher-item:hover { background: var(--border-color); }
+        .app-switcher-item .app-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .app-switcher-item .app-name { font-weight: 600; font-size: 13px; }
+        .app-switcher-item .app-desc { font-size: 11px; opacity: 0.5; }
+        .app-switcher-item.active-app .app-name::after {
+            content: ' ✓';
+            color: var(--primary);
+        }
+        .app-switcher-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 4px 0;
+        }
         
         #contacts-list { flex-grow: 1; overflow-y: auto; background: var(--white); }
         .tag-filter-chip {
@@ -1067,6 +1342,8 @@
         .msg-menu:hover {
             opacity: 1 !important;
         }
+
+
         
         /* Message Context Menu Popup */
         .msg-context-menu {
@@ -1937,12 +2214,14 @@
 
                         <label class="settings-label" data-i18n="lbl_font_design">Schrift-Design:</label>
                         <select id="font-design-select" onchange="setFontDesign(this.value)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:16px;">
-                            <option value="default">Standard (Inter / VilloChat Sans / VilloChat Serif)</option>
-                            <option value="villochat_alt">VilloChat (alt) — VilloChat Sans überall</option>
+                            <option value="default">Standard — VilloChat Serif &amp; Barlow ✦</option>
+                            <option value="barlow_raleway">Barlow &amp; Raleway</option>
+                            <option value="villochat_classic">VilloChat Classic — Inter / VilloChat Sans / Serif</option>
+                            <option value="villochat_alt">VilloChat Alt — VilloChat Sans überall</option>
                             <option value="modern">Modern — Poppins überall</option>
                             <option value="gamer">Gamer — Lilita One überall</option>
                             <option value="serif">Serif — Playfair Display &amp; Merriweather</option>
-                            <option value="tech">Tech — Droid Sans Mono &amp; Datatype</option>
+                            <option value="tech">Tech — Droid Sans Mono</option>
                             <option value="noto">Notö — Noto Serif &amp; Noto Sans</option>
                             <option value="android">Android — Roboto überall</option>
                             <option value="social">Social — TikTok Sans überall</option>
@@ -1985,7 +2264,7 @@
                         <div style="text-align:center; margin-bottom:20px;">
                             <div id="settings-avatar-preview" style="width:80px; height:80px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-size:36px; font-weight:bold; color:white;"></div>
                             <div style="font-size:18px; font-weight:700;" id="set-username"></div>
-                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 6.0 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
+                            <div style="font-size:12px; color:#999; margin-top:4px;">Version 7.0 · <a href="#" onclick="event.preventDefault(); closeOverlay('settings-overlay'); openChangelog();" style="color:var(--primary); text-decoration:none;">Changelog</a></div>
                         </div>
 
                         <!-- Avatar type tabs -->
@@ -2129,7 +2408,7 @@
                         <button onclick="closeOverlay('settings-overlay'); openHelp();" style="width:100%; margin-bottom:10px; background:var(--primary);" data-i18n="btn_open_help">📖 Hilfe-Center öffnen</button>
                         <button onclick="closeOverlay('settings-overlay'); openChangelog();" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color);" data-i18n="btn_changelog">📋 Changelog</button>
                         <div style="margin-top:20px; padding:14px; background:var(--bg); border-radius:10px; border:1px solid var(--border-color); font-size:13px; line-height:1.7; opacity:0.8;">
-                            <strong>VilloChat 6.0</strong><br>
+                            <strong>VilloChat 7.0</strong><br>
                             Entwickelt als Single-File Web-App.<br>
                             Firebase Realtime Database · Web Audio API · keine externen Tracker.
                         </div>
@@ -2368,6 +2647,22 @@
                 <span style="cursor:pointer" onclick="closeOverlay('changelog-overlay')">✕</span>
             </div>
             <div class="modal-body" style="max-height:60vh; overflow-y:auto;">
+                <h3 style="color:var(--primary); margin-top:0;">Version 7.0 🌐</h3>
+                <ul>
+                    <li>🧵 <strong>Lükvián: Tréd</strong> — "Thread" heißt in Lükvián jetzt korrekt "Tréd". Thread-Panel, Badges und Buttons vollständig auf LX übersetzt.</li>
+                    <li>🌐 <strong>LX vollständig übersetzt</strong> — Alle verbleibenden deutschen Platzhalter im Lükvián-String-Block bereinigt.</li>
+                    <li>🔤 <strong>Neues Standard-Design: VilloChat Serif + Barlow</strong> — Frischere Typografie: Barlow für UI/Chat, VilloChat Serif für Überschriften. Neuer Style "Barlow &amp; Raleway" verfügbar.</li>
+                    <li>🔀 <strong>App-Wechsler</strong> — Kleiner ▾-Pfeil neben dem Namen öffnet eine Liste mit VilloChat-Apps. Aktuell: VilloChat + "To be continued".</li>
+                </ul>
+                <h3 style="color:var(--primary); margin-top:0;">Version 6.2 🎨</h3>
+                <ul>
+                    <li>🎨 <strong>Thread-Lesbarkeit</strong> — Bubbles im Thread-Panel im Light- und Dark-Mode korrekt gefärbt.</li>
+                </ul>
+                <h3 style="color:var(--primary); margin-top:0;">Version 6.1 🧵</h3>
+                <ul>
+                    <li>🧵 <strong>Gruppen-Threads (Discord-Style)</strong> — Jede Gruppennachricht hat einen eigenen Thread. 🧵-Button öffnet ein Side-Panel rechts neben dem Chat, Hauptbereich schrumpft. Antwort-Badge unter der Nachricht zeigt Anzahl.</li>
+                    <li>🖼️ <strong>Bildgröße auf 4 MB erhöht</strong> — Chat-Bilder und Ctrl+V-Eingaben unterstützen nun bis zu 4 MB (statt 1 MB), wird automatisch komprimiert. Story-Bilder ebenfalls auf 4 MB erhöht.</li>
+                </ul>
                 <h3 style="color:var(--primary); margin-top:0;">Version 6.0 🤖</h3>
                 <ul>
                     <li>🤖 <strong>VilloAI</strong> — KI-Assistent direkt im Chat! Rechenaufgaben lösen, Fragen beantworten — alles auf Deutsch. Stündliches Nutzungslimit schützt vor Missbrauch. Über den 🤖-Button im Chat erreichbar.</li>
@@ -2400,7 +2695,7 @@
                 <h3 style="color:var(--primary);">Version 5.6 📎</h3>
                 <ul>
                     <li>📎 <strong>Anhänge</strong> — Neuer 📎-Button ersetzt 🖼️. Auswahl zwischen Bild, Audio (MP3/WAV/OGG, max. 500 KB) und Dokument (PDF/TXT, max. 500 KB). Audiodateien als Player, Dokumente als Download-Card</li>
-                    <li>🖼️ <strong>Bildgröße erhöht</strong> — Max. 1 MB (statt 500 KB), wird automatisch komprimiert. Auch Ctrl+V unterstützt 1 MB</li>
+                    <li>🖼️ <strong>Bildgröße erhöht</strong> — Max. 4 MB (statt 1 MB), wird automatisch komprimiert. Auch Ctrl+V unterstützt 4 MB</li>
                     <li>🔧 <strong>Gruppen-Fix</strong> — Gruppenmenü wird beim Wechsel zu 1:1-Chat korrekt ausgeblendet</li>
                 </ul>
                 <h3 style="color:var(--primary);">Version 5.5 🔍</h3>
@@ -2782,7 +3077,7 @@
     <div id="auth-area">
         <div class="auth-box">
             <h2 style="color:var(--primary); text-align:center;">VilloChat</h2>
-            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 6.0</p>
+            <p style="text-align:center; font-size:12px; color:#999; margin:-10px 0 15px 0;">Version 7.0</p>
             <div style="display:flex; margin-bottom:15px; border-bottom:1px solid #eee;">
                 <div id="t-login" style="flex:1; text-align:center; cursor:pointer; padding:10px; border-bottom:2px solid var(--primary);" data-i18n="login_tab">Login</div>
                 <div id="t-reg" style="flex:1; text-align:center; cursor:pointer; padding:10px; color:#999;" data-i18n="register_tab">Neu</div>
@@ -2904,7 +3199,7 @@
 
                 <!-- Image input -->
                 <div id="story-image-section" style="display:none;">
-                    <button onclick="document.getElementById('story-img-input').click()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:8px;">📁 Bild auswählen (max. 500 KB)</button>
+                    <button onclick="document.getElementById('story-img-input').click()" style="width:100%; background:var(--bg); color:var(--text-color); border:1px solid var(--border-color); margin-bottom:8px;">📁 Bild auswählen (max. 4 MB)</button>
                     <input type="file" id="story-img-input" accept="image/*" style="display:none;">
                 </div>
 
@@ -3041,10 +3336,51 @@
         </div>
     </div>
 
+    <!-- THREAD PANEL (Discord-style) -->
+    <div id="thread-panel">
+        <div id="thread-panel-header">
+            <div id="thread-panel-title" data-i18n="thread_title">🧵 Thread</div>
+            <span style="cursor:pointer; font-size:20px; opacity:0.6; line-height:1;" onclick="closeThreadPanel()">✕</span>
+        </div>
+        <div id="thread-panel-orig">
+            <div class="tp-orig-label" data-i18n="thread_orig_label">Originalnachricht</div>
+            <div class="tp-orig-sender" id="tp-orig-sender"></div>
+            <div class="tp-orig-text" id="tp-orig-text"></div>
+        </div>
+        <div id="thread-panel-messages"></div>
+        <div id="thread-panel-reply-count"></div>
+        <div id="thread-panel-input-area">
+            <textarea id="thread-panel-input" rows="1" data-i18n-placeholder="thread_placeholder" placeholder="Im Thread antworten…"
+                oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px';"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendThreadReply();}"></textarea>
+            <button id="thread-panel-send-btn" onclick="sendThreadReply()">➤</button>
+        </div>
+    </div>
+
     <div id="chat-area">
         <div id="sidebar">
             <div class="header">
-                <h2 id="my-name-display" style="cursor:pointer;" onclick="openMyProfile()" title="Mein Profil">Profil</h2>
+                <div id="app-switcher-wrap">
+                    <h2 id="my-name-display" style="cursor:pointer; flex-grow:0;" onclick="openMyProfile()" title="Mein Profil">Profil</h2>
+                    <span id="app-switcher-arrow" onclick="toggleAppSwitcher()" title="Apps">▾</span>
+                    <div id="app-switcher-dropdown">
+                        <div class="app-switcher-item active-app" onclick="closeAppSwitcher()">
+                            <div class="app-icon" style="background:linear-gradient(135deg,#25d366,#128c7e);">💬</div>
+                            <div>
+                                <div class="app-name">VilloChat</div>
+                                <div class="app-desc">Messenger</div>
+                            </div>
+                        </div>
+                        <div class="app-switcher-divider"></div>
+                        <div class="app-switcher-item" style="opacity:0.45; cursor:default;">
+                            <div class="app-icon" style="background:linear-gradient(135deg,#8b5cf6,#6366f1);">🔜</div>
+                            <div>
+                                <div class="app-name">To be continued</div>
+                                <div class="app-desc">Demnächst</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div style="display:flex; gap:12px; align-items:center;">
                     <span style="cursor:pointer; font-size:18px;" onclick="openGlobalSearch()" title="Globale Suche">🔍</span>
                     <div class="burger-menu">
@@ -3432,7 +3768,7 @@ const LANGS = {
         notif_alias_saved: '✅ Alias gespeichert',
         notif_chat_cleared: '✅ Chat geleert',
         notif_no_chat: '⚠️ Kein Chat geöffnet!',
-        notif_img_too_big: '⚠️ Bild zu groß (max. 500 KB)',
+        notif_img_too_big: '⚠️ Bild zu groß (max. 4 MB)',
         notif_img_error: '❌ Bild konnte nicht geladen werden',
         notif_new_msg: '💬 Neue Nachricht von',
         notif_group_not_found: '❌ Gruppe nicht gefunden',
@@ -3671,7 +4007,7 @@ const LANGS = {
         lbl_story_font: 'SCHRIFTART',
         lbl_story_bg: 'HINTERGRUNDFARBE',
         btn_story_emoji: '😊 Emoji wählen',
-        lbl_story_image_upload: '📁 Bild auswählen (max. 500 KB)',
+        lbl_story_image_upload: '📁 Bild auswählen (max. 4 MB)',
         btn_publish_story2: '📖 Veröffentlichen',
         lbl_story_slides_count: '/ 15 Slides',
         lbl_just_now: 'Gerade eben',
@@ -3768,6 +4104,21 @@ const LANGS = {
         notif_create_error: '❌ Fehler beim Erstellen',
         notif_min_admin: '⚠️ Mindestens ein Admin muss übrig bleiben',
         notif_left_group: '👋 Gruppe verlassen',
+        // Thread
+        thread_title: '🧵 Thread',
+        thread_orig_label: 'Originalnachricht',
+        thread_placeholder: 'Im Thread antworten…',
+        thread_no_replies: 'Noch keine Antworten',
+        thread_reply_count_one: 'Antwort in diesem Thread',
+        thread_reply_count_many: 'Antworten in diesem Thread',
+        thread_badge_one: 'Antwort →',
+        thread_badge_many: 'Antworten →',
+        thread_btn_title: 'Thread öffnen',
+        // Channels
+        channel_title: 'Kanäle',
+        channel_general: 'allgemein',
+        channel_new: '+ Neuer Kanal',
+        channel_placeholder: 'Nachricht in #',
     },
     en: {
         // Tabs
@@ -3852,7 +4203,7 @@ const LANGS = {
         notif_alias_saved: '✅ Alias saved',
         notif_chat_cleared: '✅ Chat cleared',
         notif_no_chat: '⚠️ No chat open!',
-        notif_img_too_big: '⚠️ Image too large (max. 500 KB)',
+        notif_img_too_big: '⚠️ Image too large (max. 4 MB)',
         notif_img_error: '❌ Could not load image',
         notif_new_msg: '💬 New message from',
         notif_group_not_found: '❌ Group not found',
@@ -4091,7 +4442,7 @@ const LANGS = {
         lbl_story_font: 'FONT',
         lbl_story_bg: 'BACKGROUND COLOR',
         btn_story_emoji: '😊 Pick emoji',
-        lbl_story_image_upload: '📁 Select image (max. 500 KB)',
+        lbl_story_image_upload: '📁 Select image (max. 4 MB)',
         btn_publish_story2: '📖 Publish',
         lbl_story_slides_count: '/ 15 slides',
         lbl_just_now: 'Just now',
@@ -4188,6 +4539,21 @@ const LANGS = {
         notif_create_error: '❌ Error while creating',
         notif_min_admin: '⚠️ At least one admin must remain',
         notif_left_group: '👋 Group left',
+        // Thread
+        thread_title: '🧵 Thread',
+        thread_orig_label: 'Original message',
+        thread_placeholder: 'Reply in thread…',
+        thread_no_replies: 'No replies yet',
+        thread_reply_count_one: 'reply in this thread',
+        thread_reply_count_many: 'replies in this thread',
+        thread_badge_one: 'reply →',
+        thread_badge_many: 'replies →',
+        thread_btn_title: 'Open thread',
+        // Channels
+        channel_title: 'Channels',
+        channel_general: 'general',
+        channel_new: '+ New channel',
+        channel_placeholder: 'Message #',
     },
       lx: {
         // Tabs
@@ -4211,7 +4577,7 @@ const LANGS = {
         lbl_my_status: 'Mïn Zänverinjito:',
         btn_save_avatar: 'Sávi avatário',
         btn_save_status: 'Sávi zänverinjito',
-        // Security — fehlende Begriffe: deutsche Platzhalter
+        // Security
         sec_subtitle: 'Ljava PIN û sesio',
         btn_change_pin: '🔑 Ževrö tí PIN',
         btn_logout: '🚪 Eçita sesío',
@@ -4228,9 +4594,9 @@ const LANGS = {
         opt_except: 'Kontakta untül...',
         opt_only_for: 'Kêne savira...',
         btn_save_visibility: 'Sáva',
-        lbl_blocked_users: 'Benúsna blocka',       // Platzhalter DE
-        btn_save_word_filter: 'Sáva Filtra pálavra',      // Platzhalter DE
-        lbl_word_filter: 'Filtra palavra',                 // Platzhalter DE
+        lbl_blocked_users: 'Benúsna blocka',       
+        btn_save_word_filter: 'Sáva Filtra pálavra',      
+        lbl_word_filter: 'Filtra palavra',                 
         // Help
         btn_open_help: '📖 Açesa Hölfe',
         btn_changelog: '📋 Livracećangean viva',
@@ -4245,24 +4611,24 @@ const LANGS = {
         ph_search_msg: 'ćerći mesajes...',
         ph_search_all: 'ćerći allân chats...',
         ph_status: 'dê ejemplo busja...',
-        ph_contact_note: 'Notizen zu diesem Kontakt...',   // Platzhalter DE
+        ph_contact_note: 'Notizen zu diesem Kontakt...',   
         ph_group_search: 'ćerći benúsva...',
-        ph_announcement: 'Annônça',    // Platzhalter DE
-        ph_announcement_title: 'Frânvíaćio (optionala)',         // Platzhalter DE
-        ph_report_reason: 'Eçerćio...',                 // Platzhalter DE
-        ph_pin_hint: 'PIN-Hintí (optionala)',             // Platzhalter DE
-        ph_new_pin: 'Nü PIN (xxxx-xxxx)',               // Platzhalter DE
-        ph_current_pin: 'PIN Nü',                   // Platzhalter DE
-        ph_group_name: 'Nóm grúpân',                   // Platzhalter DE
+        ph_announcement: 'Annônça',    
+        ph_announcement_title: 'Frânvíaćio (optionala)',         
+        ph_report_reason: 'Eçerćio...',                 
+        ph_pin_hint: 'PIN-Hintí (optionala)',             
+        ph_new_pin: 'Nü PIN (xxxx-xxxx)',               
+        ph_current_pin: 'PIN Nü',                   
+        ph_group_name: 'Nóm grúpân',                   
         ph_message: 'Mesáje...',
-        ph_edit_message: 'Edíta...',        // Platzhalter DE
+        ph_edit_message: 'Edíta...',        
         // Empty state
         empty_chat_title: 'Nödel chat selektave',
         empty_chat_sub: 'Chúse kontakte tüllev vi gríd starta villo-chattja',
         empty_contacts: 'Nödel kontakta',
         empty_contacts_sub: 'Ćerće kontakta lista ô adda cod qr.',
-        empty_bookmarks: 'Nö Markas',              // Platzhalter DE
-        empty_stories: 'Nö storijas',                // Platzhalter DE
+        empty_bookmarks: 'Nö Markas',              
+        empty_stories: 'Nö storijas',                
         // Context menu
         ctx_copy: 'Dupli',
         ctx_react: 'Reaćio',
@@ -4274,73 +4640,73 @@ const LANGS = {
         ctx_delete: 'Clêra',
         ctx_delete_all: 'Delêta',
         ctx_info: 'Mesáje info',
-        ctx_bookmark: 'Marka',                       // Platzhalter DE
-        ctx_report: 'Reporta',                              // Platzhalter DE
-        ctx_save_image: 'sáva piktća',                  // Platzhalter DE
+        ctx_bookmark: 'Marka',                       
+        ctx_report: 'Reporta',                              
+        ctx_save_image: 'sáva piktća',                  
         // Buttons / Actions
         btn_send: 'Vátül sênda',
-        btn_cancel: 'Abdande',                           // Platzhalter DE
+        btn_cancel: 'Abdande',                           
         btn_save: 'Sáva',
         btn_delete: 'Delêta',
-        btn_close: 'Abdande',                            // Platzhalter DE
-        btn_confirm: 'OK',                         // Platzhalter DE
+        btn_close: 'Abdande',                            
+        btn_confirm: 'OK',                         
         btn_create_group: 'Grupa creáçio',
-        btn_invite: 'Ínvita',                            // Platzhalter DE
-        btn_leave_group: 'Eçita grúpa',               // Platzhalter DE
-        btn_report: 'Repôrta',                              // Platzhalter DE
-        btn_block: 'Blockânvja',                           // Platzhalter DE
-        btn_unblock: 'Dêblockanvja',                         // Platzhalter DE
-        btn_add_contact: 'Adda Kontakta',             // Platzhalter DE
-        btn_remove_contact: 'Remóva kontakta',           // Platzhalter DE
-        btn_clear_chat: 'Delêta chat',                     // Platzhalter DE
-        btn_export_chat: 'exporta chat TXTên',               // Platzhalter DE
-        btn_share_qr: 'cód qr QR sênda',                        // Platzhalter DE
+        btn_invite: 'Ínvita',                            
+        btn_leave_group: 'Eçita grúpa',               
+        btn_report: 'Repôrta',                              
+        btn_block: 'Blockânvja',                           
+        btn_unblock: 'Dêblockanvja',                         
+        btn_add_contact: 'Adda Kontakta',             
+        btn_remove_contact: 'Remóva kontakta',           
+        btn_clear_chat: 'Delêta chat',                     
+        btn_export_chat: 'exporta chat TXTên',               
+        btn_share_qr: 'cód qr QR sênda',                        
         btn_publish_story: '✅ Storija poléva',
         btn_add_slide: '+ Sildan adda',
-        btn_create_poll: 'Créata Pollâvjianćio',           // Platzhalter DE
+        btn_create_poll: 'Créata Pollâvjianćio',           
         // Labels / Titles
         lbl_contacts: 'Kontakta',
-        lbl_groups: 'Grupä',                              // Platzhalter LX
+        lbl_groups: 'Grupä',                              
         lbl_stories: 'Storijas',
-        lbl_bookmarks: 'Markas',                      // Platzhalter DE
-        lbl_archived: 'Arvave',                        // Platzhalter DE
-        lbl_pinned: 'Pinve',                          // Platzhalter DE
+        lbl_bookmarks: 'Markas',                      
+        lbl_archived: 'Arvave',                        
+        lbl_pinned: 'Pinve',                          
         lbl_online: 'On líne',
         lbl_offline: 'Off líne',
         lbl_typing: 'týpas',
-        lbl_members: 'Partićipantias',                         // Platzhalter DE
+        lbl_members: 'Partićipantias',                         
         lbl_admin: 'Admínístrátore',
-        lbl_moderator: 'Mod.',                        // Platzhalter DE
-        lbl_read: 'Reda',                               // Platzhalter DE
-        lbl_sent: 'Sendâve',                              // Platzhalter DE
-        lbl_delivered: 'Açeptave',                       // Platzhalter DE
-        lbl_deleted_msg: 'Dêletave mesáje',             // Platzhalter DE
-        lbl_edited: 'edítave',                          // Platzhalter DE
-        lbl_forwarded: 'Sêndave tül',                   // Platzhalter DE
-        lbl_reply_to: 'Rêpla tül',                       // Platzhalter DE
-        lbl_poll: 'Pollâvjianćio',                            // Platzhalter DE
-        lbl_poll_closed: 'Poll. nödvanve',         // Platzhalter DE
-        lbl_votes: 'Sêrvas',                              // Platzhalter DE
-        lbl_invite_link: 'Ínvitaçio linkça',                 // Platzhalter DE
-        lbl_group_created: 'Creatave Grupa',              // Platzhalter DE
-        lbl_joined_group: 'Ínicia grupa',            // Platzhalter DE
-        lbl_left_group: 'Abd\'inda grupa',                // Platzhalter DE
-        lbl_removed_from_group: 'Vâlentave grúpa',     // Platzhalter DE
-        lbl_made_admin: 'Kä Admínístrátore',               // Platzhalter DE
-        lbl_removed_admin: 'Vê Admínístrátore',        // Platzhalter DE
-        lbl_ban_history: 'Baná histórja',                  // Platzhalter DE
-        lbl_warn_history: 'Alêrta histórja',              // Platzhalter DE
-        lbl_no_warnings: 'Nö alêrta ô fáléra',                // Platzhalter DE
-        lbl_no_bans: 'Nö bâna',                      // Platzhalter DE
-        lbl_announcement: 'Annônça',                   // Platzhalter DE
-        lbl_system_msg: 'Mesáje systémý',                 // Platzhalter DE
+        lbl_moderator: 'Mod.',                        
+        lbl_read: 'Reda',                               
+        lbl_sent: 'Sendâve',                              
+        lbl_delivered: 'Açeptave',                       
+        lbl_deleted_msg: 'Dêletave mesáje',             
+        lbl_edited: 'edítave',                          
+        lbl_forwarded: 'Sêndave tül',                   
+        lbl_reply_to: 'Rêpla tül',                       
+        lbl_poll: 'Pollâvjianćio',                            
+        lbl_poll_closed: 'Poll. nödvanve',         
+        lbl_votes: 'Sêrvas',                              
+        lbl_invite_link: 'Ínvitaçio linkça',                 
+        lbl_group_created: 'Creatave Grupa',              
+        lbl_joined_group: 'Ínicia grupa',            
+        lbl_left_group: 'Abd\'inda grupa',                
+        lbl_removed_from_group: 'Vâlentave grúpa',     
+        lbl_made_admin: 'Kä Admínístrátore',               
+        lbl_removed_admin: 'Vê Admínístrátore',        
+        lbl_ban_history: 'Baná histórja',                  
+        lbl_warn_history: 'Alêrta histórja',              
+        lbl_no_warnings: 'Nö alêrta ô fáléra',                
+        lbl_no_bans: 'Nö bâna',                      
+        lbl_announcement: 'Annônça',                   
+        lbl_system_msg: 'Mesáje systémý',                 
         lbl_version: 'Versio',
-        lbl_today: 'Tüldía',                                // Platzhalter DE
-        lbl_yesterday: 'Vêdía',                          // Platzhalter DE
-        lbl_search_results: 'Resulta',              // Platzhalter DE
-        lbl_no_results: 'Nö Resulta. Ćinria velinccia û palavria ô triýa nüve',                // Platzhalter DE
-        lbl_loading: 'Lóada...',                            // Platzhalter DE
-        lbl_error: 'Fáler',                               // Platzhalter DE
+        lbl_today: 'Tüldía',                                
+        lbl_yesterday: 'Vêdía',                          
+        lbl_search_results: 'Resulta',              
+        lbl_no_results: 'Nö Resulta. Ćinria velinccia û palavria ô triýa nüve',                
+        lbl_loading: 'Lóada...',                            
+        lbl_error: 'Fáler',                               
         // Notifications
         notif_accent_changed: '✅ Kolora ževri',
         notif_registered: '✅ Registra suçinfulla!',
@@ -4353,7 +4719,7 @@ const LANGS = {
         notif_alias_saved: '✅ Saváve Alias',
         notif_chat_cleared: '✅ Cleváve chat',
         notif_no_chat: '⚠️ Nödel chat!',
-        notif_img_too_big: '⚠️ Piktća larjja vê max (max. 500 KB)',
+        notif_img_too_big: '⚠️ Piktća larjja vê max (max. 4 MB)',
         notif_img_error: '❌ Nödel create piktća',
         notif_new_msg: '💬 Nü mesaja de: ',
         notif_group_not_found: '❌ Nödel ćercarevi grupa',
@@ -4374,22 +4740,22 @@ const LANGS = {
         notif_pin_changed: '✅ PIN ževri suçinfull',
         notif_min_slide: '⚠️ Min. 1 silda adda',
         notif_slide_content: '⚠️ Kontenta adda fáv.',
-        notif_contact_added: '✅ Kontakta adda',                  // Platzhalter LX
+        notif_contact_added: '✅ Kontakta adda',                  
         notif_group_created: '✅ Grupa creata',
-        notif_group_joined: '✅ Grupa ínicave',                  // Platzhalter DE
-        notif_group_left: '✅ Grupa deínicave',                  // Platzhalter DE
-        notif_link_copied: '✅ Link duploave',                     // Platzhalter DE
-        notif_poll_created: '✅ Pollâvjianćio creâtave',             // Platzhalter DE
-        notif_poll_closed: '🔒 Pollâvjianćio eçratan',          // Platzhalter DE
-        notif_reported: '✅ Repôrtave',                           // Platzhalter DE
-        notif_blocked: '✅ Blockân',                           // Platzhalter DE
-        notif_unblocked: '✅ Dêblockan',                         // Platzhalter DE
-        notif_bookmark_saved: '✅ Mârka istra',           // Platzhalter DE
-        notif_chat_exported: '✅ Chat eçporta',               // Platzhalter DE
-        notif_announcement_sent: '✅ Sêndave annônça',      // Platzhalter DE
-        notif_warn_sent: '✅ Eçrimva eksklamanća',                   // Platzhalter DE
-        notif_ban_applied: '✅ Banân',                  // Platzhalter DE
-        notif_unbanned: '✅ Unbanâve',                           // Platzhalter DE
+        notif_group_joined: '✅ Grupa ínicave',                  
+        notif_group_left: '✅ Grupa deínicave',                  
+        notif_link_copied: '✅ Link duploave',                     
+        notif_poll_created: '✅ Pollâvjianćio creâtave',             
+        notif_poll_closed: '🔒 Pollâvjianćio eçratan',          
+        notif_reported: '✅ Repôrtave',                           
+        notif_blocked: '✅ Blockân',                           
+        notif_unblocked: '✅ Dêblockan',                         
+        notif_bookmark_saved: '✅ Mârka istra',           
+        notif_chat_exported: '✅ Chat eçporta',               
+        notif_announcement_sent: '✅ Sêndave annônça',      
+        notif_warn_sent: '✅ Eçrimva eksklamanća',                   
+        notif_ban_applied: '✅ Banân',                  
+        notif_unbanned: '✅ Unbanâve',                           
         // Group info dynamic
         mute: '🔇 Volúmý nö',
         unmute: '🔊 Volúmý sï',
@@ -4399,12 +4765,12 @@ const LANGS = {
         forward_btn: 'Sendjave',
         forward_selected: 'Sendjavea',
         // Confirm dialogs
-        confirm_delete_msg: '¿Delêta mesája?',       // Platzhalter DE
-        confirm_clear_chat: '¿Delêta chat?',             // Platzhalter DE
-        confirm_leave_group: '¿Eçita grupa?',       // Platzhalter DE
-        confirm_remove_contact: '¿remóva kontakta?',   // Platzhalter DE
-        confirm_delete_story: '¿Delêta storija?',    // Platzhalter DE
-        confirm_close_poll: '¿Enda Pollâvjianćio?',    // Platzhalter DE
+        confirm_delete_msg: '¿Delêta mesája?',       
+        confirm_clear_chat: '¿Delêta chat?',             
+        confirm_leave_group: '¿Eçita grupa?',       
+        confirm_remove_contact: '¿remóva kontakta?',   
+        confirm_delete_story: '¿Delêta storija?',    
+        confirm_close_poll: '¿Enda Pollâvjianćio?',    
         // Burger menu
         menu_settings: 'Setûp',
         menu_reports: 'Mesája repôrta',
@@ -4506,7 +4872,7 @@ const LANGS = {
         lbl_story_font: 'FONT',
         lbl_story_bg: 'KOLORA',
         btn_story_emoji: '😊 Emoji:',
-        lbl_story_image_upload: '📁 Chuse piktća (max. 500 KB)',
+        lbl_story_image_upload: '📁 Chuse piktća (max. 4 MB)',
         btn_publish_story2: '📖 Publika',
         lbl_story_slides_count: 'de 15 Slidas',
         lbl_just_now: 'Rá tül',
@@ -4603,6 +4969,21 @@ const LANGS = {
         notif_create_error: '❌ Fáler ina creaćio',
         notif_min_admin: '⚠️ Min. 1 admínístrátore rêsta',
         notif_left_group: '👋 Grupo deínicave',
+        // Tréd (Thread)
+        thread_title: '🧵 Tréd',
+        thread_orig_label: 'Mesáje orjína',
+        thread_placeholder: 'Revla ina tréd…',
+        thread_no_replies: 'Nödel revlas',
+        thread_reply_count_one: 'revla ina tréd',
+        thread_reply_count_many: 'revlas ina tréd',
+        thread_badge_one: 'revla →',
+        thread_badge_many: 'revlas →',
+        thread_btn_title: 'Açese tréd',
+        // Kanálan (Channels)
+        channel_title: 'Kanálan',
+        channel_general: 'jeneral',
+        channel_new: '+ Nü kanál',
+        channel_placeholder: 'Mesáje ina #',
     }
 };
 
@@ -4841,10 +5222,22 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e)
 // Each design: { ui, msg, heading, googleFonts }
 const FONT_DESIGNS = {
     default: {
+        ui:      "'Barlow', 'Noto Color Emoji', sans-serif",
+        msg:     "'Barlow', 'Noto Color Emoji', sans-serif",
+        heading: "'VilloChat Serif', 'Noto Color Emoji', serif",
+        google:  "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap"
+    },
+    barlow_raleway: {
+        ui:      "'Barlow', 'Noto Color Emoji', sans-serif",
+        msg:     "'Raleway', 'Noto Color Emoji', sans-serif",
+        heading: "'Raleway', 'Noto Color Emoji', sans-serif",
+        google:  "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Raleway:wght@400;500;600;700&display=swap"
+    },
+    villochat_classic: {
         ui:      "'Inter', 'Noto Color Emoji', sans-serif",
         msg:     "'VilloChat Sans', 'Noto Color Emoji', sans-serif",
         heading: "'VilloChat Serif', 'Noto Color Emoji', serif",
-        google:  null // Already loaded
+        google:  null
     },
     villochat_alt: {
         ui:      "'VilloChat Sans', 'Noto Color Emoji', sans-serif",
@@ -5922,6 +6315,8 @@ function startChat(n){
     if(chatRef) off(chatRef);
     if(typingRef) off(typingRef);
     if(onlineStatusListener) off(onlineStatusListener);
+    // Close thread panel when switching to 1:1 chat
+    if(typeof closeThreadPanel === 'function') closeThreadPanel();
 
     activeChatId = myUsername < n ? `${myUsername}_${n}` : `${n}_${myUsername}`;
     activeContactName = n;
@@ -6263,7 +6658,7 @@ document.getElementById('img-upload-input').addEventListener('change', async (e)
     const file = e.target.files[0];
     e.target.value = '';
     if(!file || !activeChatId) return;
-    const MAX_BYTES = 1024 * 1024; // 1 MB
+    const MAX_BYTES = 4 * 1024 * 1024; // 4 MB
     const dataUrl = await compressImage(file, MAX_BYTES);
     if(!dataUrl) { showNotification('❌ Bild konnte nicht geladen werden', 'error'); return; }
     const msgData = { sender: myUsername, text: dataUrl, timestamp: Date.now(), read: false, isImage: true };
@@ -6367,7 +6762,7 @@ document.getElementById('msg-input').addEventListener('paste', async (e) => {
         if(item.type.startsWith('image/')) {
             e.preventDefault();
             const file = item.getAsFile();
-            const dataUrl = await compressImage(file, 1024 * 1024);
+            const dataUrl = await compressImage(file, 4 * 1024 * 1024);
             if(!dataUrl) return;
             push(ref(db, 'chats/' + activeChatId), {
                 sender: myUsername, text: dataUrl, timestamp: Date.now(), read: false, isImage: true
@@ -7248,8 +7643,8 @@ document.getElementById('story-img-input').addEventListener('change', async (e) 
     const file = e.target.files[0];
     e.target.value = '';
     if(!file) return;
-    if(file.size > 500 * 1024) { showNotification(t('notif_img_too_big'), 'warning'); return; }
-    storyImageData = await compressImage(file, 500 * 1024);
+    if(file.size > 4 * 1024 * 1024) { showNotification(t('notif_img_too_big'), 'warning'); return; }
+    storyImageData = await compressImage(file, 4 * 1024 * 1024);
     const img = document.getElementById('story-preview-img');
     img.src = storyImageData;
     img.style.display = 'block';
@@ -8937,7 +9332,7 @@ const helpArticles = [
             <ul style="font-size:13px; line-height:1.8;">
                 <li><strong>✏️ Text</strong> — Eigenen Text mit Hintergrundfarbe und Schriftart wählen</li>
                 <li><strong>😊 Emoji</strong> — Ein großes Emoji auf Farbhintergrund</li>
-                <li><strong>🖼️ Bild</strong> — Ein Foto (max. 500 KB, wird komprimiert)</li>
+                <li><strong>🖼️ Bild</strong> — Ein Foto (max. 4 MB, wird automatisch komprimiert)</li>
             </ul>
             <h4>Mehrere Slides</h4>
             <p>Drücke <strong>💾 Slide speichern</strong> um den aktuellen Inhalt als Slide hinzuzufügen. Du siehst die Slides als kleine Thumbnails — klicke darauf zum Bearbeiten oder tippe ✕ zum Löschen. Du kannst bis zu <strong>15 Slides</strong> pro Geschichte hinzufügen. Beim Klick auf <strong>📖 Veröffentlichen</strong> wird die ganze Geschichte auf einmal geteilt.</p>
@@ -10348,6 +10743,8 @@ window.onload = () => {
                               'change-pin-overlay', 'help-overlay', 'global-search-overlay', 
                               'forward-overlay', 'my-profile-overlay', 'changelog-overlay',
                               'group-create-overlay', 'group-info-overlay', 'msg-info-overlay', 'scheduled-overlay', 'story-create-overlay', 'qr-pin-overlay', 'sticker-overlay', 'bookmarks-overlay', 'reports-overlay', 'contact-tags-overlay'];
+                // Also close thread panel on ESC
+                if(typeof closeThreadPanel === 'function' && document.getElementById('thread-panel')?.classList.contains('open')) { closeThreadPanel(); return; }
             let anyOpen = false;
             overlays.forEach(id => {
                 const el = document.getElementById(id);
@@ -10399,6 +10796,8 @@ window.onload = () => {
         if(chatRef) off(chatRef);
         if(typingRef) off(typingRef);
         if(onlineStatusListener) off(onlineStatusListener);
+        // Close thread panel when switching chats
+        if(typeof closeThreadPanel === 'function') closeThreadPanel();
 
         activeChatId = gid;
         activeGroupId = gid;
@@ -10574,17 +10973,133 @@ window.onload = () => {
 
         const checkmark = m.sender === myUsername ? `<span class="msg-status check-sent">✓</span>` : '';
         const editedMark = m.edited ? '<span class="msg-edited">(bearbeitet)</span>' : '';
-        const safeText = (m.text||'').replace(/`/g,'\\`');
-        const replyIcon = `<span class="msg-menu" onclick="replyToMsg('${msgKey}','${m.sender}',\`${safeText}\`)">↩️</span>`;
+        const safeText = (m.text||'').replace(/`/g,'\\`').replace(/'/g,"\\'");
+        const replyIcon = `<span class="msg-menu" onclick="replyToMsg('${msgKey}','${m.sender}',\`${(m.text||'').replace(/`/g,'\\`')}\`)">↩️</span>`;
         const delIcon = m.sender === myUsername ? `<span class="del-msg" style="cursor:pointer;" onclick="deleteMsg('${msgKey}')">🗑</span>` : '';
+        const threadBtn = `<span class="msg-thread-btn" onclick="openThreadPanel('${msgKey}','${m.sender.replace(/'/g,"\\'")}',\`${(m.text||'').replace(/`/g,'\\`')}\`)" title="${t('thread_btn_title')}">🧵</span>`;
+        const threadCount = m.threadCount || 0;
+        const threadBadge = threadCount > 0
+            ? `<div class="msg-thread-badge" onclick="openThreadPanel('${msgKey}','${m.sender.replace(/'/g,"\\'")}',\`${(m.text||'').replace(/`/g,'\\`')}\`)">🧵 ${threadCount} ${threadCount !== 1 ? t('thread_badge_many') : t('thread_badge_one')}</div>`
+            : '';
 
         if(m.poll) {
-            d.innerHTML = `${senderLabel}${replyHTML}${renderPoll(msgKey, m.poll)}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+            d.innerHTML = `${senderLabel}${replyHTML}${renderPoll(msgKey, m.poll)}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${checkmark} ${replyIcon} ${threadBtn} ${delIcon}</span>${threadBadge}`;
             return;
         }
 
-        d.innerHTML = `${senderLabel}${replyHTML}${renderMessageContent(m.text||'')}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${delIcon}</span>`;
+        d.innerHTML = `${senderLabel}${replyHTML}${renderMessageContent(m.text||'')}${reactionsHTML}<span class="msg-time"><span class="full-date">${fullDate}</span>${time} ${editedMark} ${checkmark} ${replyIcon} ${threadBtn} ${delIcon}</span>${threadBadge}`;
     }
+
+    // ── App Switcher ──────────────────────────────────────────────
+    window.toggleAppSwitcher = function() {
+        const dd = document.getElementById('app-switcher-dropdown');
+        dd.classList.toggle('open');
+    };
+    window.closeAppSwitcher = function() {
+        document.getElementById('app-switcher-dropdown')?.classList.remove('open');
+    };
+    document.addEventListener('click', (e) => {
+        if(!e.target.closest('#app-switcher-wrap')) closeAppSwitcher();
+    });
+
+    // ── Thread System (Discord-style) ────────────────────────────
+    let activeThreadMsgKey = null;
+    let activeThreadChildListener = null;
+    let activeThreadCountListener = null;
+
+    window.openThreadPanel = function(msgKey, senderName, msgText) {
+        if(!activeGroupId) return;
+
+        // If same thread clicked again → close
+        if(activeThreadMsgKey === msgKey && document.getElementById('thread-panel').classList.contains('open')) {
+            closeThreadPanel();
+            return;
+        }
+
+        activeThreadMsgKey = msgKey;
+
+        // Populate original message
+        document.getElementById('tp-orig-sender').style.color = stringToColor(senderName);
+        document.getElementById('tp-orig-sender').textContent = senderName;
+        const preview = (msgText||'').substring(0, 200) + ((msgText||'').length > 200 ? '…' : '');
+        document.getElementById('tp-orig-text').innerHTML = renderMessageContent(preview);
+
+        // Clear messages
+        const container = document.getElementById('thread-panel-messages');
+        container.innerHTML = '';
+
+        // Detach old listeners
+        if(activeThreadChildListener) { off(ref(db, `threads/${activeGroupId}/${activeThreadMsgKey}_prev/messages`)); }
+        activeThreadChildListener = null;
+        if(activeThreadCountListener) { activeThreadCountListener(); activeThreadCountListener = null; }
+
+        const threadRef = ref(db, `threads/${activeGroupId}/${msgKey}/messages`);
+
+        // Live-load replies
+        activeThreadChildListener = onChildAdded(threadRef, (s) => {
+            if(document.getElementById(`tp-msg-${s.key}`)) return; // dedupe
+            const tm = s.val();
+            const isMine = tm.sender === myUsername;
+            const timeStr = new Date(tm.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+
+            const wrap = document.createElement('div');
+            wrap.className = `tp-msg ${isMine ? 'tp-sent' : 'tp-recv'}`;
+            wrap.id = `tp-msg-${s.key}`;
+            wrap.innerHTML = `
+                ${!isMine ? `<div class="tp-sender-name" style="color:${stringToColor(tm.sender)}">${tm.sender}</div>` : ''}
+                <div class="tp-bubble">${renderMessageContent(tm.text||'')}</div>
+                <div class="tp-meta">${timeStr}</div>
+            `;
+            container.appendChild(wrap);
+            container.scrollTop = container.scrollHeight;
+        });
+
+        // Live reply count + update badge on parent msg
+        activeThreadCountListener = onValue(threadRef, (snap) => {
+            const count = snap.exists() ? Object.keys(snap.val()).length : 0;
+            const bar = document.getElementById('thread-panel-reply-count');
+            if(bar) bar.textContent = count === 0 ? t('thread_no_replies') : `${count} ${count !== 1 ? t('thread_reply_count_many') : t('thread_reply_count_one')}`;
+
+            // Update threadCount on parent message for badge
+            update(ref(db, `chats/${activeGroupId}/${msgKey}`), { threadCount: count });
+        });
+
+        // Open panel + shrink main chat on desktop
+        document.getElementById('thread-panel').classList.add('open');
+        document.getElementById('main-chat').classList.add('thread-open');
+
+        setTimeout(() => document.getElementById('thread-panel-input').focus(), 200);
+    };
+
+    window.closeThreadPanel = function() {
+        document.getElementById('thread-panel').classList.remove('open');
+        document.getElementById('main-chat').classList.remove('thread-open');
+
+        if(activeThreadChildListener) {
+            try { off(ref(db, `threads/${activeGroupId}/${activeThreadMsgKey}/messages`), 'child_added', activeThreadChildListener); } catch(e){}
+            activeThreadChildListener = null;
+        }
+        if(activeThreadCountListener) { activeThreadCountListener(); activeThreadCountListener = null; }
+        activeThreadMsgKey = null;
+    };
+
+    // Keep backward-compat alias
+    window.closeThreadOverlay = closeThreadPanel;
+
+    window.sendThreadReply = async function() {
+        const input = document.getElementById('thread-panel-input');
+        const text = input.value.trim();
+        if(!text || !activeThreadMsgKey || !activeGroupId) return;
+
+        await push(ref(db, `threads/${activeGroupId}/${activeThreadMsgKey}/messages`), {
+            sender: myUsername,
+            text: text,
+            timestamp: Date.now()
+        });
+        playSendSound();
+        input.value = '';
+        input.style.height = 'auto';
+    };
 
     // ── Gruppe erstellen Dialog ───────────────────────────────────
     window.openGroupCreate = () => {
@@ -11981,11 +12496,11 @@ window.fmtDate = fmtDate;
             case 'name':
                 return 'Ich bin **VilloAI**, betrieben von **'+MODEL_NAME+'**. 🤖';
             case 'entwickler':
-                return 'Ich wurde vom **VilloChat-Team** entwickelt und in Version 6.0 eingeführt. 👨‍💻';
+                return 'Ich wurde vom **VilloChat-Team** entwickelt und in Version 7.0 eingeführt. 👨‍💻';
             case 'villochat':
                 return '💬 **VilloChat** ist eine Echtzeit-Chat-App mit Gruppen, Stories, KI und vielem mehr!';
             case 'alter_ai':
-                return 'Ich bin mit **VilloChat 6.0** gestartet – noch ganz frisch! 🤖';
+                return 'Ich bin mit **VilloChat 7.0** gestartet – noch ganz frisch! 🤖';
             case 'befinden':
                 return 'Als KI habe ich keine Gefühle, aber ich bin bereit, dir zu helfen! 😊';
             case 'modell':
