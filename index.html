@@ -55,7 +55,7 @@
             --primary: #075e54; 
             --bg: #f0f2f5; 
             --white: #ffffff; 
-            --text-main: 'Inter', 'Noto Color Emoji', sans-serif; 
+            --text-main: 'Barlow', 'Noto Color Emoji', sans-serif; 
             --text-heading: 'VilloChat Serif', 'Noto Color Emoji', serif;
             --text-msg: 'VilloChat Sans', 'Noto Color Emoji', sans-serif;
             --msg-font-size: 15px;
@@ -2214,17 +2214,17 @@
 
                         <label class="settings-label" data-i18n="lbl_font_design">Schrift-Design:</label>
                         <select id="font-design-select" onchange="setFontDesign(this.value)" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border-color); background:var(--input-bg); color:var(--text-color); margin-bottom:16px;">
-                            <option value="default">Standard — VilloChat Serif &amp; Barlow ✦</option>
-                            <option value="barlow_raleway">Barlow &amp; Raleway</option>
-                            <option value="villochat_classic">VilloChat Classic — Inter / VilloChat Sans / Serif</option>
-                            <option value="villochat_alt">VilloChat Alt — VilloChat Sans überall</option>
-                            <option value="modern">Modern — Poppins überall</option>
-                            <option value="gamer">Gamer — Lilita One überall</option>
-                            <option value="serif">Serif — Playfair Display &amp; Merriweather</option>
-                            <option value="tech">Tech — Droid Sans Mono</option>
-                            <option value="noto">Notö — Noto Serif &amp; Noto Sans</option>
-                            <option value="android">Android — Roboto überall</option>
-                            <option value="social">Social — TikTok Sans überall</option>
+                            <option value="default">Standard (Neu) ✦</option>
+                            <option value="railway">Railway (Neu)</option>
+                            <option value="villochat_classic">VilloChat Classic</option>
+                            <option value="villochat_alt">VilloChat Alt</option>
+                            <option value="modern">Modern</option>
+                            <option value="gamer">Gamer</option>
+                            <option value="serif">Serif</option>
+                            <option value="tech">Tech</option>
+                            <option value="noto">Notö</option>
+                            <option value="android">Android</option>
+                            <option value="social">Social</option>
                         </select>
 
                         <label class="settings-label" data-i18n="lbl_bubble_style">Bubble-Stil:</label>
@@ -5227,10 +5227,10 @@ const FONT_DESIGNS = {
         heading: "'VilloChat Serif', 'Noto Color Emoji', serif",
         google:  "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap"
     },
-    barlow_raleway: {
-        ui:      "'Barlow', 'Noto Color Emoji', sans-serif",
-        msg:     "'Raleway', 'Noto Color Emoji', sans-serif",
-        heading: "'Raleway', 'Noto Color Emoji', sans-serif",
+    railway: {
+        ui:      "'Raleway', 'Noto Color Emoji', sans-serif",
+        msg:     "'Barlow', 'Noto Color Emoji', sans-serif",
+        heading: "'Barlow', 'Noto Color Emoji', sans-serif",
         google:  "https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Raleway:wght@400;500;600;700&display=swap"
     },
     villochat_classic: {
@@ -5285,7 +5285,7 @@ const FONT_DESIGNS = {
         ui:      "'TikTok Sans', 'Inter', 'Noto Color Emoji', sans-serif",
         msg:     "'TikTok Sans', 'Inter', 'Noto Color Emoji', sans-serif",
         heading: "'TikTok Sans', 'Inter', 'Noto Color Emoji', sans-serif",
-        google:  "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+        google:  "https://fonts.googleapis.com/css2?family=TikTok+Sans&display=swap"
     }
 };
 
